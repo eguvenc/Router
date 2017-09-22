@@ -1,3 +1,4 @@
+
 ## Router
 
 Php standalone router package
@@ -42,9 +43,14 @@ $router->map('GET', 'welcome', 'Welcome/index');
 $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', 'Welcome/index/$1/$2');
 ```
 
+### Getting Mapped Arguments
+
+Using <kbd>$router->getArgs()</kbd> method you can reach mapped arguments.
+
+
 ```php
-$router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', function($request, $response) {
-    $response->getBody()->write( print_r($request->getArgs(), true));
+$router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', function($request, $response) use($router) {
+    $response->getBody()->write( print_r($router->getArgs(), true));
     return $response;
 });
 ```
@@ -53,8 +59,8 @@ $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', function($request,
 
 ```php
 $router->map('GET', '/users/(\w+)/(\d+)', '/Users/$1/$2');
-$router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response) {
-     var_dump($args);
+$router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response) use($router) {
+     var_dump($router->getArgs());
 });
 ```
 
@@ -72,9 +78,9 @@ $router->group(
                 $router->map(
                     'GET',
                     'users/test/(\w+)/(\d+).*',
-                    function ($request, $response) {
+                    function ($request, $response) use ($router) {
                         
-                        // var_dump($request->getArgs());
+                        // var_dump($router->getArgs());
                         
                         $response->getBody()->write("yES !");
 
@@ -102,9 +108,9 @@ $router->group(
                 $router->map(
                     'GET',
                     'users/test/(\w+)/(\d+).*',
-                    function ($request, $response) {
+                    function ($request, $response) use ($router) {
                         
-                        // var_dump($request->getArgs());
+                        // var_dump($router->getArgs());
                         
                         $response->getBody()->write("yES !");
 
@@ -113,7 +119,7 @@ $router->group(
                 )->add('Guest')
                 	->filter('contains', ['users/test/45'])->add('Guest');
 
-                //->filter('notContains', ['users/teZ'])->add('Guest');;
+                //->filter('notContains', ['users/teZ'])->add('Guest');
                 //
                 // ->ifContains(['login'])
                 // ->ifNotContains(['login', 'payment'])

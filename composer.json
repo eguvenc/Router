@@ -1,0 +1,26 @@
+{
+    "name": "obullo/router",
+    "type": "library",
+    "description": "Php router that supports http middlewares and rest features.",
+    "keywords": ["router","restful","middleware","http route"],
+    "homepage": "https://obullo.github.io/Router/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ersin Guvenc",
+            "email": "eguvenc@gmail.com",
+            "homepage": "http://obullo.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Obullo\\Router\\": "src/",
+            "": "classes/"
+        }
+    },
+    "require": {
+        "phpunit/phpunit": "^4.8",
+        "zendframework/zend-diactoros": "^1.3"
+    }
+}

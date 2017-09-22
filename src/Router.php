@@ -30,10 +30,11 @@ class Router implements RouterInterface
     protected $response;
     protected $container;
     protected $count = 0;
+    protected $args = array();
     protected $routes = array();
-    protected $params = array();
     protected $webRouting = true;  // default web router
     protected $dispatched = false;
+    protected $middlewareClasses = null;
     
     /**
      * Construct
@@ -41,11 +42,13 @@ class Router implements RouterInterface
      * @param Request  $request  request
      * @param Response $response response
      */
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, $config = array())
     {
         $this->path      = $request->getUri()->getPath();
         $this->request   = $request;
         $this->response  = $response;
+
+        $this->middlewareClasses = $config['middleware.classes'];
     }
 
     /**
@@ -119,15 +122,14 @@ class Router implements RouterInterface
             $pattern = $r['pattern'];
             if (trim($pattern, "/") == trim($this->path, "/") || preg_match('#^'.$pattern.'$#', $this->path, $args)) {
                 if (! in_array($this->request->getMethod(), (array)$r['method'])) {
-                    $notAllowed = '\\'. APP_NAME .'\Middleware\NotAllowed';
+                    $notAllowed = '\\' . trim($this->middlewareClasses, '\\') . '\NotAllowed';
                     $this->queue->enqueue(['callable' => new $notAllowed, 'params' => (array)$r['method']]);
                     continue;
                 }
                 $this->queue($r['middlewares']);
 
                 array_shift($args);
-                $this->params  = $args;
-                $this->request = $this->request->withAttribute('args', $args);
+                $this->args = $args;
 
                 if (is_string($handler)) {
                     $this->handler = $handler;
@@ -140,16 +142,6 @@ class Router implements RouterInterface
             }
         }
         $this->setDefaultHandler();  // Auto resolve if route not exists and web routing is on.
-    }
-
-    /**
-     * Returns to router request object
-     *
-     * @return object
-     */
-    public function getRequest()
-    {
-        return $this->request;
     }
 
     /**
@@ -207,20 +199,20 @@ class Router implements RouterInterface
     public function getHandler()
     {
         if (! $this->dispatched) {  // Run one time, this function runs twice
-            $this->popGroup();      // in App.php invoke() method.
+            $this->popGroup();
             $this->dispatch();
         }
         return $this->handler;
     }
 
     /**
-     * Returns to uri parameters
+     * Returns to mapped arguments
      *
      * @return array
      */
-    public function getParams()
+    public function getArgs()
     {
-        return $this->params;
+        return $this->args;
     }
 
     /**
@@ -260,7 +252,7 @@ class Router implements RouterInterface
             return;
         }
         foreach ((array)$middlewares as $value) {
-            $middleware = '\\'. APP_NAME .'\Middleware\\'.$value['name'];
+            $middleware = '\\' . trim($this->middlewareClasses, '\\') . '\\' . $value['name'];
             if (! class_exists($middleware, false)) {
                 $this->queue->enqueue(['callable' => new $middleware, 'params' => $value['params']]);
             }
