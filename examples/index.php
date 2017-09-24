@@ -99,7 +99,7 @@ $router->group(
 // $args    = $router->getArgs();	  // Returns to mapped route arguments
 
 $middleware = new Obullo\Router\Middleware('\App\Middleware\\');  // Optional
-$dispatcher = new Obullo\Router\Dispatcher($middleware, $router->getPath());
+$dispatcher = new Obullo\Router\Dispatcher($router->getPath(), $middleware);
 
 $handler = null;
 $dispatched = false;

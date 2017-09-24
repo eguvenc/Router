@@ -14,7 +14,7 @@ class Dispatcher
     protected $middleware;
     protected $args = array();
 
-    public function ___construct($middleware, $path)
+    public function ___construct($path, $middleware = null)
     {
         $this->middleware = $middleware;
         $this->path = $path;
@@ -35,7 +35,7 @@ class Dispatcher
 
         if (in_array(trim($g['pattern'], "/"), $exp, true)) {
             $g['callable']($request, $response);
-            if ($this->middleware) {
+            if ($this->middleware != null) {
                 $this->middleware->queue($g['middlewares']);
             }
         }

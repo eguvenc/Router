@@ -130,3 +130,79 @@ $router->group(
     }
 );
 ```
+
+
+### Dispatch
+
+
+```php
+$dispatcher = new Obullo\Router\Dispatcher($router->getPath());
+
+$handler = null;
+$dispatched = false;
+$dispatcher->popGroup($request, $response, $router->getGroup());
+
+foreach ($router->getRoutes() as $r) {
+    if ($dispatcher->dispatch($r['pattern'])) {
+        if (! in_array($request->getMethod(), (array)$r['method'])) {
+            die("Method not allowed");
+        }
+        if (is_callable($r['handler'])) {
+            $handler = $r['handler']($request, $response, $dispatcher->getArgs());
+        }
+    }
+}
+
+// If routes is not restful do web routing functionality.
+
+if ($handler == null && $router->restful() == false) {
+    $handler = $router->getPath();
+}
+if ($handler != null) {
+    $dispatched = true;
+}
+
+var_dump($handler);
+var_dump($dispatched);
+```
+
+### Middleware Dispatch
+
+
+```php
+$middleware = new Obullo\Router\Middleware('\App\Middleware\\');  // Optional
+$dispatcher = new Obullo\Router\Dispatcher($router->getPath(), $middleware);
+
+$handler = null;
+$dispatched = false;
+$dispatcher->popGroup($request, $response, $router->getGroup());
+
+foreach ($router->getRoutes() as $r) {
+    if ($dispatcher->dispatch($r['pattern'])) {
+        if (! in_array($request->getMethod(), (array)$r['method'])) {
+            $middleware->queue('NotAllowed', (array)$r['method']);
+            continue; // stop
+        }
+        if (! empty($r['middlewares'])) {
+            foreach ((array)$r['middlewares'] as $value) {
+                $middleware->queue($value['name'], $value['params']);
+            }
+        }
+        if (is_callable($r['handler'])) {
+            $handler = $r['handler']($request, $response, $dispatcher->getArgs());
+        }
+    }
+}
+
+// If routes is not restful do web routing functionality.
+
+if ($handler == null && $router->restful() == false) {
+    $handler = $router->getPath();
+}
+if ($handler != null) {
+    $dispatched = true;
+}
+
+var_dump($handler);
+var_dump($dispatched);
+```
