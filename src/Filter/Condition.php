@@ -3,11 +3,10 @@
 namespace Obullo\Router\Filter;
 
 use InvalidArgumentException;
-use Psr\Http\Message\RequestInterface as Request;
 
 /**
  * Middleware conditions
- * 
+ *
  * @copyright 2009-2016 Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
@@ -18,19 +17,19 @@ class Condition
 
     /**
      * Contsructor
-     * 
-     * @param Request $request request
+     *
+     * @param string $path uri path
      */
-    public function __construct(Request $request)
+    public function __construct($path)
     {
-        $this->path = $request->getUri()->getPath();
+        $this->path = $path;
     }
 
     /**
      * If uri contains path(s)
-     * 
+     *
      * @param strig|array $path path
-     * 
+     *
      * @return object
      */
     public function contains($path)
@@ -47,9 +46,9 @@ class Condition
 
     /**
      * If uri NOT contains path(s)
-     * 
+     *
      * @param strig|array $path path
-     * 
+     *
      * @return object
      */
     public function notContains($path)
@@ -66,9 +65,9 @@ class Condition
 
     /**
      * If uri match with regex
-     * 
+     *
      * @param string $pattern pattern
-     * 
+     *
      * @return void
      */
     public function regExp($pattern)
@@ -84,9 +83,9 @@ class Condition
 
     /**
      *  If uri NOT match with regex
-     * 
+     *
      * @param string $pattern pattern
-     * 
+     *
      * @return void
      */
     public function notRegExp($pattern)
@@ -102,12 +101,11 @@ class Condition
 
     /**
      * Returns to condition match result
-     * 
+     *
      * @return boolean
      */
     public function hasMatch()
     {
         return $this->match;
     }
-
 }

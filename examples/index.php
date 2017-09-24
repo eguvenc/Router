@@ -1,13 +1,18 @@
 <?php
 
-use Obullo\Router;
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require '../vendor/autoload.php';
+
+use Obullo\Router\Router;
 
 $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
-$router = new Router($request, $response, array('middleware.classes' => '\\App\Middleware\\'));
+$router = new Router($request->getUri()->getPath());
 
-$router->restful(false);  // disable web routing style
+$router->restful(false);  // disable web routing
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
 
 
@@ -87,8 +92,44 @@ $router->group(
 );
 
 
-$handler = $this->router->getHandler();   // Returns to route handler (callable or string)
-$args    = $this->router->getArgs();	  // Returns to mapped route arguments
-// $queue   = $this->router->getQueue();  // Returns to middleware queue object
+// $router->dispatch();
+
+
+// $handler = $router->getHandler();   // Returns to route handler (callable or string)
+// $args    = $router->getArgs();	  // Returns to mapped route arguments
+
+$middleware = new Obullo\Router\Middleware('\App\Middleware\\');  // Optional
+$dispatcher = new Obullo\Router\Dispatcher($middleware, $router->getPath());
+
+$handler = null;
+$dispatched = false;
+$dispatcher->popGroup($request, $response, $router->getGroup());
+
+foreach ($router->getRoutes() as $r) {
+    if ($dispatcher->dispatch($r['pattern'])) {
+        if (! in_array($request->getMethod(), (array)$r['method'])) {
+            $middleware->queue('NotAllowed', (array)$r['method']);
+            continue; // stop
+        }
+        if (! empty($r['middlewares'])) {
+            foreach ((array)$r['middlewares'] as $value) {
+                $middleware->queue($value['name'], $value['params']);
+            }
+        }
+        if (is_callable($r['handler'])) {
+            $handler = $r['handler']($request, $response, $dispatcher->getArgs());
+        }
+    }
+}
+
+// If routes is not restful do web routing functionality.
+
+if ($handler == null && $router->restful() == false) {
+    $handler = $router->getPath();
+}
+if ($handler != null) {
+    $dispatched = true;
+}
 
 var_dump($handler);
+var_dump($dispatched);

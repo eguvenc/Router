@@ -2,19 +2,14 @@
 
 namespace Obullo\Router;
 
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-
-use SplQueue;
 use Obullo\Router\Group;
 use InvalidArgumentException;
 use Obullo\Router\Filter\FilterTrait;
-use Interop\Container\ContainerInterface as Container;
 
 /**
  * Router
  *
- * @copyright 2009-2016 Obullo
+ * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
 class Router implements RouterInterface
@@ -24,31 +19,18 @@ class Router implements RouterInterface
 
     protected $path;
     protected $group;
-    protected $queue;
-    protected $handler;
-    protected $request;
-    protected $response;
-    protected $container;
     protected $count = 0;
-    protected $args = array();
     protected $routes = array();
-    protected $webRouting = true;  // default web router
-    protected $dispatched = false;
-    protected $middlewareClasses = null;
+    protected $restful = false;  // default web router
     
     /**
-     * Construct
+     * Constructor
      *
-     * @param Request  $request  request
-     * @param Response $response response
+     * @param string $path request uri path
      */
-    public function __construct(Request $request, Response $response, $config = array())
+    public function __construct($path)
     {
-        $this->path      = $request->getUri()->getPath();
-        $this->request   = $request;
-        $this->response  = $response;
-
-        $this->middlewareClasses = $config['middleware.classes'];
+        $this->path = $path;
     }
 
     /**
@@ -103,45 +85,29 @@ class Router implements RouterInterface
         if (! is_callable($callable)) {
             throw new InvalidArgumentException("Group method second parameter must be callable.");
         }
-        $this->group = ($this->group == null) ? new Group($this->request) : $this->group;
+        $this->group = ($this->group == null) ? new Group($this->path) : $this->group;
         $this->group->enqueue($pattern, $callable);
         return $this->group;
     }
 
     /**
-     * Route process
+     * Returns to routes
      *
-     * @return void
+     * @return array
      */
-    protected function dispatch()
+    public function getRoutes()
     {
-        $args = array();
-        $this->dispatched = false;
-        foreach ($this->routes as $r) {
-            $handler = $r['handler'];
-            $pattern = $r['pattern'];
-            if (trim($pattern, "/") == trim($this->path, "/") || preg_match('#^'.$pattern.'$#', $this->path, $args)) {
-                if (! in_array($this->request->getMethod(), (array)$r['method'])) {
-                    $notAllowed = '\\' . trim($this->middlewareClasses, '\\') . '\NotAllowed';
-                    $this->queue->enqueue(['callable' => new $notAllowed, 'params' => (array)$r['method']]);
-                    continue;
-                }
-                $this->queue($r['middlewares']);
+        return $this->routes;
+    }
 
-                array_shift($args);
-                $this->args = $args;
+    public function getPath()
+    {
+        return $this->path;
+    }
 
-                if (is_string($handler)) {
-                    $this->handler = $handler;
-                    $this->dispatched = true;
-                }
-                if (is_callable($handler)) {
-                    $this->handler = $handler($this->request, $this->response);
-                    $this->dispatched = true;
-                }
-            }
-        }
-        $this->setDefaultHandler();  // Auto resolve if route not exists and web routing is on.
+    public function getGroup()
+    {
+        return $this->group;
     }
 
     /**
@@ -153,110 +119,7 @@ class Router implements RouterInterface
      */
     public function restful($bool = true)
     {
-        $this->webRouting = ($bool) ? false : true;
-    }
-
-    /**
-     * Set default path as handler ( Resolves current path if has no route match )
-     *
-     * @return void
-     */
-    protected function setDefaultHandler()
-    {
-        if ($this->handler == null && $this->webRouting) {
-            $this->dispatched = true;
-            $this->handler = $this->path;
-        }
-    }
-
-    /**
-     * Group process
-     *
-     * @return void
-     */
-    public function popGroup()
-    {
-        if ($this->group == null) {
-            return;
-        }
-        $exp   = explode("/", trim($this->path, "/"));
-        $group = $this->group->dequeue();
-
-        if (in_array(trim($group['pattern'], "/"), $exp, true)) {
-            $group['callable']($this->request, $this->response);
-            $this->queue($group['middlewares']);
-        }
-        if (! $this->group->isEmpty()) {
-            $this->popGroup();
-        }
-    }
-
-    /**
-     * Get executed handler result
-     *
-     * @return object|string
-     */
-    public function getHandler()
-    {
-        if (! $this->dispatched) {  // Run one time, this function runs twice
-            $this->popGroup();
-            $this->dispatch();
-        }
-        return $this->handler;
-    }
-
-    /**
-     * Returns to mapped arguments
-     *
-     * @return array
-     */
-    public function getArgs()
-    {
-        return $this->args;
-    }
-
-    /**
-     * Set queue for middlewares
-     *
-     * @param SplQueue $queue queue
-     *
-     * @return void
-     */
-    public function setQueue(SplQueue $queue)
-    {
-        $this->queue = $queue;
-    }
-
-    /**
-     * Return queue for middlewares
-     *
-     * @param SplQueue $queue queue
-     *
-     * @return void
-     */
-    public function getQueue()
-    {
-        return $this->queue;
-    }
-
-    /**
-     * Queue middlewares
-     *
-     * @param array $middlewares middlewares
-     *
-     * @return void
-     */
-    protected function queue($middlewares)
-    {
-        if (empty($middlewares)) {
-            return;
-        }
-        foreach ((array)$middlewares as $value) {
-            $middleware = '\\' . trim($this->middlewareClasses, '\\') . '\\' . $value['name'];
-            if (! class_exists($middleware, false)) {
-                $this->queue->enqueue(['callable' => new $middleware, 'params' => $value['params']]);
-            }
-        }
+        $this->restful = $bool;
     }
 
     /**
@@ -271,5 +134,4 @@ class Router implements RouterInterface
     {
         $this->routes[$this->count]['middlewares'][] = array('name' => $name, 'params' => $args);
     }
-
 }
