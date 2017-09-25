@@ -10,7 +10,7 @@ use Obullo\Router\Router;
 $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
-$router = new Router($request->getUri()->getPath());
+$router = new Router($request->getUri()->getPath(), $request->getMethod());
 
 $router->restful(false);  // disable web routing
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en

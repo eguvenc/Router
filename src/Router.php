@@ -18,6 +18,7 @@ class Router implements RouterInterface
     use FilterTrait;
 
     protected $path;
+    protected $method;
     protected $group;
     protected $count = 0;
     protected $routes = array();
@@ -28,9 +29,10 @@ class Router implements RouterInterface
      *
      * @param string $path request uri path
      */
-    public function __construct($path)
+    public function __construct($path, $method)
     {
-        $this->path = $path;
+        $this->path   = $path;
+        $this->method = $method;
     }
 
     /**
@@ -44,7 +46,7 @@ class Router implements RouterInterface
      */
     public function rewrite($method, $pattern, $rewrite)
     {
-        if (in_array($this->request->getMethod(), (array)$method)) {
+        if (in_array($this->method, (array)$method)) {
             $pattern    = "/".ltrim($pattern, "/");
             $path       = preg_replace('#^'.$pattern.'$#', $rewrite, $this->path);
             $this->path = '/'.ltrim($path, '/');
