@@ -19,6 +19,7 @@ class Router implements RouterInterface
 
     protected $path;
     protected $method;
+    protected $server;
     protected $group;
     protected $count = 0;
     protected $routes = array();
@@ -29,10 +30,11 @@ class Router implements RouterInterface
      *
      * @param string $path request uri path
      */
-    public function __construct($path, $method)
+    public function __construct($path, $method, $server)
     {
         $this->path   = $path;
         $this->method = $method;
+        $this->server = $server;
     }
 
     /**
@@ -60,17 +62,52 @@ class Router implements RouterInterface
      * @param string $pattern regex pattern
      * @param mixed  $handler mixed
      *
-     * @return void
+     * @return object
      */
-    public function map($method, $pattern, $handler = null)
+    public function map($method, $pattern, $handler = null, $type = 'http')
     {
         ++$this->count;
         $this->routes[$this->count] = [
+            'type' => $type,
             'method' => (array)$method,
             'pattern' => "/".ltrim($pattern, "/"),
             'handler' => $handler,
             'middlewares' => array()
         ];
+        return $this;
+    }
+
+    /**
+     * Create a secure request route
+     *
+     * @param string $method  method
+     * @param string $pattern regex pattern
+     * @param mixed  $handler mixed
+     *
+     * @return object
+     */
+    public function https($method, $pattern, $handler = null)
+    {
+        if ((!empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off') || $this->server['SERVER_PORT'] == 443) {
+            return $this->map($method, $pattern, $handler, __FUNCTION__);
+        }
+        return $this;
+    }
+
+    /**
+     * Create a http xml request route
+     *
+     * @param string $method  method
+     * @param string $pattern regex pattern
+     * @param mixed  $handler mixed
+     *
+     * @return object
+     */
+    public function ajax($method, $pattern, $handler = null)
+    {
+        if (!empty($this->server['HTTP_X_REQUESTED_WITH']) && strtolower($this->server['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            return $this->map($method, $pattern, $handler, __FUNCTION__);
+        }
         return $this;
     }
 
@@ -102,11 +139,21 @@ class Router implements RouterInterface
         return $this->routes;
     }
 
+    /**
+    * Returns to path
+    * 
+    * @return string
+    */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+    * Returns to group object
+    *
+    * @return object
+    */
     public function getGroup()
     {
         return $this->group;

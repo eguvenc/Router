@@ -10,10 +10,12 @@ use Obullo\Router\Router;
 $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
-$router = new Router($request->getUri()->getPath(), $request->getMethod());
+$router = new Router($request->getUri()->getPath(), $request->getMethod(), $request->getServerParams());
 
-$router->restful(false);  // disable web routing
-$router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
+$router->restful(true);  // only matched routes enabled
+$router->rewrite(array('GET','POST'), '/examples/index.php(.*)', '$1');  // rewrite rule for examples folder
+
+// $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
 
 
 // $router->map('GET', '/users/(.*)',
@@ -95,6 +97,8 @@ $router->group(
 // $router->dispatch();
 
 
+
+
 // $handler = $router->getHandler();   // Returns to route handler (callable or string)
 // $args    = $router->getArgs();	  // Returns to mapped route arguments
 
@@ -116,6 +120,9 @@ foreach ($router->getRoutes() as $r) {
                 $middleware->queue($value['name'], $value['params']);
             }
         }
+        if (is_string($r['handler'])){
+            $handler = $r['handler'];
+        }
         if (is_callable($r['handler'])) {
             $handler = $r['handler']($request, $response, $dispatcher->getArgs());
         }
@@ -124,12 +131,12 @@ foreach ($router->getRoutes() as $r) {
 
 // If routes is not restful do web routing functionality.
 
-if ($handler == null && $router->restful() == false) {
+if ($handler == null && $router->restful() === false) {
     $handler = $router->getPath();
 }
 if ($handler != null) {
     $dispatched = true;
 }
 
+
 var_dump($handler);
-var_dump($dispatched);

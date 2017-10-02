@@ -14,10 +14,10 @@ class Dispatcher
     protected $middleware;
     protected $args = array();
 
-    public function ___construct($path, $middleware = null)
+    public function __construct($path, $middleware = null)
     {
-        $this->middleware = $middleware;
         $this->path = $path;
+        $this->middleware = $middleware;
     }
 
     /**
