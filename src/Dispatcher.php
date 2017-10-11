@@ -14,6 +14,13 @@ class Dispatcher
     protected $middleware;
     protected $args = array();
 
+    /**
+     * Constructor
+     * 
+     * @param string $path       path
+     * @param string $middleware middleware
+     * @param void
+     */
     public function __construct($path, $middleware = null)
     {
         $this->path = $path;
@@ -44,6 +51,13 @@ class Dispatcher
         }
     }
 
+    /**
+     * Dispatch route
+     * 
+     * @param array $pattern pattern
+     * 
+     * @return boolean
+     */
     public function dispatch($pattern)
     {
         $args = array();
@@ -57,6 +71,11 @@ class Dispatcher
         return false;
     }
 
+    /**
+     * Get dispatched route arguments
+     * 
+     * @return array
+     */
     public function getArgs()
     {
         return $this->args;

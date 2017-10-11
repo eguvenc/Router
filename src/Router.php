@@ -38,6 +38,18 @@ class Router implements RouterInterface
     }
 
     /**
+     * Sets restful routing functionality / Disable web routing
+     *
+     * @param boolean $bool on / off
+     *
+     * @return void
+     */
+    public function restful($bool = true)
+    {
+        $this->restful = $bool;
+    }
+
+    /**
      * Rewrite all http requests
      *
      * @param string $method  method
@@ -78,40 +90,6 @@ class Router implements RouterInterface
     }
 
     /**
-     * Create a secure request route
-     *
-     * @param string $method  method
-     * @param string $pattern regex pattern
-     * @param mixed  $handler mixed
-     *
-     * @return object
-     */
-    public function https($method, $pattern, $handler = null)
-    {
-        if ((!empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off') || $this->server['SERVER_PORT'] == 443) {
-            return $this->map($method, $pattern, $handler, __FUNCTION__);
-        }
-        return $this;
-    }
-
-    /**
-     * Create a http xml request route
-     *
-     * @param string $method  method
-     * @param string $pattern regex pattern
-     * @param mixed  $handler mixed
-     *
-     * @return object
-     */
-    public function ajax($method, $pattern, $handler = null)
-    {
-        if (!empty($this->server['HTTP_X_REQUESTED_WITH']) && strtolower($this->server['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            return $this->map($method, $pattern, $handler, __FUNCTION__);
-        }
-        return $this;
-    }
-
-    /**
      * Create group
      *
      * @param string   $pattern  pattern
@@ -140,7 +118,7 @@ class Router implements RouterInterface
     }
 
     /**
-    * Returns to path
+    * Returns to rewrited path
     * 
     * @return string
     */
@@ -157,18 +135,6 @@ class Router implements RouterInterface
     public function getGroup()
     {
         return $this->group;
-    }
-
-    /**
-     * Sets restful routing functionality / Disable web routing
-     *
-     * @param boolean $bool on / off
-     *
-     * @return void
-     */
-    public function restful($bool = true)
-    {
-        $this->restful = $bool;
     }
 
     /**
