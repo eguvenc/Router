@@ -25,9 +25,12 @@ $router->rewrite(array('GET','POST'), '/examples/index.php(.*)', '$1');
 // Example routes
 //--------------------------------------------------------------------
 
-$router->map('GET', '/', 'Welcome/index');
-$router->map('GET', 'welcome', 'Welcome/index');
-$router->map('GET', 'welcome/index/(\d+)', 'Welcome/index/$1');
+include 'welcome.php';
+// include 'language.php';
+// include 'group.php';
+// include 'arguments.php';
+// include 'middleware.php';
+// include 'filters.php';
 
 //--------------------------------------------------------------------
 // Middleware is Optional
@@ -47,6 +50,7 @@ $dispatched = false;
 $dispatcher->popGroup($request, $response, $router->getGroup());
 
 foreach ($router->getRoutes() as $r) {
+
     if ($dispatcher->dispatch($r['pattern'])) {
         if (! in_array($request->getMethod(), (array)$r['method'])) {
             $middleware->queue('NotAllowed', (array)$r['method']);
@@ -77,4 +81,7 @@ if ($handler != null) {
 }
 
 
+echo '<pre>';
+echo '<b>Handler Output: </b>';
 var_dump($handler);
+echo '</pre>';

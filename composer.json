@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Php router that supports http middlewares and rest features.",
     "keywords": ["router","restful","middleware","http route"],
-    "homepage": "https://obullo.github.io/Router/",
+    "homepage": "http://obullo-router.com",
     "license": "MIT",
     "authors": [
         {
