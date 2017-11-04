@@ -1,5 +1,7 @@
 <?php
 
+include 'header.php';
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -11,29 +13,25 @@ $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
 $router = new Router($request->getUri()->getPath(), $request->getMethod(), $request->getServerParams());
-
 $router->restful(true);
-
-//--------------------------------------------------------------------
-// Rewrite rules to run /example folder
-//--------------------------------------------------------------------
-
-$router->rewrite(array('GET','POST'), '/examples/', '$1');
-$router->rewrite(array('GET','POST'), '/examples/index.php(.*)', '$1');
 
 //--------------------------------------------------------------------
 // Example routes
 //--------------------------------------------------------------------
 
-include 'welcome.php';
-// include 'language.php';
-// include 'group.php';
-// include 'arguments.php';
-// include 'middleware.php';
-// include 'filters.php';
+$router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
+
+$router->map('GET', '/', 'Welcome/index');
+$router->map('GET', 'welcome.*', 'Welcome/index');
+$router->map('GET', 'welcome/index/(\d+)', 'Welcome/index/$1');
+
+include 'group-routes.php';
+include 'argument-routes.php';
+include 'middleware-routes.php';
+// include 'filter-routes.php';
 
 //--------------------------------------------------------------------
-// Middleware is Optional
+// Middleware is optional
 //--------------------------------------------------------------------
 
 $middleware = new Obullo\Router\Middleware(new SplQueue);
@@ -44,12 +42,13 @@ $middleware->register('\App\Middleware\\');
 //--------------------------------------------------------------------
 
 $dispatcher = new Obullo\Router\Dispatcher($router->getPath(), $middleware);
+// $dispatcher = new Obullo\Router\Dispatcher($router->getPath(), null);
 
 $handler = null;
 $dispatched = false;
 $dispatcher->popGroup($request, $response, $router->getGroup());
 
-foreach ($router->getRoutes() as $r) {
+foreach ($router->fetchRoutes() as $r) {
 
     if ($dispatcher->dispatch($r['pattern'])) {
         if (! in_array($request->getMethod(), (array)$r['method'])) {
@@ -58,9 +57,11 @@ foreach ($router->getRoutes() as $r) {
         }
         if (! empty($r['middlewares'])) {
             print_r($r['middlewares']);
+            /*
             foreach ((array)$r['middlewares'] as $value) {
                 $middleware->queue($value['name'], $value['params']);
             }
+            */
         }
         if (is_string($r['handler'])){
             $handler = $r['handler'];
@@ -80,8 +81,18 @@ if ($handler != null) {
     $dispatched = true;
 }
 
-
+echo '<div style="font-size: 14px;">';
+echo '<h3>Response</h3>';
+echo '<hr size="1">';
 echo '<pre>';
 echo '<b>Handler Output: </b>';
-var_dump($handler);
+if ($handler instanceof Zend\Diactoros\Response) {
+    echo $handler->getBody().'<br>';
+} else {
+    var_dump($handler);
+}
+echo '<br>';
+echo '<b>Arguments: </b>';
+var_dump($dispatcher->getArgs());
 echo '</pre>';
+echo '</div>';

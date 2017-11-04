@@ -47,6 +47,8 @@ class Middleware
      */
     public function queue($name, $params = array())
     {
+        var_dump($name);
+
         $middleware = '\\' . trim($this->middlewarePath, '\\') . '\\' . $name;
 
         if (! class_exists($middleware, false)) {

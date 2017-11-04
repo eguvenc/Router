@@ -45,12 +45,12 @@ $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', 'Welcome/index/$1/
 
 ### Getting Mapped Arguments
 
-Using <kbd>$router->getArgs()</kbd> method you can reach mapped arguments.
+Using <kbd>$args</kbd> variable you can reach mapped arguments.
 
 
 ```php
-$router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', function($request, $response) use($router) {
-    $response->getBody()->write( print_r($router->getArgs(), true));
+$router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)', function($request, $response, $args) use($router) {
+    $response->getBody()->write(print_r($args, true));
     return $response;
 });
 ```
@@ -59,8 +59,8 @@ $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', function($request,
 
 ```php
 $router->map('GET', '/users/(\w+)/(\d+)', '/Users/$1/$2');
-$router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response) use($router) {
-     var_dump($router->getArgs());
+$router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response, $args) use($router) {
+     var_dump($args);
 });
 ```
 
@@ -79,8 +79,6 @@ $router->group(
                     'GET',
                     'users/test/(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
-                        
-                        // var_dump($router->getArgs());
                         
                         $response->getBody()->write("yES !");
 

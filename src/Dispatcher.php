@@ -29,7 +29,11 @@ class Dispatcher
 
     /**
      * Group process
-     *
+     * 
+     * @param object $request  request
+     * @param object $response response
+     * @param object $group    group
+     * 
      * @return void
      */
     public function popGroup($request, $response, $group)
@@ -42,12 +46,12 @@ class Dispatcher
 
         if (in_array(trim($g['pattern'], "/"), $exp, true)) {
             $g['callable']($request, $response);
-            if ($this->middleware != null) {
+            if ($this->middleware != null && ! empty($g['middlewares'])) {
                 $this->middleware->queue($g['middlewares']);
             }
         }
         if (! $group->isEmpty()) {
-            $this->popGroup();
+            $this->popGroup($request, $response, $group);
         }
     }
 

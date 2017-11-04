@@ -112,7 +112,7 @@ class Router implements RouterInterface
      *
      * @return array
      */
-    public function getRoutes()
+    public function fetchRoutes()
     {
         return $this->routes;
     }
