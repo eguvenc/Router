@@ -174,6 +174,7 @@ $dispatcher = new Obullo\Router\Dispatcher($router->getPath(), $middleware);
 $handler = null;
 $dispatched = false;
 $dispatcher->popGroup($request, $response, $router->getGroup());
+$dispatcher->popRoutes();
 
 foreach ($router->getRoutes() as $r) {
     if ($dispatcher->dispatch($r['pattern'])) {

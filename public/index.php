@@ -8,11 +8,13 @@ ini_set('display_errors', 1);
 require '../vendor/autoload.php';
 
 use Obullo\Router\Router;
+use Obullo\Router\MiddlewareQueue;
+use Obullo\Router\Dispatcher;
 
 $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
-$router = new Router($request->getUri()->getPath(), $request->getMethod(), $request->getServerParams());
+$router = new Router($request, $response);
 $router->restful(true);
 
 //--------------------------------------------------------------------
@@ -34,43 +36,19 @@ include 'middleware-routes.php';
 // Middleware is optional
 //--------------------------------------------------------------------
 
-$middleware = new Obullo\Router\Middleware(new SplQueue);
+$middleware = new MiddlewareQueue(new SplQueue);
 $middleware->register('\App\Middleware\\');
 
 //--------------------------------------------------------------------
 // Dispatch
 //--------------------------------------------------------------------
 
-$dispatcher = new Obullo\Router\Dispatcher($router->getPath(), $middleware);
-// $dispatcher = new Obullo\Router\Dispatcher($router->getPath(), null);
+$dispatcher = new Dispatcher($request, $response, $router);
 
-$handler = null;
 $dispatched = false;
-$dispatcher->popGroup($request, $response, $router->getGroup());
+$handler = $dispatcher->execute($middleware);
+// $handler = $dispatcher->execute();
 
-foreach ($router->fetchRoutes() as $r) {
-
-    if ($dispatcher->dispatch($r['pattern'])) {
-        if (! in_array($request->getMethod(), (array)$r['method'])) {
-            $middleware->queue('NotAllowed', (array)$r['method']);
-            continue; // stop
-        }
-        if (! empty($r['middlewares'])) {
-            print_r($r['middlewares']);
-            /*
-            foreach ((array)$r['middlewares'] as $value) {
-                $middleware->queue($value['name'], $value['params']);
-            }
-            */
-        }
-        if (is_string($r['handler'])){
-            $handler = $r['handler'];
-        }
-        if (is_callable($r['handler'])) {
-            $handler = $r['handler']($request, $response, $dispatcher->getArgs());
-        }
-    }
-}
 
 // If routes is not restful do web routing functionality.
 

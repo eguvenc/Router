@@ -22,6 +22,7 @@
 <a href="/tr/group/test/abc/10">/tr/group/test/abc/10</a> <br />
 
 <h3>Middleware Routes</h3>
-<a href="/middleware/test">/middleware/test</a> <br />
+<a href="/middleware/test/dummy">/middleware/test</a> <br />
+<a href="/middleware/group/test">/middleware/group/test</a> <br />
 
 </div>

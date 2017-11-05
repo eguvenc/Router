@@ -10,7 +10,7 @@ use SplQueue;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class Middleware
+class MiddlewareQueue implements MiddlewareQueueInterface
 {
     protected $queue;
     protected $middlewarePath;
@@ -47,8 +47,6 @@ class Middleware
      */
     public function queue($name, $params = array())
     {
-        var_dump($name);
-
         $middleware = '\\' . trim($this->middlewarePath, '\\') . '\\' . $name;
 
         if (! class_exists($middleware, false)) {

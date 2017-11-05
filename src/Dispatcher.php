@@ -11,48 +11,24 @@ namespace Obullo\Router;
 class Dispatcher
 {
     protected $path;
-    protected $middleware;
+    protected $router;
+    protected $request;
+    protected $response;
     protected $args = array();
 
     /**
      * Constructor
      * 
-     * @param string $path       path
-     * @param string $middleware middleware
-     * @param void
-     */
-    public function __construct($path, $middleware = null)
-    {
-        $this->path = $path;
-        $this->middleware = $middleware;
-    }
-
-    /**
-     * Group process
-     * 
      * @param object $request  request
      * @param object $response response
-     * @param object $group    group
-     * 
-     * @return void
+     * @param object $router   router
      */
-    public function popGroup($request, $response, $group)
+    public function __construct($request, $response, $router)
     {
-        if ($group == null) {
-            return;
-        }
-        $exp = explode("/", trim($this->path, "/"));
-        $g   = $group->dequeue();
-
-        if (in_array(trim($g['pattern'], "/"), $exp, true)) {
-            $g['callable']($request, $response);
-            if ($this->middleware != null && ! empty($g['middlewares'])) {
-                $this->middleware->queue($g['middlewares']);
-            }
-        }
-        if (! $group->isEmpty()) {
-            $this->popGroup($request, $response, $group);
-        }
+        $this->router     = $router;
+        $this->request    = $request;
+        $this->response   = $response;
+        $this->path       = $router->getPath();
     }
 
     /**
@@ -73,6 +49,46 @@ class Dispatcher
             return true;
         }
         return false;
+    }
+
+    /**
+     * Executer dispatch process
+     *
+     * @param mixed $middleware optional middleware queue
+     * 
+     * @return mixed handler
+     */
+    public function execute($middleware = null)
+    {
+        $this->router->setMiddleware($middleware);
+
+        $handler = null;
+        $groupHandler = $this->router->popGroup();
+
+        foreach ($this->router->fetchRoutes() as $r) {
+
+            if ($this->dispatch($r['pattern'])) {
+                if (! in_array($this->request->getMethod(), (array)$r['method'])) {
+                    $middleware->queue('NotAllowed', (array)$r['method']);
+                    continue; // stop process
+                }
+                if (! empty($r['middlewares'])) {
+                    foreach ((array)$r['middlewares'] as $value) {
+                        $middleware->queue($value['name'], $value['params']);
+                    }
+                }
+                if (is_string($r['handler'])){
+                    $handler = $r['handler'];
+                }
+                if (is_callable($r['handler'])) {
+                    $handler = $r['handler']($this->request, $this->response, $this->getArgs());
+                }
+            }
+        }
+        if ($handler == null) {
+            $handler = $groupHandler;
+        }
+        return $handler;
     }
 
     /**
