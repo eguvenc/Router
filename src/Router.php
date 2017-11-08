@@ -23,7 +23,7 @@ class Router implements RouterInterface
     protected $response;
     protected $server;
     protected $group = null;
-    protected $groupPaths = array();
+    protected $groupLevel = 0;
     protected $count = 0;
     protected $routes = array();
     protected $restful = false;  // default web router
@@ -42,12 +42,6 @@ class Router implements RouterInterface
         $this->path     = $request->getUri()->getPath();
         $this->method   = $request->getMethod();
         $this->server   = $request->getServerParams();
-    }
-
-
-    public function setMiddleware($middleware)
-    {
-        $this->middleware = $middleware;
     }
 
     /**
@@ -90,13 +84,12 @@ class Router implements RouterInterface
      */
     public function map($method, $pattern, $handler = null)
     {
-        ksort($this->groupPaths);
-        $groupPattern = empty($this->groupPaths) ? "/" : "/".implode($this->groupPaths, "/")."/";
+        $prefix = ($this->groupLevel > 0) ? '.*?' : ''; // Ignore executed group paths
 
         ++$this->count;
         $this->routes[$this->count] = [
             'method' => (array)$method,
-            'pattern' => $groupPattern.trim($pattern, "/"),
+            'pattern' => $prefix.trim($pattern, "/"),
             'handler' => $handler,
             'middlewares' => array()
         ];
@@ -137,23 +130,19 @@ class Router implements RouterInterface
         $g      = $this->group->dequeue();
         $folder = trim($g['pattern'], "/");
 
-        $i = 0;
-        foreach ($exp as $item) {
-            if ($item == $folder) {
-                $this->groupPaths[$i] = $item;
-                $handler = $g['callable']($this->request, $this->response);
-            }
-            ++$i;
-        }
-        if ($this->middleware != null && ! empty($g['middlewares'])) {
-            foreach ((array)$g['middlewares'] as $value) {
-                $this->middleware->queue($value['name'], $value['params']);
+        if (in_array($folder, $exp, true)) {
+            ++$this->groupLevel;
+            $handler = $g['callable']($this->request, $this->response);
+            if ($this->middleware != null && ! empty($g['middlewares'])) {
+                foreach ((array)$g['middlewares'] as $value) {
+                    $this->middleware->queue($value['name'], $value['params']);
+                }
             }
         }
         if (! $this->group->isEmpty()) {
             $handler = $this->popGroup();
         }
-        $this->groupPaths = array();
+        $this->groupLevel = 0;
         return $handler;
     }
 
@@ -188,6 +177,16 @@ class Router implements RouterInterface
     }
 
     /**
+     * Set middleware
+     * 
+     * @param object $middleware middleware queue
+     */
+    public function setMiddleware($middleware)
+    {
+        $this->middleware = $middleware;
+    }
+
+    /**
      * Add middleware
      *
      * @param string $name middleware name
@@ -199,4 +198,5 @@ class Router implements RouterInterface
     {
         $this->routes[$this->count]['middlewares'][] = array('name' => $name, 'params' => $args);
     }
+
 }

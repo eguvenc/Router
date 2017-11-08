@@ -32,7 +32,11 @@ $router->group(
             'group/',
             function ($request, $response) use ($router) {
 
-                $router->map('GET', 'test.*')->add('Dummy');
+                $router->map(
+                    'GET',
+                    'test.*', function(){
+                    
+                })->add('Dummy');
                 
                 $response->getBody()->write("It works !");
                 return $response;

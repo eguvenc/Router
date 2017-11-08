@@ -42,7 +42,7 @@ class Dispatcher
     {
         $args = array();
         if (trim($pattern, "/") == trim($this->path, "/") ||
-            preg_match('#^'.$pattern.'$#', $this->path, $args)
+            preg_match('#^'."/".ltrim($pattern, "/").'$#', $this->path, $args)
         ) {
             array_shift($args);
             $this->args = $args;
