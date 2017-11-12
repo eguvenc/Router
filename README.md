@@ -1,60 +1,110 @@
 
-## Router
+## Obullo Router
 
-Php standalone router package
+Obullo http router bağımsız php router paketidir. <kbd>Route grupları</kbd>, <kbd>Route filtreleri</kbd>, <kbd>Route middleware</kbd> gibi özelliklerin yanı sıra az kodlama ve yüksek performans hedefler.
 
-### Enabling Restful Routing
+### Rest Tabanlı Kurallar
 
-
-```php
-$router->restful(false);  // disable web routing style
-```
-
-### Http Get Routes
+Router paketi varsayılan olarak web sunucu davranışları sergiler. Eğer bir route kuralı ile eşleşmezse olmazsa route handler http isteğinden gelen uri path değerine döner.
 
 
 ```php
-$router->map('GET', '/users/(.*)',
-     function ($request, $response, $args) use($router) {
-
-         $response->getBody()->write('Users group');
-
-       return $response;
-});
+$router->restful(false);  // Restful davranışlarını devredışı bırak.
 ```
 
-### Rewriting All Routes
+Fakat opsiyonel olarak rest tabanlı route sayfanın en başında ilan edilirse router sınıfı bir rest sunucu gibi davranır ve herhangi bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
 
-```php
-$router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
-```
-
-### Routing Map
+### Kurallar
 
 ```php
 $router->map('GET', '/', 'Welcome/index');
 $router->map('GET', 'welcome', 'Welcome/index');
 ```
 
-### Routing Map for Strict Types
+Bu route kuralları <kbd>"/"</kbd> yada <kbd>"/welcome"</kbd> istekleri geldiğinde <b>$handler</b> değişkeninden <kbd>"Welcome/index"</kbd> olarak çıktı elde edilmesini sağlar.
+
+### Çözümleme
+
+```php
+$dispatcher = new Dispatcher($request, $response, $router);
+$handler    = $dispatcher->execute();
+
+var_dump($handler);  // "Welcome/index"
+```
+
+### Http Tabanlı Kurallar
+
+Bu kural sadece http GET türü dışındaki istekler geldiğinde <b>MiddlewareQueue</b> sınıfına <b>NotAllowed</b> middleware sınıfını gönderir.
+
+```php
+$router->map('GET', '/users/(.*)',
+     function ($request, $response, $args) use($router) {
+
+         $response->getBody()->write('Welcome user !');
+
+       return $response;
+});
+```
+
+Eğer birden fazla http metodu tanımlamak isterseniz bu metotları bir dizi içerisinde tanımlamanız gerekir.
+
+
+```php
+$router->map(['GET','POST','PUT'], '/users/(.*)',
+     function ($request, $response, $args) use($router) {
+
+         $response->getBody()->write('Welcome user !');
+
+       return $response;
+});
+```
+
+* MiddlewareQueue kullanmak istemiyorsanız bu davranışı kendi Dispatcher sınıfınızı kullanarak değişterebilirsiniz.
+
+
+### Yeniden Yazım
+
+```php
+$router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
+```
+
+Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa <b>rewrite</b> metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
+
+
+### Kesin Türler Belirleme
 
 ```php
 $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', 'Welcome/index/$1/$2');
 ```
 
-### Getting Mapped Arguments
-
-Using <kbd>$args</kbd> variable you can reach mapped arguments.
-
+<kbd>$dispatcher->getArgs()</kbd> kullanılarak metodu ile dışarıdan argüman değerleri elde edilmiş olur.
 
 ```php
-$router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)', function($request, $response, $args) use($router) {
-    $response->getBody()->write(print_r($args, true));
-    return $response;
-});
+$router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)',
+    function($request, $response, $args) use($router) {
+        $response->getBody()->write(print_r($args, true));
+        return $response;
+    }
+);
 ```
 
-### Routing Map Integer Example
+<b>$args</b> değişkeni aşağıdaki gibi çıktılanır.
+
+```php
+/*
+Çıktı
+array(2) {
+  "id" => 155
+  [0]=>
+  string(3) "155"
+  "month" => "October"
+  [1]=>
+  string(2) "October"
+}
+*/
+```
+
+Başka bir örnek yazım
 
 ```php
 $router->map('GET', '/users/(\w+)/(\d+)', '/Users/$1/$2');
@@ -63,39 +113,12 @@ $router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response, $args) 
 });
 ```
 
-### Route Groups & Middlewares
+
+### Kural Grupları
 
 ```php
 $router->group(
-    'users/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-                
-                $router->map(
-                    'GET',
-                    'users/test/(\w+)/(\d+).*',
-                    function ($request, $response) use ($router) {
-                        
-                        $response->getBody()->write("yES !");
-
-                        return $response;
-                    }
-                )->add('Guest');
-            }
-        );
-    }
-);
-```
-
-
-### Route Filters
-
-```php
-$router->group(
-    'users/',
+    'group/',
     function () use ($router) {
 
         $router->group(
@@ -104,24 +127,14 @@ $router->group(
 
                 $router->map(
                     'GET',
-                    'users/test/(\w+)/(\d+).*',
-                    function ($request, $response) use ($router) {
-                        
-                        // var_dump($router->getArgs());
-                        
-                        $response->getBody()->write("yES !");
+                    '/(\w+)/(\d+).*',
+                    function ($request, $response, $args = null) use ($router) {
+                    
+                        $response->getBody()->write("It works !");
 
                         return $response;
                     }
-                )->add('Guest')
-                	->filter('contains', ['users/test/45'])->add('Guest');
-
-                //->filter('notContains', ['users/teZ'])->add('Guest');
-                //
-                // ->ifContains(['login'])
-                // ->ifNotContains(['login', 'payment'])
-                // ->ifRegExp(['welcome/path/index'])
-                // ->ifNotRegExp(['welcome/path/index'])
+                );
             }
         );
     }
@@ -129,78 +142,157 @@ $router->group(
 ```
 
 
-### Dispatch
+### Middleware Kullanmak
 
+Bir middleware aşağıda bir route kuralına,
 
 ```php
-$dispatcher = new Obullo\Router\Dispatcher($router->getPath());
-
-$handler = null;
-$dispatched = false;
-$dispatcher->popGroup($request, $response, $router->getGroup());
-
-foreach ($router->getRoutes() as $r) {
-    if ($dispatcher->dispatch($r['pattern'])) {
-        if (! in_array($request->getMethod(), (array)$r['method'])) {
-            die("Method not allowed");
-        }
-        if (is_callable($r['handler'])) {
-            $handler = $r['handler']($request, $response, $dispatcher->getArgs());
-        }
-    }
-}
-
-// If routes is not restful do web routing functionality.
-
-if ($handler == null && $router->restful() == false) {
-    $handler = $router->getPath();
-}
-if ($handler != null) {
-    $dispatched = true;
-}
-
-var_dump($handler);
-var_dump($dispatched);
+$router->map('GET','(\w+)/(.*)')->add('Dummy');
 ```
 
-### Middleware Dispatch
-
+veya bir gruba eklenebilir.
 
 ```php
-$middleware = new Obullo\Router\Middleware('\App\Middleware\\');  // Optional
-$dispatcher = new Obullo\Router\Dispatcher($router->getPath(), $middleware);
+$router->group(
+    'test/',
+    function ($request, $response) use ($router) {
 
-$handler = null;
-$dispatched = false;
-$dispatcher->popGroup($request, $response, $router->getGroup());
-$dispatcher->popRoutes();
-
-foreach ($router->getRoutes() as $r) {
-    if ($dispatcher->dispatch($r['pattern'])) {
-        if (! in_array($request->getMethod(), (array)$r['method'])) {
-            $middleware->queue('NotAllowed', (array)$r['method']);
-            continue; // stop
-        }
-        if (! empty($r['middlewares'])) {
-            foreach ((array)$r['middlewares'] as $value) {
-                $middleware->queue($value['name'], $value['params']);
+        $router->map(
+            'GET',
+            'dummy.*',
+            function ($request, $response, $args = null) use ($router) {
+                $response->getBody()->write("It works !");
+                return $response;
             }
-        }
-        if (is_callable($r['handler'])) {
-            $handler = $r['handler']($request, $response, $dispatcher->getArgs());
-        }
+        );
     }
-}
 
-// If routes is not restful do web routing functionality.
-
-if ($handler == null && $router->restful() == false) {
-    $handler = $router->getPath();
-}
-if ($handler != null) {
-    $dispatched = true;
-}
-
-var_dump($handler);
-var_dump($dispatched);
+)->add('Dummy');
 ```
+
+
+### Middleware Filtreleri
+
+Middleware filtreleri kuralların yanısıra uri değeri filtrelenerek belirli şartlara uygunluk gösterip göstermemelerine göre eklenebilirler.
+
+#### Contains Filtresi
+
+```php
+$router->group(
+    'example/',
+    function () use ($router) {
+
+        $router->group(
+            'test/',
+            function () use ($router) {
+
+                $router->map(
+                    'GET',
+                    '(\w+)/(\d+).*',
+                    function ($request, $response) use ($router) {
+                        
+                        $response->getBody()->write("It works !");
+
+                        return $response;
+                    }
+
+                )->filter('contains', ['test/foo/123', 'test/foo/1234'])->add('Dummy');
+            }
+        );
+    }
+);
+```
+
+Yukarıdaki filtre <kbd>example/test/(\w+)/(\d+).\*</kbd> eşleşmesinden sonra <kbd>test/foo/123</kbd> ve <kbd>test/foo/1234</kbd> içeren http isteklerine <b>Dummy</b> middleware sınıfını ekler.
+
+#### NotContains Filtresi
+
+```php
+$router->group(
+    'example/',
+    function () use ($router) {
+
+        $router->group(
+            'test/',
+            function () use ($router) {
+
+                $router->map(
+                    'GET',
+                    '(\w+)/(\d+).*',
+                    function ($request, $response) use ($router) {
+                        
+                        $response->getBody()->write("It works !");
+
+                        return $response;
+                    }
+
+                )->filter('notContains', ['test/foo/888', 'test/foo/999'])->add('Dummy');
+            }
+        );
+    }
+);
+```
+
+Contains metodunun zıt yönlü filtresidir.
+
+#### Regex Filtresi
+
+```php
+$router->group(
+    'example/',
+    function () use ($router) {
+
+        $router->group(
+            'test/',
+            function () use ($router) {
+
+                $router->map(
+                    'GET',
+                    '(\w+)/(\d+).*',
+                    function ($request, $response) use ($router) {
+                        
+                        $response->getBody()->write("It works !");
+
+                        return $response;
+                    }
+
+                )->filter('regex', '.*?abc/(\d+)')->add('Dummy');
+            }
+        );
+
+    }
+);
+```
+
+Yukarıdaki filtre <kbd>example/test/(\w+)/(\d+).\*</kbd> eşleşmesinden sonra <kbd>abc/digit</kbd> değer içeren http isteklerine <b>Dummy</b> middleware sınıfını ekler.
+
+#### Not Regex Filtresi
+
+```php
+$router->group(
+    'example/',
+    function () use ($router) {
+
+        $router->group(
+            'test/',
+            function () use ($router) {
+
+                $router->map(
+                    'GET',
+                    '(\w+)/(.*)',
+                    function ($request, $response) use ($router) {
+                        
+                        $response->getBody()->write("It works !");
+
+                        return $response;
+                    }
+
+                )->filter('notRegex', '.*?abc/(\d+)')->add('Dummy');
+            }
+        );
+
+    }
+);
+```
+
+Regex metodunun zıt yönlü filtresidir.
