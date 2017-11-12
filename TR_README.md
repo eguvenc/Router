@@ -3,7 +3,7 @@
 
 Obullo http router bağımsız php router paketidir. <kbd>Route grupları</kbd>, <kbd>Route filtreleri</kbd>, <kbd>Route middleware</kbd> gibi özelliklerin yanı sıra az kodlama ve yüksek performans hedefler.
 
-### Rest Tabanlı Kurallar
+#### Rest Tabanlı Kurallar
 
 Router paketi varsayılan olarak web sunucu davranışları sergiler. Eğer bir route kuralı ile eşleşmezse olmazsa route handler http isteğinden gelen uri path değerine döner.
 
@@ -14,7 +14,7 @@ $router->restful(false);  // Restful davranışlarını devredışı bırak.
 
 Fakat opsiyonel olarak rest tabanlı route sayfanın en başında ilan edilirse router sınıfı bir rest sunucu gibi davranır ve herhangi bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
 
-### Kurallar
+#### Kurallar
 
 ```php
 $router->map('GET', '/', 'Welcome/index');
@@ -23,7 +23,7 @@ $router->map('GET', 'welcome', 'Welcome/index');
 
 Bu route kuralları <kbd>"/"</kbd> yada <kbd>"/welcome"</kbd> istekleri geldiğinde <b>$handler</b> değişkeninden <kbd>"Welcome/index"</kbd> olarak çıktı elde edilmesini sağlar.
 
-### Çözümleme
+#### Çözümleme
 
 ```php
 $dispatcher = new Dispatcher($request, $response, $router);
@@ -32,7 +32,7 @@ $handler 	= $dispatcher->execute();
 var_dump($handler);  // "Welcome/index"
 ```
 
-### Http Tabanlı Kurallar
+#### Http Tabanlı Kurallar
 
 Bu kural sadece http GET türü dışındaki istekler geldiğinde <b>MiddlewareQueue</b> sınıfına <b>NotAllowed</b> middleware sınıfını gönderir.
 
@@ -62,7 +62,7 @@ $router->map(['GET','POST','PUT'], '/users/(.*)',
 * MiddlewareQueue kullanmak istemiyorsanız bu davranışı kendi Dispatcher sınıfınızı kullanarak değişterebilirsiniz.
 
 
-### Yeniden Yazım
+#### Yeniden Yazım
 
 ```php
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
@@ -71,7 +71,7 @@ $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or
 Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa <b>rewrite</b> metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
 
 
-### Kesin Türler Belirleme
+#### Kesin Türler Belirleme
 
 ```php
 $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', 'Welcome/index/$1/$2');
@@ -113,8 +113,7 @@ $router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response, $args) 
 });
 ```
 
-
-### Kural Grupları
+#### Kural Grupları
 
 ```php
 $router->group(
@@ -142,7 +141,7 @@ $router->group(
 ```
 
 
-### Middleware Kullanmak
+#### Middleware Kullanmak
 
 Bir middleware aşağıda bir route kuralına,
 
@@ -171,11 +170,11 @@ $router->group(
 ```
 
 
-### Middleware Filtreleri
+#### Middleware Filtreleri
 
 Middleware filtreleri kuralların yanısıra uri değeri filtrelenerek belirli şartlara uygunluk gösterip göstermemelerine göre eklenebilirler.
 
-#### Contains Filtresi
+##### Contains Filtresi
 
 ```php
 $router->group(
@@ -205,7 +204,7 @@ $router->group(
 
 Yukarıdaki filtre <kbd>example/test/(\w+)/(\d+).\*</kbd> eşleşmesinden sonra <kbd>test/foo/123</kbd> ve <kbd>test/foo/1234</kbd> içeren http isteklerine <b>Dummy</b> middleware sınıfını ekler.
 
-#### NotContains Filtresi
+##### NotContains Filtresi
 
 ```php
 $router->group(
@@ -235,7 +234,7 @@ $router->group(
 
 Contains metodunun zıt yönlü filtresidir.
 
-#### Regex Filtresi
+##### Regex Filtresi
 
 ```php
 $router->group(
@@ -266,7 +265,7 @@ $router->group(
 
 Yukarıdaki filtre <kbd>example/test/(\w+)/(\d+).\*</kbd> eşleşmesinden sonra <kbd>abc/digit</kbd> değer içeren http isteklerine <b>Dummy</b> middleware sınıfını ekler.
 
-#### Not Regex Filtresi
+##### Not Regex Filtresi
 
 ```php
 $router->group(
@@ -296,3 +295,8 @@ $router->group(
 ```
 
 Regex metodunun zıt yönlü filtresidir.
+
+
+#### Örnekler
+
+Daha fazla örnek kurallar tanımlamalarını <kbd>/public</kbd> klasöründe bulabilirsiniz.

@@ -36,7 +36,7 @@ include 'filter-regex.php';
 include 'filter-not-regex.php';
 
 //--------------------------------------------------------------------
-// $middlewareQueue is optional
+// MiddlewareQueue is optional
 //--------------------------------------------------------------------
 
 $middlewareQueue = new MiddlewareQueue(new SplQueue);
