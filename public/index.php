@@ -33,11 +33,11 @@ include 'middleware-routes.php';
 // include 'filter-routes.php';
 
 //--------------------------------------------------------------------
-// Middleware is optional
+// $middlewareQueue is optional
 //--------------------------------------------------------------------
 
-$middleware = new MiddlewareQueue(new SplQueue);
-$middleware->register('\App\Middleware\\');
+$middlewareQueue = new MiddlewareQueue(new SplQueue);
+$middlewareQueue->register('\App\Middleware\\');
 
 //--------------------------------------------------------------------
 // Dispatch
@@ -46,7 +46,7 @@ $middleware->register('\App\Middleware\\');
 $dispatcher = new Dispatcher($request, $response, $router);
 
 $dispatched = false;
-$handler = $dispatcher->execute($middleware);
+$handler = $dispatcher->execute($middlewareQueue);
 // $handler = $dispatcher->execute();
 
 
@@ -75,4 +75,6 @@ var_dump($dispatcher->getArgs());
 echo '</pre>';
 echo '</div>';
 
-var_dump($middleware);
+echo '<pre>';
+var_dump($middlewareQueue);
+echo '</pre>';

@@ -20,18 +20,11 @@ $router->group(
                     ->add('Dummy');
             }
         );
-    }
-);
-
-
-$router->group(
-    'middleware/',
-    function () use ($router) {
 
         $router->group(
             'group/',
             function ($request, $response) use ($router) {
-
+                
                 $router->map(
                     'GET',
                     'test.*', function(){
@@ -42,5 +35,11 @@ $router->group(
                 return $response;
             }
         );
+
+
     }
 );
+
+
+
+
