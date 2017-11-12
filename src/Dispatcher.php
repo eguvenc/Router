@@ -40,9 +40,10 @@ class Dispatcher
      */
     public function dispatch($pattern)
     {
+        $rule = '#^'."/".ltrim($pattern, "/").'$#';
         $args = array();
         if (trim($pattern, "/") == trim($this->path, "/") ||
-            preg_match('#^'."/".ltrim($pattern, "/").'$#', $this->path, $args)
+            preg_match($rule, $this->path, $args)
         ) {
             array_shift($args);
             $this->args = $args;

@@ -34,12 +34,12 @@ class Condition
      */
     public function contains($path)
     {
+        $result = "";
         foreach ((array)$path as $value) {
-            $result = stripos($this->path, "/".trim($value, "/"));
-            if ($result !== false) {
-                $this->match = true;
-                continue;
-            }
+            $result.= stripos($this->path, "/".trim($value, "/"));
+        }
+        if (! empty($result)) {
+            $this->match = true;
         }
         return $this;
     }
@@ -53,12 +53,12 @@ class Condition
      */
     public function notContains($path)
     {
+        $result = "";
         foreach ((array)$path as $value) {
-            $result = stripos($this->path, "/".trim($value, "/"));
-            if ($result === false) {
-                $this->match = true;
-                continue;
-            }
+            $result.= stripos($this->path, "/".trim($value, "/"));
+        }
+        if (empty($result)) {
+            $this->match = true;
         }
         return $this;
     }
@@ -70,7 +70,7 @@ class Condition
      *
      * @return void
      */
-    public function regExp($pattern)
+    public function regex($pattern)
     {
         if (! is_string($pattern)) {
             throw new InvalidArgumentException("Regex pattern must be string.");
@@ -88,7 +88,7 @@ class Condition
      *
      * @return void
      */
-    public function notRegExp($pattern)
+    public function notRegex($pattern)
     {
         if (! is_string($pattern)) {
             throw new InvalidArgumentException("Regex pattern must be string.");

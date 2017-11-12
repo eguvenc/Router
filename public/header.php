@@ -25,4 +25,14 @@
 <a href="/middleware/test/dummy">/middleware/test/dummy</a> <br />
 <a href="/middleware/group/test">/middleware/group/test</a> <br />
 
+<h3>Filters</h3>
+
+<a href="/filter-contains/test/foo/123">/filter-contains/test/foo/123</a> <br />
+<a href="/filter-contains/test/foo/1234">/filter-contains/test/foo/1234</a> <br />
+<a href="/filter-not-contains/test/foo/123">/filter-not-contains/test/foo/123</a> <br />
+<a href="/filter-not-contains/test/foo/888">/filter-not-contains/test/foo/888</a> <br />
+<a href="/filter-regex/test/abc/45">/filter-regex/test/abc/45</a> <br />
+<a href="/filter-not-regex/test/abc/foo">/filter-not-regex/test/abc/foo</a> <br />
+<a href="/filter-not-regex/test/abc/45">/filter-not-regex/test/abc/45</a> <br />
+
 </div>

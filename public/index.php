@@ -15,7 +15,7 @@ $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
 $router = new Router($request, $response);
-$router->restful(true);
+$router->restful(false);
 
 //--------------------------------------------------------------------
 // Example routes
@@ -30,7 +30,10 @@ $router->map('GET', '/welcome/index/(\d+)', 'Welcome/index/$1');
 include 'group-routes.php';
 include 'argument-routes.php';
 include 'middleware-routes.php';
-// include 'filter-routes.php';
+include 'filter-contains.php';
+include 'filter-not-contains.php';
+include 'filter-regex.php';
+include 'filter-not-regex.php';
 
 //--------------------------------------------------------------------
 // $middlewareQueue is optional
@@ -52,7 +55,7 @@ $handler = $dispatcher->execute($middlewareQueue);
 
 // If routes is not restful do web routing functionality.
 
-if ($handler == null && $router->restful() === false) {
+if ($handler == null && $router->isRestful() == false) {
     $handler = $router->getPath();
 }
 if ($handler != null) {

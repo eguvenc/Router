@@ -24,6 +24,7 @@ class Router implements RouterInterface
     protected $server;
     protected $group = null;
     protected $groupLevel = 0;
+    protected $groupPath  = "";
     protected $segments = array();
     protected $count = 0;
     protected $routes = array();
@@ -55,6 +56,16 @@ class Router implements RouterInterface
     public function restful($bool = true)
     {
         $this->restful = $bool;
+    }
+
+    /**
+     * Returns to restful variable
+     * 
+     * @return boolean
+     */
+    public function isRestful()
+    {
+        return $this->restful;
     }
 
     /**
@@ -98,8 +109,7 @@ class Router implements RouterInterface
         $prefix = '';
         $rule = trim($pattern, "/");
         if ($this->groupLevel > 0) {
-            preg_match("#(.*?)".$rule."#", $this->getPath(), $output); // Add root uri path for current group rule
-            $prefix = (isset($output[1])) ? $output[1] : '';
+           $prefix = $this->groupPath;
         }
         ++$this->count;
         $this->routes[$this->count] = [
@@ -146,6 +156,7 @@ class Router implements RouterInterface
 
         if (! empty($this->segments[0]) && $this->segments[0] == $folder) { // Execute the group if segment equal to group name.
             ++$this->groupLevel;
+            $this->groupPath.= $folder."/";
             $handler = $g['callable']($this->request, $this->response);
             if ($this->middlewareQueue != null && ! empty($g['middlewares'])) {
                 foreach ((array)$g['middlewares'] as $value) {

@@ -9,15 +9,15 @@ $router->group(
             'test/',
             function ($request, $response) use ($router) {
 
-                    $router->map(
-                        'GET',
-                        'dummy.*',
-                        function ($request, $response, $args = null) use ($router) {
-                            $response->getBody()->write("It works !");
-                            return $response;
-                        }
-                    )
-                    ->add('Dummy');
+                $router->map(
+                    'GET',
+                    'dummy.*',
+                    function ($request, $response, $args = null) use ($router) {
+                        $response->getBody()->write("It works !");
+                        return $response;
+                    }
+                )
+                ->add('Dummy');
             }
         );
 

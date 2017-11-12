@@ -34,7 +34,6 @@ $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or
 ```php
 $router->map('GET', '/', 'Welcome/index');
 $router->map('GET', 'welcome', 'Welcome/index');
-// $router->map('GET', 'welcome/index/(\d+)', 'Welcome/index/$1');
 ```
 
 ### Routing Map for Strict Types
