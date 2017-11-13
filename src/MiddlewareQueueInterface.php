@@ -29,4 +29,11 @@ interface MiddlewareQueueInterface
      */
     public function queue($name, $params = array());
 
+    /**
+     * Returns to SplQueue
+     * 
+     * @return object
+     */
+    public function getQueue();
+
 }

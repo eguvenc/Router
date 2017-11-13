@@ -38,6 +38,16 @@ class MiddlewareQueue implements MiddlewareQueueInterface
     }
 
     /**
+     * Returns to SplQueue
+     * 
+     * @return object
+     */
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
+    /**
      * Queue 
      * 
      * @param  string $name   class name

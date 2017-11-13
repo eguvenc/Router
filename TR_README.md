@@ -3,25 +3,26 @@
 
 Obullo http router bağımsız php router paketidir. <kbd>Route grupları</kbd>, <kbd>Route filtreleri</kbd>, <kbd>Route middleware</kbd> gibi özelliklerin yanı sıra az kodlama ve yüksek performans hedefler.
 
-#### Rest Tabanlı Kurallar
-
-Router paketi varsayılan olarak web sunucu davranışları sergiler. Eğer bir route kuralı ile eşleşmezse olmazsa route handler http isteğinden gelen uri path değerine döner.
-
-
-```php
-$router->restful(false);  // Restful davranışlarını devredışı bırak.
 ```
+require '../vendor/autoload.php';
 
-Fakat opsiyonel olarak rest tabanlı route sayfanın en başında ilan edilirse router sınıfı bir rest sunucu gibi davranır ve herhangi bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
+use Obullo\Router\Router;
+use Obullo\Router\MiddlewareQueue;
+use Obullo\Router\Dispatcher;
+
+$request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$response = new Zend\Diactoros\Response;
+
+$router = new Router($request, $response);
+```
 
 #### Kurallar
 
 ```php
 $router->map('GET', '/', 'Welcome/index');
-$router->map('GET', 'welcome', 'Welcome/index');
 ```
 
-Bu route kuralları <kbd>"/"</kbd> yada <kbd>"/welcome"</kbd> istekleri geldiğinde <b>$handler</b> değişkeninden <kbd>"Welcome/index"</kbd> olarak çıktı elde edilmesini sağlar.
+Bu route kuralları <kbd>"/"</kbd> yada <kbd>"/welcome"</kbd> istekleri geldiğinde <kbd>$handler</kbd> değişkeninden <kbd>"Welcome/index"</kbd> olarak çıktı elde edilmesini sağlar.
 
 #### Çözümleme
 
@@ -29,22 +30,16 @@ Bu route kuralları <kbd>"/"</kbd> yada <kbd>"/welcome"</kbd> istekleri geldiği
 $dispatcher = new Dispatcher($request, $response, $router);
 $handler 	= $dispatcher->execute();
 
-var_dump($handler);  // "Welcome/index"
+if ($handler instanceof Zend\Diactoros\Response) {
+    echo $handler->getBody().'<br>';
+} else {
+    var_dump($handler); // "Welcome/index"
+}
+
+var_dump($dispatcher->getArgs());  // Varsa map edilmiş argümanlar çıktılanır.
 ```
 
 #### Http Tabanlı Kurallar
-
-Bu kural sadece http GET türü dışındaki istekler geldiğinde <b>MiddlewareQueue</b> sınıfına <b>NotAllowed</b> middleware sınıfını gönderir.
-
-```php
-$router->map('GET', '/users/(.*)',
-     function ($request, $response, $args) use($router) {
-
-         $response->getBody()->write('Welcome user !');
-
-       return $response;
-});
-```
 
 Eğer birden fazla http metodu tanımlamak isterseniz bu metotları bir dizi içerisinde tanımlamanız gerekir.
 
@@ -59,7 +54,8 @@ $router->map(['GET','POST','PUT'], '/users/(.*)',
 });
 ```
 
-* MiddlewareQueue kullanmak istemiyorsanız bu davranışı kendi Dispatcher sınıfınızı kullanarak değişterebilirsiniz.
+* Tanımlanmayan bir http isteği geldiğinde middleware kuyruğuna <kbd>NotAllowed</kbd> middleware sınıfı eklenir.
+* <kbd>MiddlewareQueue</kbd> kullanmak istemiyorsanız bu davranışı kendi <kbd>Dispatcher</kbd> sınıfınızı kullanarak değişterebilirsiniz.
 
 
 #### Yeniden Yazım
@@ -68,7 +64,7 @@ $router->map(['GET','POST','PUT'], '/users/(.*)',
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
 ```
 
-Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa <b>rewrite</b> metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
+Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa <kbd>rewrite</kbd> metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
 
 
 #### Kesin Türler Belirleme
@@ -88,7 +84,7 @@ $router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)',
 );
 ```
 
-<b>$args</b> değişkeni aşağıdaki gibi çıktılanır.
+<kbd>$args</kbd> değişkeni aşağıdaki gibi çıktılanır.
 
 ```php
 /*
@@ -112,6 +108,18 @@ $router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response, $args) 
      var_dump($args);
 });
 ```
+
+#### Rest Tabanlı Kurallar
+
+Router paketi varsayılan olarak web sunucu davranışları sergiler. 
+
+```php
+$router->restful(false);  // Restful davranışını devredışı bırak.
+```
+
+* Restful değeri <b>false</b> iken bir route kuralı ile eşleşmezse olmazsa route handler geçerli uri path değerine döner.
+* Restful değeri <b>true</b> ilen bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
+
 
 #### Kural Grupları
 
@@ -143,7 +151,25 @@ $router->group(
 
 #### Middleware Kullanmak
 
-Bir middleware aşağıda bir route kuralına,
+Eğer bir middleware kuyruklayıcı kullanmak istiyorsanız <kbd>MiddlewareQueue</kbd> sınıfını kullanabilirsiniz.
+
+```php
+$middlewareQueue = new MiddlewareQueue(new SplQueue);
+```
+
+Kuyruklayıcının çalışabilmesi middleware klasörünüzü register metodu ile belirlemeniz gerekir.
+
+```php
+$middlewareQueue->register('\App\Middleware\\');
+```
+
+Son olarak kuyruklayıcıyı execute metoduna enjekte edin.
+
+```php
+$handler = $dispatcher->execute($middlewareQueue);
+```
+
+Bir middleware <kbd>add</kbd> metodu kullanılarak aşağıdaki gibi bir route kuralına,
 
 ```php
 $router->map('GET','(\w+)/(.*)')->add('Dummy');
