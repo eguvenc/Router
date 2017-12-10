@@ -37,7 +37,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testInit()
     {
-        $this->router->init();
         $segments = $this->router->getSegments();
 
         $this->assertEquals($segments[0], "foo");
@@ -88,13 +87,51 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testFetchRoutes()
     {
-        $router->map(array('POST','GET'), 'arg/test/(?<id>\d+)/(?<foo>\w+)');
+        $this->router->map(array('POST','GET'), 'arg/test/(?<id>\d+)/(?<foo>\w+)', 'Welcome/test');
 
         $r = $this->router->fetchRoutes();
         $data = current($r);
         $this->assertEquals("POST", $data['method'][0]);
-        $this->assertEquals("welcome.*", $data['pattern']);
-        $this->assertEquals("Welcome/index", $data['handler']);
+        $this->assertEquals("GET", $data['method'][1]);
+        $this->assertEquals("arg/test/(?<id>\d+)/(?<foo>\w+)", $data['pattern']);
+        $this->assertEquals("Welcome/test", $data['handler']);
+    }
+
+    public function testGetPath()
+    {
+        $this->assertEquals("/foo/bar", $this->router->getPath());
+    }
+
+    public function testGetGroup()
+    {
+        $this->router->group('group/', function () {});
+        $this->assertInstanceOf("Obullo\Router\Group", $this->router->getGroup());
+    }
+
+    public function testGetQueue()
+    {
+        $this->assertInstanceOf("Obullo\Middleware\Queue", $this->router->getQueue());
+    }
+
+    public function testGetSegments()
+    {
+        $segments = $this->router->getSegments();
+
+        $this->assertEquals("foo", $segments[0]);
+        $this->assertEquals("bar", $segments[1]);
+    }
+
+    public function testAdd()
+    {
+        $this->router->add("NotAllowed", array('GET', 'POST'));
+        $data   = $this->queue->dequeue();
+        $params = $data['argument']->getParams();
+
+        $this->assertInstanceOf("App\Middleware\NotAllowed", $data['callable']);
+        $this->assertInstanceOf("Obullo\Middleware\Argument", $data['argument']);
+
+        $this->assertEquals($params[0], "GET");
+        $this->assertEquals($params[1], "POST");
     }
 
     public function createRequest($uri)
@@ -108,5 +145,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $this->response = new Zend\Diactoros\Response;
         $this->router   = new Router($this->request, $this->response, $this->queue);
+        $this->router->init();
     }
 }

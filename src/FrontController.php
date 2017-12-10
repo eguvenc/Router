@@ -7,7 +7,7 @@ namespace Obullo\Router;
  *
  * Helps mapped route variables to set your application (folder/class/method)
  *
- * @copyright 2009-2017 Obullo
+ * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
 class FrontController

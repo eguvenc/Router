@@ -7,7 +7,7 @@ use Closure;
 /**
  * Router Interface
  * 
- * @copyright 2009-2017 Obullo
+ * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
 interface RouterInterface

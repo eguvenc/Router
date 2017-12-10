@@ -9,7 +9,7 @@ use Obullo\Middleware\QueueInterface;
 /**
  * Route group
  *
- * @copyright 2009-2016 Obullo
+ * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
 class Group
