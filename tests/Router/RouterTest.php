@@ -140,8 +140,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->queue->register('\App\Middleware\\');
 
         // Create a request
-        $this->request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
-            ->withUri(new Zend\Diactoros\Uri($uri));
+        $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $this->request = $request->withUri(new Zend\Diactoros\Uri($uri));
 
         $this->response = new Zend\Diactoros\Response;
         $this->router   = new Router($this->request, $this->response, $this->queue);
