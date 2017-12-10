@@ -4,6 +4,7 @@ namespace Obullo\Router;
 
 use Obullo\Router\Group;
 use InvalidArgumentException;
+use Obullo\Middleware\Argument;
 use Obullo\Router\Filter\FilterTrait;
 
 /**
@@ -29,25 +30,29 @@ class Router implements RouterInterface
     protected $count = 0;
     protected $routes = array();
     protected $restful = false;  // default web router
-    protected $middlewareQueue;
+    protected $queue;
     
     /**
      * Constructor
      * 
      * @param object $request  request
      * @param obejct $response response
+     * @param obejct $queue    middleware
      */
-    public function __construct($request, $response)
+    public function __construct($request, $response, $queue = null)
     {
         $this->request  = $request;
         $this->response = $response;
         $this->path     = $request->getUri()->getPath();
         $this->method   = $request->getMethod();
         $this->server   = $request->getServerParams();
+        $this->queue    = $queue;
     }
 
     /**
-     * Sets restful routing functionality / Disable web routing
+     * Restful flag
+     * 
+     * Enable api routing / disable web routing
      *
      * @param boolean $bool on / off
      *
@@ -87,7 +92,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * Initialize router start methods
+     * Initialize router
      * 
      * @return void
      */
@@ -112,12 +117,7 @@ class Router implements RouterInterface
            $prefix = $this->groupPath;
         }
         ++$this->count;
-        $this->routes[$this->count] = [
-            'method' => (array)$method,
-            'pattern' => $prefix.$rule,
-            'handler' => $handler,
-            'middlewares' => array()
-        ];
+        $this->routes[$this->count] = ['method' => (array)$method,'pattern' => $prefix.$rule,'handler' => $handler];
         return $this;
     }
 
@@ -134,7 +134,7 @@ class Router implements RouterInterface
         if (! is_callable($callable)) {
             throw new InvalidArgumentException("Group method second parameter must be callable.");
         }
-        $this->group = ($this->group == null) ? new Group($this->path) : $this->group;
+        $this->group = ($this->group == null) ? new Group($this->queue) : $this->group;
         $this->group->enqueue($pattern, $callable);
         return $this->group;
     }
@@ -151,21 +151,15 @@ class Router implements RouterInterface
         if ($this->group == null) {
             return;
         }
-        $g      = $this->group->dequeue();
+        $g = $this->group->dequeue();
         $folder = trim($g['pattern'], "/");
-
+        
         if (! empty($this->segments[0]) && $this->segments[0] == $folder) { // Execute the group if segment equal to group name.
             ++$this->groupLevel;
             $this->groupPath.= $folder."/";
             $handler = $g['callable']($this->request, $this->response);
-            if ($this->middlewareQueue != null && ! empty($g['middlewares'])) {
-                foreach ((array)$g['middlewares'] as $value) {
-                    $this->middlewareQueue->queue($value['name'], $value['params']);
-                }
-            }
             array_shift($this->segments); // Remove first segment from the path array
         }
-
         if (! $this->group->isEmpty()) {
             $handler = $this->popGroup();
         }
@@ -174,7 +168,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * Returns to routes
+     * Returns to defined routes
      *
      * @return array
      */
@@ -184,7 +178,7 @@ class Router implements RouterInterface
     }
 
     /**
-    * Returns to rewrited path
+    * Returns to rewrited uri path
     * 
     * @return string
     */
@@ -204,13 +198,23 @@ class Router implements RouterInterface
     }
 
     /**
-     * Set middleware
+     * Returns to middleware queue
      * 
-     * @param object $middleware middleware queue
+     * @return object
      */
-    public function setMiddlewareQueue($middlewareQueue)
+    public function getQueue()
     {
-        $this->middlewareQueue = $middlewareQueue;
+        return $this->queue;
+    }
+
+    /**
+     * Return to uri segments
+     * 
+     * @return array
+     */
+    public function getSegments()
+    {
+        return $this->segments;
     }
 
     /**
@@ -223,7 +227,7 @@ class Router implements RouterInterface
      */
     protected function middleware($name, array $args)
     {
-        $this->routes[$this->count]['middlewares'][] = array('name' => $name, 'params' => $args);
+        $this->queue->enqueue($name, new Argument($args));
     }
 
 }

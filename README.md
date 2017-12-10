@@ -1,30 +1,76 @@
 
-## Obullo Router
+# Obullo Router
 
-Obullo http router bağımsız php router paketidir. <kbd>Route grupları</kbd>, <kbd>Route filtreleri</kbd>, <kbd>Route middleware</kbd> gibi özelliklerin yanı sıra az kodlama ve yüksek performans hedefler.
+[![Build Status](https://travis-ci.org/obullo/Router.svg?branch=master)](https://travis-ci.org/obullo/Router)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
+> Obullo router, hafif yükte yüksek performans hedeflenerek geliştirilmiş bağımsız bir php router paketidir.
+
+Bunun yanında `Route grupları`, `Route middleware`, `Restful Routing` gibi modern web router özelliklerini de destekler.
+
+## Install
+
+Via Composer
+
+``` bash
+$ composer require obullo/router
 ```
+
+## Hello world
+
+```php
 require '../vendor/autoload.php';
 
-use Obullo\Router\Router;
-use Obullo\Router\MiddlewareQueue;
-use Obullo\Router\Dispatcher;
+$request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
+            ->withUri(new Zend\Diactoros\Uri("http://example.com/hello"));
 
-$request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
 $router = new Router($request, $response);
+$router->map('GET', '/hello.*', 'Hello/world');
+
+$dispatcher = new Dispatcher($request, $response, $router);
+$handler = $dispatcher->execute();
+
+var_dump($handler);  // (string) "Hello/world"
 ```
 
-#### Kurallar
+## Host configuration
+
+[CONFIGURATION.md](CONFIGURATION.md)
+
+## Requirements
+
+The following versions of PHP are supported by this version.
+
+* 5.6
+* 7.0
+* 7.1
+* 7.2
+* hhvm
+
+## Testing
+
+``` bash
+$ vendor/bin/phpunit
+```
+
+## Languages
+
+* [TR_CONFIGURATION.md](TR_CONFIGURATION.md)
+* [TR_README.md](TR_README.md)
+
+
+## Kurallar
 
 ```php
 $router->map('GET', '/', 'Welcome/index');
 ```
 
-Bu route kuralları <kbd>"/"</kbd> yada <kbd>"/welcome"</kbd> istekleri geldiğinde <kbd>$handler</kbd> değişkeninden <kbd>"Welcome/index"</kbd> olarak çıktı elde edilmesini sağlar.
+Bu route kuralları `"/"` yada `"/welcome"` istekleri geldiğinde `$handler` değişkeninden `"Welcome/index"` olarak çıktı elde edilmesini sağlar.
 
-#### Çözümleme
+## Çözümleme
 
 ```php
 $dispatcher = new Dispatcher($request, $response, $router);
@@ -39,7 +85,7 @@ if ($handler instanceof Zend\Diactoros\Response) {
 var_dump($dispatcher->getArgs());  // Varsa map edilmiş argümanlar çıktılanır.
 ```
 
-#### Http Tabanlı Kurallar
+## Http tabanlı kurallar
 
 Eğer birden fazla http metodu tanımlamak isterseniz bu metotları bir dizi içerisinde tanımlamanız gerekir.
 
@@ -54,26 +100,22 @@ $router->map(['GET','POST','PUT'], '/users/(.*)',
 });
 ```
 
-* Tanımlanmayan bir http isteği geldiğinde middleware kuyruğuna <kbd>NotAllowed</kbd> middleware sınıfı eklenir.
-* <kbd>MiddlewareQueue</kbd> kullanmak istemiyorsanız bu davranışı kendi <kbd>Dispatcher</kbd> sınıfınızı kullanarak değişterebilirsiniz.
-
-
-#### Yeniden Yazım
+## Yeniden yazım
 
 ```php
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
 ```
 
-Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa <kbd>rewrite</kbd> metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
+Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa `rewrite` metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
 
 
-#### Kesin Türler Belirleme
+## Kesin türler belirleme
 
 ```php
 $router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', 'Welcome/index/$1/$2');
 ```
 
-<kbd>$dispatcher->getArgs()</kbd> kullanılarak metodu ile dışarıdan argüman değerleri elde edilmiş olur.
+`$dispatcher->getArgs()` kullanılarak metodu ile dışarıdan argüman değerleri elde edilmiş olur.
 
 ```php
 $router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)',
@@ -84,7 +126,7 @@ $router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)',
 );
 ```
 
-<kbd>$args</kbd> değişkeni aşağıdaki gibi çıktılanır.
+`$args` değişkeni aşağıdaki gibi çıktılanır.
 
 ```php
 /*
@@ -109,7 +151,7 @@ $router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response, $args) 
 });
 ```
 
-#### Rest Tabanlı Kurallar
+## Rest tabanlı kurallar
 
 Router paketi varsayılan olarak web sunucu davranışları sergiler. 
 
@@ -118,10 +160,10 @@ $router->restful(false);  // Restful davranışını devredışı bırak.
 ```
 
 * Restful değeri <b>false</b> iken bir route kuralı ile eşleşmezse olmazsa route handler geçerli uri path değerine döner.
-* Restful değeri <b>true</b> ilen bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
+* Restful değeri <b>true</b> iken bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
 
 
-#### Kural Grupları
+## Kural grupları
 
 ```php
 $router->group(
@@ -148,34 +190,41 @@ $router->group(
 );
 ```
 
+## Middleware
 
-#### Middleware Kullanmak
+> Obullo router opsiyonel olarak `obullo\middleware` paketi ile route kurallarına veya gruplarına http katmanları ekleyebilmeyi destekler.
 
-Eğer bir middleware kuyruklayıcı kullanmak istiyorsanız <kbd>MiddlewareQueue</kbd> sınıfını kullanabilirsiniz.
-
-```php
-$middlewareQueue = new MiddlewareQueue(new SplQueue);
-```
-
-Kuyruklayıcının çalışabilmesi middleware klasörünüzü register metodu ile belirlemeniz gerekir.
+Aşağıdaki örnekte bir route kuralına `Dummy` adlı http katmanı ekleniyor.
 
 ```php
-$middlewareQueue->register('\App\Middleware\\');
+require '../vendor/autoload.php';
+
+use Obullo\Router\Router;
+use Obullo\Router\Dispatcher;
+use Obullo\Router\MiddlewareDispatcher;
+use Obullo\Middleware\Queue;
+
+$request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
+            ->withUri(new Zend\Diactoros\Uri("http://example.com/welcome"));
+$response = new Zend\Diactoros\Response;
+
+$queue = new Queue;
+$queue->register('\App\Middleware\\');
+
+$router = new Router($request, $response, $queue);
+$router->map('GET', '/welcome', 'Welcome/index')->add('Dummy');
+
+$dispatcher = new MiddlewareDispatcher($request, $response, $router);
+
+$handler = $dispatcher->execute();
+
+var_dump($handler);  // (string) "Welcome/index"
+var_dump($queue->dequeue());    // ["callable"]=> object(App\Middleware\Dummy)#22 (0) {}
 ```
 
-Son olarak kuyruklayıcıyı execute metoduna enjekte edin.
+### Add metodu
 
-```php
-$handler = $dispatcher->execute($middlewareQueue);
-```
-
-Bir middleware <kbd>add</kbd> metodu kullanılarak aşağıdaki gibi bir route kuralına,
-
-```php
-$router->map('GET','(\w+)/(.*)')->add('Dummy');
-```
-
-veya bir gruba eklenebilir.
+Middleware bir route kuralına yada route grubuna `add` metodu kullanılarak eklenir.
 
 ```php
 $router->group(
@@ -195,12 +244,19 @@ $router->group(
 )->add('Dummy');
 ```
 
+Add metodu ikinci parametresinden parametreler gönderilebilir.
 
-#### Middleware Filtreleri
+```php
+$router->map('GET', 'welcome', 'Welcome/index')->add('Dummy', $params = array());
+```
 
-Middleware filtreleri kuralların yanısıra uri değeri filtrelenerek belirli şartlara uygunluk gösterip göstermemelerine göre eklenebilirler.
+## Middleware filtreleri
 
-##### Contains Filtresi
+> Http katmanları, http uri filtreleri kullanılarak belirli route kuralları yada gruplarına atanabilirler. Bu filtreler aşağıda sıralanmıştır.
+
+### Contains filtresi
+
+Aşağıdaki filtre `example/test/(\w+)/(\d+).\*` eşleşmesinden sonra `test/foo/123` ve `test/foo/1234` içeren segmentler için `Dummy` middleware sınıfını ekler.
 
 ```php
 $router->group(
@@ -228,9 +284,9 @@ $router->group(
 );
 ```
 
-Yukarıdaki filtre <kbd>example/test/(\w+)/(\d+).\*</kbd> eşleşmesinden sonra <kbd>test/foo/123</kbd> ve <kbd>test/foo/1234</kbd> içeren http isteklerine <b>Dummy</b> middleware sınıfını ekler.
+### NotContains filtresi
 
-##### NotContains Filtresi
+Contains metodunun zıt yönlü filtresidir.
 
 ```php
 $router->group(
@@ -258,9 +314,9 @@ $router->group(
 );
 ```
 
-Contains metodunun zıt yönlü filtresidir.
+### Regex filtresi
 
-##### Regex Filtresi
+Aşağıdaki filtre `example/test/(\w+)/(\d+).\*` eşleşmesinden sonra `abc/digit` değer içeren http isteklerine `Dummy` middleware sınıfını ekler.
 
 ```php
 $router->group(
@@ -289,9 +345,9 @@ $router->group(
 );
 ```
 
-Yukarıdaki filtre <kbd>example/test/(\w+)/(\d+).\*</kbd> eşleşmesinden sonra <kbd>abc/digit</kbd> değer içeren http isteklerine <b>Dummy</b> middleware sınıfını ekler.
+### NotRegex filtresi
 
-##### Not Regex Filtresi
+Regex metodunun zıt yönlü filtresidir.
 
 ```php
 $router->group(
@@ -320,9 +376,6 @@ $router->group(
 );
 ```
 
-Regex metodunun zıt yönlü filtresidir.
+## Örnekler
 
-
-#### Örnekler
-
-Daha fazla örnek kurallar tanımlamalarını <kbd>/public</kbd> klasöründe bulabilirsiniz.
+Daha fazla örnek kurallar tanımlamalarını `/public` klasöründe bulabilirsiniz.

@@ -7,14 +7,13 @@ trait AddTrait
     /**
      * Add middleware
      *
+     * @param string $name middleware
+     * @param array  $args arguments
+     * 
      * @return object router
      */
-    public function add()
+    public function add($name, $args = array())
     {
-        $args = func_get_args();
-        $name = $args[0];
-        unset($args[0]);
-
         if ($this->condition == null) {
             $this->middleware($name, $args);
             return $this;

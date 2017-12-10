@@ -2,7 +2,9 @@
 
 namespace Obullo\Router;
 
+use Obullo\Middleware\Argument;
 use Obullo\Router\Filter\FilterTrait;
+use Obullo\Middleware\QueueInterface;
 
 /**
  * Route group
@@ -15,8 +17,19 @@ class Group
     use AddTrait;
     use FilterTrait;
 
-    protected $count  = 0;
+    protected $queue;
+    protected $count = 0;
     protected $groups = array();
+
+    /**
+     * Constructor
+     * 
+     * @param QueueInterface|null $queue middleware
+     */
+    public function __construct(QueueInterface $queue = null)
+    {
+        $this->queue = $queue;
+    }
 
     /**
      * Queue group
@@ -29,11 +42,7 @@ class Group
     public function enqueue($pattern, $callable)
     {
         ++$this->count;
-        $this->groups[$this->count] = [
-            'pattern' => $pattern,
-            'callable' => $callable,
-            'middlewares' => array()
-        ];
+        $this->groups[$this->count] = ['pattern' => $pattern,'callable' => $callable];
     }
 
     /**
@@ -66,6 +75,6 @@ class Group
      */
     protected function middleware($name, array $args)
     {
-        $this->groups[$this->count]['middlewares'][] = array('name' => $name, 'params' => $args);
+        $this->queue->enqueue($name, new Argument($args));
     }
 }

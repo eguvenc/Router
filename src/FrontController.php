@@ -3,17 +3,34 @@
 namespace Obullo\Router;
 
 /**
- * Path Controller
+ * Front Controller
  *
  * Helps mapped route variables to set your application (folder/class/method)
  *
  * @copyright 2009-2017 Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class PathController
+class FrontController
 {
+    /**
+     * Class name
+     * 
+     * @var string
+     */
     protected $class;
+
+    /**
+     * Folder name
+     * 
+     * @var string
+     */
     protected $folder;
+
+    /**
+     * Method name
+     * 
+     * @var string
+     */
     protected $method;
 
     /**

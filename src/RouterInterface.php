@@ -12,7 +12,6 @@ use Closure;
  */
 interface RouterInterface
 {
-
     /**
      * Rewrite all http requests
      * 

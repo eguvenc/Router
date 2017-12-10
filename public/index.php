@@ -8,13 +8,25 @@ ini_set('display_errors', 1);
 require '../vendor/autoload.php';
 
 use Obullo\Router\Router;
-use Obullo\Router\MiddlewareQueue;
 use Obullo\Router\Dispatcher;
+use Obullo\Router\MiddlewareDispatcher;
+use Obullo\Middleware\Queue;
 
 $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $response = new Zend\Diactoros\Response;
 
-$router = new Router($request, $response);
+//--------------------------------------------------------------------
+// MiddlewareQueue is optional
+//--------------------------------------------------------------------
+
+$queue = new Queue;
+$queue->register('\App\Middleware\\');
+
+//--------------------------------------------------------------------
+// Router
+//--------------------------------------------------------------------
+
+$router = new Router($request, $response, $queue);
 $router->restful(false);
 
 //--------------------------------------------------------------------
@@ -36,22 +48,15 @@ include 'filter-regex.php';
 include 'filter-not-regex.php';
 
 //--------------------------------------------------------------------
-// MiddlewareQueue is optional
-//--------------------------------------------------------------------
-
-$middlewareQueue = new MiddlewareQueue(new SplQueue);
-$middlewareQueue->register('\App\Middleware\\');
-
-//--------------------------------------------------------------------
 // Dispatch
 //--------------------------------------------------------------------
 
-$dispatcher = new Dispatcher($request, $response, $router);
+$dispatcher = new MiddlewareDispatcher($request, $response, $router); // creates dispatcher with middleware functionality
+
+// $dispatcher = new Dispatcher($request, $response, $router); // creates dispatcher without middleware functionality
 
 $dispatched = false;
-$handler = $dispatcher->execute($middlewareQueue);
-// $handler = $dispatcher->execute();
-
+$handler = $dispatcher->execute();
 
 // If routes is not restful do web routing functionality.
 
@@ -78,6 +83,8 @@ var_dump($dispatcher->getArgs());
 echo '</pre>';
 echo '</div>';
 
-echo '<pre>';
-var_dump($middlewareQueue);
-echo '</pre>';
+if ($dispatcher instanceof MiddlewareDispatcher) {
+	echo '<pre>';
+	var_dump($queue);
+	echo '</pre>';
+}

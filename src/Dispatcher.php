@@ -55,29 +55,21 @@ class Dispatcher
     /**
      * Executer dispatch process
      *
-     * @param mixed $middlewareQueue is optional
+     * @param mixed $queue middleware is optional
      * 
      * @return mixed handler
      */
-    public function execute($middlewareQueue = null)
+    public function execute()
     {
-        $this->router->setMiddlewareQueue($middlewareQueue);
         $this->router->init();
 
         $handler = null;
         $groupHandler = $this->router->popGroup();
 
         foreach ($this->router->fetchRoutes() as $r) {
-
             if ($this->dispatch($r['pattern'])) {
                 if (! in_array($this->request->getMethod(), (array)$r['method'])) {
-                    $middlewareQueue->queue('NotAllowed', (array)$r['method']);
                     continue; // stop process
-                }
-                if (! empty($r['middlewares'])) {
-                    foreach ((array)$r['middlewares'] as $value) {
-                        $middlewareQueue->queue($value['name'], $value['params']);
-                    }
                 }
                 if (is_string($r['handler'])){
                     $handler = $r['handler'];
