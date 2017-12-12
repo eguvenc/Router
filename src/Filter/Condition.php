@@ -36,7 +36,7 @@ class Condition
     {
         $result = "";
         foreach ((array)$path as $value) {
-            $result.= stripos($this->path, "/".trim($value, "/"));
+            $result.= (stripos(trim($this->path, "/"), trim($value, "/")) !== false) ? "1" : "";
         }
         if (! empty($result)) {
             $this->match = true;
@@ -55,7 +55,7 @@ class Condition
     {
         $result = "";
         foreach ((array)$path as $value) {
-            $result.= stripos($this->path, "/".trim($value, "/"));
+            $result.= (stripos(trim($this->path, "/"), trim($value, "/")) !== false) ? "1" : "";
         }
         if (empty($result)) {
             $this->match = true;

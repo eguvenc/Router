@@ -18,9 +18,8 @@ trait FilterTrait
      */
     public function filter($method, $params = null)
     {
-        if ($this->condition == null) {
-            $this->condition = new Condition($this->path);
-        }
+        $this->condition = new Condition($this->path);
+        
         if (! method_exists($this->condition, $method)) {
             throw new BadMethodCallException(
                 sprintf(

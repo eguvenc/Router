@@ -1,8 +1,5 @@
 <?php
 
-use Obullo\Router\Group;
-use Obullo\Middleware\Queue;
-
 class GroupTest extends PHPUnit_Framework_TestCase
 {
     protected $queue;
@@ -10,9 +7,9 @@ class GroupTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-		$this->queue = new Queue;
+		$this->queue = new Obullo\Middleware\Queue;
 		$this->queue->register('\App\Middleware\\');
-        $this->group = new Group($this->queue);
+        $this->group = new Obullo\Router\Group($this->queue);
     }
 
     public function testEnqueue()
@@ -40,7 +37,7 @@ class GroupTest extends PHPUnit_Framework_TestCase
     {
     	$this->group->add("Dummy", array('foo', 'bar'));
 
-    	$data 	= $this->queue->dequeue();
+    	$data 	= $this->queue[0];
     	$params = $data['argument']->getParams();
 
     	$this->assertInstanceOf("App\Middleware\Dummy", $data['callable']);

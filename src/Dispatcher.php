@@ -25,10 +25,10 @@ class Dispatcher
      */
     public function __construct($request, $response, $router)
     {
-        $this->router     = $router;
-        $this->request    = $request;
-        $this->response   = $response;
-        $this->path       = $router->getPath();
+        $this->router   = $router;
+        $this->request  = $request;
+        $this->response = $response;
+        $this->path     = $router->getPath();
     }
 
     /**

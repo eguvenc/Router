@@ -1,9 +1,5 @@
 <?php
 
-use Obullo\Router\Router;
-use Obullo\Middleware\Queue;
-use Obullo\Router\Dispatcher;
-
 class RouterTest extends PHPUnit_Framework_TestCase
 {
     protected $queue;
@@ -29,7 +25,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');
         $this->router->map('GET', '/welcome.*', 'Welcome/index');
 
-        $dispatcher = new Dispatcher($this->request, $this->response, $this->router);
+        $dispatcher = new Obullo\Router\Dispatcher($this->request, $this->response, $this->router);
 
         $handler = $dispatcher->execute();
         $this->assertEquals("Welcome/index", $handler);
@@ -75,13 +71,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
                 );
             }
         );
-        $dispatcher = new Dispatcher($this->request, $this->response, $this->router);
+        $dispatcher = new Obullo\Router\Dispatcher($this->request, $this->response, $this->router);
         $response   = $dispatcher->execute();
-
         ob_start();
         echo $response->getBody();
         $result = ob_get_clean();
-
         $this->assertEquals("It works !", $result);
     }
 
@@ -124,7 +118,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testAdd()
     {
         $this->router->add("NotAllowed", array('GET', 'POST'));
-        $data   = $this->queue->dequeue();
+        $data   = $this->queue[0];
         $params = $data['argument']->getParams();
 
         $this->assertInstanceOf("App\Middleware\NotAllowed", $data['callable']);
@@ -136,7 +130,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function createRequest($uri)
     {
-        $this->queue = new Queue;
+        $this->queue = new Obullo\Middleware\Queue;
         $this->queue->register('\App\Middleware\\');
 
         // Create a request
@@ -144,7 +138,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->request = $request->withUri(new Zend\Diactoros\Uri($uri));
 
         $this->response = new Zend\Diactoros\Response;
-        $this->router   = new Router($this->request, $this->response, $this->queue);
+        $this->router   = new Obullo\Router\Router($this->request, $this->response, $this->queue);
         $this->router->init();
     }
 }

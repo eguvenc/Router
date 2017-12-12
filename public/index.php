@@ -36,8 +36,8 @@ $router->restful(false);
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
 
 $router->map('GET', '/', 'Welcome/index');
-$router->map('GET', '/welcome.*', 'Welcome/index');
-$router->map('GET', '/welcome/index/(\d+)', 'Welcome/index/$1');
+$router->map('GET', 'welcome.*', 'Welcome/index');
+$router->map('GET', 'welcome/index/(\d+)', 'Welcome/index/$1');
 
 include 'group-routes.php';
 include 'argument-routes.php';
