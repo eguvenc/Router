@@ -6,7 +6,7 @@ class ConditionTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-		$this->condition = new Obullo\Router\Filter\Condition("test/foo/123");
+        $this->condition = new Obullo\Router\Filter\Condition("test/foo/123");
     }
 
     public function testContains()

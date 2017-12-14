@@ -165,6 +165,8 @@ $router->restful(false);  // Restful davranışını devredışı bırak.
 
 ## Kural grupları
 
+Group fonksiyonu ile içe içe route grupları oluşturabilir. Grup adı ile url segmentleri eşleşmediği sürece grup fonksiyonları çalışmaz.
+
 ```php
 $router->group(
     'group/',
