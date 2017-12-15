@@ -7,7 +7,7 @@
 
 > Obullo router, hafif yükte yüksek performans hedeflenerek geliştirilmiş bağımsız bir php router paketidir.
 
-Bunun yanında `Route grupları`, `Route middleware`, `Restful Routing` gibi modern web router özelliklerini de destekler.
+Bununla birlikte `Route grupları`, `Route middleware`, `Restful Routing` gibi modern web router özelliklerini de destekler.
 
 ## Install
 
@@ -28,7 +28,7 @@ $request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
 $response = new Zend\Diactoros\Response;
 
 $router = new Router($request, $response);
-$router->map('GET', '/hello.*', 'Hello/world');
+$router->map('GET', 'hello.*', 'Hello/world');
 
 $dispatcher = new Dispatcher($request, $response, $router);
 $handler = $dispatcher->execute();
@@ -66,9 +66,10 @@ $ vendor/bin/phpunit
 
 ```php
 $router->map('GET', '/', 'Welcome/index');
+$router->map('GET', 'welcome', 'Welcome/index');
 ```
 
-Bu route kuralları `"/"` yada `"/welcome"` istekleri geldiğinde `$handler` değişkeninden `"Welcome/index"` olarak çıktı elde edilmesini sağlar.
+Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkeninden `"Welcome/index"` olarak çıktı elde edilmesini sağlar.
 
 ## Çözümleme
 
@@ -145,8 +146,8 @@ array(2) {
 Başka bir örnek yazım
 
 ```php
-$router->map('GET', '/users/(\w+)/(\d+)', '/Users/$1/$2');
-$router->map('GET', '/users/(\w+)/(\d+)', function ($request, $response, $args) use($router) {
+$router->map('GET', 'users/(\w+)/(\d+)', '/Users/$1/$2');
+$router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $args) use($router) {
      var_dump($args);
 });
 ```
@@ -178,7 +179,7 @@ $router->group(
 
                 $router->map(
                     'GET',
-                    '/(\w+)/(\d+).*',
+                    '(\w+)/(\d+).*',
                     function ($request, $response, $args = null) use ($router) {
                     
                         $response->getBody()->write("It works !");
@@ -194,7 +195,7 @@ $router->group(
 
 ## Middleware
 
-> Obullo router opsiyonel olarak `obullo\middleware` paketi ile route kurallarına veya gruplarına http katmanları ekleyebilmeyi destekler.
+> Obullo router opsiyonel olarak `obullo\middleware` paketi ile route kurallarına http katmanları ekleyebilmeyi destekler.
 
 Aşağıdaki örnekte bir route kuralına `Dummy` adlı http katmanı ekleniyor.
 
@@ -214,7 +215,7 @@ $queue = new Queue;
 $queue->register('\App\Middleware\\');
 
 $router = new Router($request, $response, $queue);
-$router->map('GET', '/welcome', 'Welcome/index')->add('Dummy');
+$router->map('GET', 'welcome', 'Welcome/index')->add('Dummy');
 
 $dispatcher = new MiddlewareDispatcher($request, $response, $router);
 
@@ -226,7 +227,7 @@ var_dump($queue->dequeue());    // ["callable"]=> object(App\Middleware\Dummy)#2
 
 ### Add metodu
 
-Middleware bir route kuralına yada route grubuna `add` metodu kullanılarak eklenir.
+Middleware bir route kuralına yada route grubuna `add` metodu kullanılarak eklenebilir.
 
 ```php
 $router->group(
@@ -246,7 +247,7 @@ $router->group(
 )->add('Dummy');
 ```
 
-Add metodu ikinci parametresinden parametreler gönderilebilir.
+Add metodu ikinci parametresi opsiyonel olarak parametre gönderilmeyi destekler.
 
 ```php
 $router->map('GET', 'welcome', 'Welcome/index')->add('Dummy', $params = array());
@@ -258,7 +259,7 @@ $router->map('GET', 'welcome', 'Welcome/index')->add('Dummy', $params = array())
 
 ### Contains filtresi
 
-Aşağıdaki filtre `example/test/(\w+)/(\d+).\*` eşleşmesinden sonra `test/foo/123` ve `test/foo/1234` içeren segmentler için `Dummy` middleware sınıfını ekler.
+Aşağıdaki tanımlada route kuralı `test/foo/123` veya `test/foo/1234` segmentlerini içeriyorsa `Dummy` middleware sınıfı uygulamaya eklenmiş olur.
 
 ```php
 $router->group(
@@ -318,7 +319,7 @@ $router->group(
 
 ### Regex filtresi
 
-Aşağıdaki filtre `example/test/(\w+)/(\d+).\*` eşleşmesinden sonra `abc/digit` değer içeren http isteklerine `Dummy` middleware sınıfını ekler.
+Aşağıdaki tanımlada route kuralı `.*?abc/(\d+)` düzenli ifadesini sağlayan segmentler için uygulamaya `Dummy` middleware sınıfını ekler.
 
 ```php
 $router->group(
@@ -380,4 +381,4 @@ $router->group(
 
 ## Örnekler
 
-Daha fazla örnek kurallar tanımlamalarını `/public` klasöründe bulabilirsiniz.
+`/public` klasörü altında daha fazla örnek bulabilirsiniz.

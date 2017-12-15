@@ -1,12 +1,11 @@
 
+## Konfigürasyon
 
-### Konfigürasyon
+> Bu dosya router paketini yerel sunucunuzda nasıl kuracağınıza ilişkin bilgileri içerir.
 
-Bu dosya router paketini yerel sunucunuzda nasıl kuracağınıza ilişkin bilgileri içerir.
+### Apache web server
 
-#### Apache Web Server Konfigurasyonu
-
-Apache konfigürasyon dosyanızda <kbd>DocumentRoot</kbd> konfigürasyonu <kbd>projeniz/public/</kbd> klasörüne ayarlanmış olmalıdır.
+Apache konfigürasyon dosyanızda `DocumentRoot` konfigürasyonu `projeniz/public/` klasörüne ayarlanmış olmalıdır.
 
 ```
 <VirtualHost *:80>
@@ -23,12 +22,12 @@ Apache konfigürasyon dosyanızda <kbd>DocumentRoot</kbd> konfigürasyonu <kbd>p
 </VirtualHost>
 ```
 
-DirectoryIndex değerini <kbd>index.php</kbd> değerine ayarlamanız önerilir. ServerName bu örnekte <kbd>router</kbd> olarak ayarlanmıştır.
+DirectoryIndex değerini `index.php` değerine ayarlamanız önerilir. ServerName bu örnekte `router` olarak ayarlanmıştır.
 
 
-#### .htaccess
+### .htaccess
 
-Konfigurasyon aşağıdaki gibi <kbd>.htaccess</kbd> dosyasını gerektirir. Bu dosya <kbd>/public</kbd> klasöründe mevcuttur.
+Konfigurasyon aşağıdaki gibi `.htaccess` dosyasını gerektirir. Bu dosya `/public` klasöründe mevcuttur.
 
 ```
 # Disable directory indexing
@@ -52,9 +51,9 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php/$1 [L]
 ```
 
-#### Host Dosyası
+### Host dosyası
 
-Bu örnekte <kbd>/etc/hosts</kbd> dosyasına proje router olarak tanımlanmıştır.
+Bu örnekte `/etc/hosts` dosyasına proje router olarak tanımlanmıştır.
 
 ```
 127.0.1.1       router

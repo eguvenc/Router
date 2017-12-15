@@ -1,12 +1,11 @@
 
+## Configuration
 
-### Konfigürasyon
+This file contains information of how to set up the router package on your localhost.
 
-Bu dosya router paketini yerel sunucunuzda nasıl kuracağınıza ilişkin bilgileri içerir.
+### Apache web server
 
-#### Apache Web Server Konfigurasyonu
-
-Apache konfigürasyon dosyanızda <kbd>DocumentRoot</kbd> konfigürasyonu <kbd>projeniz/public/</kbd> klasörüne ayarlanmış olmalıdır.
+In your Apache configuration file, `DocumentRoot` should be set to directory `your-project/public/`.
 
 ```
 <VirtualHost *:80>
@@ -23,12 +22,11 @@ Apache konfigürasyon dosyanızda <kbd>DocumentRoot</kbd> konfigürasyonu <kbd>p
 </VirtualHost>
 ```
 
-DirectoryIndex değerini <kbd>index.php</kbd> değerine ayarlamanız önerilir. ServerName bu örnekte <kbd>router</kbd> olarak ayarlanmıştır.
+DirectoryIndex value are suggested to be set to `index.php`. ServerName is set to `router` in this example.
 
+### .htaccess
 
-#### .htaccess
-
-Konfigurasyon aşağıdaki gibi <kbd>.htaccess</kbd> dosyasını gerektirir. Bu dosya <kbd>/public</kbd> klasöründe mevcuttur.
+Configuration requires a `.htaccess` file like below. This file exists in `/public` folder.
 
 ```
 # Disable directory indexing
@@ -52,15 +50,15 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php/$1 [L]
 ```
 
-#### Host Dosyası
+### Host file
 
-Bu örnekte <kbd>/etc/hosts</kbd> dosyasına proje router olarak tanımlanmıştır.
+In this example, the project is set as router in `/etc/hosts` file.
 
 ```
 127.0.1.1       router
 ```
 
-Bu tanımlamadan sonra tarayıcınızdan aşağıdaki gibi proje ismi ile örnek dosyalara ulaşabilirsiniz.
+After defining this, you can access the sample files through your browser with the project name as in the below example:
 
 ```
 http://router/
