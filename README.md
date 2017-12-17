@@ -83,7 +83,6 @@ Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değ
 
 ```php
 $dispatcher = new Dispatcher($request, $response, $router);
-
 $handler = $dispatcher->dispatch(
     new UrlMapper(
         $dispatcher,
