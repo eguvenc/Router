@@ -82,7 +82,7 @@ Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değ
 ## Çözümleme
 
 ```php
-$dispatcher = new Dispatcher($request, $response, $router); // creates dispatcher with middleware functionality
+$dispatcher = new Dispatcher($request, $response, $router);
 
 $handler = $dispatcher->dispatch(
     new UrlMapper(
@@ -224,7 +224,7 @@ $queue->register('\App\Middleware\\');
 $router = new Router($request, $response, $queue);
 $router->map('GET', 'welcome', 'WelcomeController->index')->add('Dummy');
 
-$dispatcher = new Dispatcher($request, $response, $router); // creates dispatcher with middleware functionality
+$dispatcher = new Dispatcher($request, $response, $router);
 $handler = $dispatcher->dispatch(
     new UrlMapper(
         $dispatcher,
