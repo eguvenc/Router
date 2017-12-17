@@ -28,12 +28,20 @@ $request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
 $response = new Zend\Diactoros\Response;
 
 $router = new Router($request, $response);
-$router->map('GET', 'hello.*', 'Hello/world');
+$router->map('GET', 'hello.*', 'HelloWorldController->index');
 
 $dispatcher = new Dispatcher($request, $response, $router);
-$handler = $dispatcher->execute();
-
-var_dump($handler);  // (string) "Hello/world"
+$handler = $dispatcher->dispatch(
+    new UrlMapper(
+        $dispatcher,
+        [
+            'path' => $router->getPath(),
+            'separator' => '->',
+            'default.method' => 'index'
+        ]
+    )
+);
+var_dump($handler);  // (string) "HelloWorldController->index"
 ```
 
 ## Host configuration
@@ -65,38 +73,48 @@ $ vendor/bin/phpunit
 ## Kurallar
 
 ```php
-$router->map('GET', '/', 'Welcome/index');
-$router->map('GET', 'welcome', 'Welcome/index');
+$router->map('GET', '/', 'WelcomeConroller->index');
+$router->map('GET', 'welcome', 'WelcomeController->index');
 ```
 
-Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkeninden `"Welcome/index"` olarak çıktı elde edilmesini sağlar.
+Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkeninden `"WelcomeController->index"` olarak çıktı elde edilmesini sağlar.
 
 ## Çözümleme
 
 ```php
-$dispatcher = new Dispatcher($request, $response, $router);
-$handler    = $dispatcher->execute();
+$dispatcher = new Dispatcher($request, $response, $router); // creates dispatcher with middleware functionality
 
+$handler = $dispatcher->dispatch(
+    new UrlMapper(
+        $dispatcher,
+        [
+            'path' => $router->getPath(),
+            'separator' => '->',
+            'default.method' => 'index'
+        ]
+    )
+);
 if ($handler instanceof Zend\Diactoros\Response) {
-    echo $handler->getBody().'<br>';
-} else {
-    var_dump($handler); // "Welcome/index"
+    $response = $handler;
 }
-
-var_dump($dispatcher->getArgs());  // Varsa map edilmiş argümanlar çıktılanır.
+if ($handler instanceof UrlMapperInterface) {  // parse mapped variables
+    $html = "<br /><br />";
+    $html.= "<b>Class: </b>".$handler->getClass()."<br />";
+    $html.= "<b>Method: </b>".$handler->getMethod()."<br />";
+    $html.= "<b>First Argument: </b>".$handler->getArgs(0)."<br />";
+    $response->getBody()->write($html);
+}
+echo $response->getBody();  // print body
 ```
 
 ## Http tabanlı kurallar
 
 Eğer birden fazla http metodu tanımlamak isterseniz bu metotları bir dizi içerisinde tanımlamanız gerekir.
 
-
 ```php
-$router->map(['GET','POST','PUT'], '/users/(.*)',
-     function ($request, $response, $args) use($router) {
-
+$router->map(['GET','POST','PATCH'], 'users/.*',
+     function ($request, $response, $mapper) use($router) {
          $response->getBody()->write('Welcome user !');
-
        return $response;
 });
 ```
@@ -113,15 +131,15 @@ Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa `rewrit
 ## Kesin türler belirleme
 
 ```php
-$router->map('GET', 'welcome/index/(?<id>\d+)/(?<month>\w+)', 'Welcome/index/$1/$2');
+$router->map('GET', 'WelcomeController->index/(?<id>\d+)/(?<month>\w+)', 'WelcomeController->index');
 ```
 
-`$dispatcher->getArgs()` kullanılarak metodu ile dışarıdan argüman değerleri elde edilmiş olur.
+`$mapper` nesnesi kullanılarak dışarıdan map edilen argümanlar elde edilmiş olur.
 
 ```php
 $router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)',
-    function($request, $response, $args) use($router) {
-        $response->getBody()->write(print_r($args, true));
+    function($request, $response, $mapper) use($router) {
+        $response->getBody()->write(print_r($mapper->getArgs(), true));
         return $response;
     }
 );
@@ -146,23 +164,11 @@ array(2) {
 Başka bir örnek yazım
 
 ```php
-$router->map('GET', 'users/(\w+)/(\d+)', '/Users/$1/$2');
+$router->map('GET', 'users/(\w+)/(\d+)', 'UserController->index');
 $router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $args) use($router) {
      var_dump($args);
 });
 ```
-
-## Rest tabanlı kurallar
-
-Router paketi varsayılan olarak web sunucu davranışları sergiler. 
-
-```php
-$router->restful(false);  // Restful davranışını devredışı bırak.
-```
-
-* Restful değeri <b>false</b> iken bir route kuralı ile eşleşmezse olmazsa route handler geçerli uri path değerine döner.
-* Restful değeri <b>true</b> iken bir route kuralı ile eşleşmezse olmazsa handler <b>NULL</b> değerine döner.
-
 
 ## Kural grupları
 
@@ -180,10 +186,8 @@ $router->group(
                 $router->map(
                     'GET',
                     '(\w+)/(\d+).*',
-                    function ($request, $response, $args = null) use ($router) {
-                    
+                    function ($request, $response, $mapper) use ($router) {
                         $response->getBody()->write("It works !");
-
                         return $response;
                     }
                 );
@@ -204,8 +208,11 @@ require '../vendor/autoload.php';
 
 use Obullo\Router\Router;
 use Obullo\Router\Dispatcher;
-use Obullo\Router\MiddlewareDispatcher;
+use Obullo\Router\UrlMapper;
+use Obullo\Router\UrlMapperInterface;
+
 use Obullo\Middleware\Queue;
+use Obullo\Middleware\QueueInterface;
 
 $request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
             ->withUri(new Zend\Diactoros\Uri("http://example.com/welcome"));
@@ -215,13 +222,20 @@ $queue = new Queue;
 $queue->register('\App\Middleware\\');
 
 $router = new Router($request, $response, $queue);
-$router->map('GET', 'welcome', 'Welcome/index')->add('Dummy');
+$router->map('GET', 'welcome', 'WelcomeController->index')->add('Dummy');
 
-$dispatcher = new MiddlewareDispatcher($request, $response, $router);
-
-$handler = $dispatcher->execute();
-
-var_dump($handler);  // (string) "Welcome/index"
+$dispatcher = new Dispatcher($request, $response, $router); // creates dispatcher with middleware functionality
+$handler = $dispatcher->dispatch(
+    new UrlMapper(
+        $dispatcher,
+        [
+            'path' => $router->getPath(),
+            'separator' => '->',
+            'default.method' => 'index'
+        ]
+    )
+);
+var_dump($handler);  // "object(UrlMapper)"
 var_dump($queue->dequeue());    // ["callable"]=> object(App\Middleware\Dummy)#22 (0) {}
 ```
 
@@ -237,7 +251,7 @@ $router->group(
         $router->map(
             'GET',
             'dummy.*',
-            function ($request, $response, $args = null) use ($router) {
+            function ($request, $response, $mapper) use ($router) {
                 $response->getBody()->write("It works !");
                 return $response;
             }
@@ -250,7 +264,7 @@ $router->group(
 Add metodu ikinci parametresi opsiyonel olarak parametre gönderilmeyi destekler.
 
 ```php
-$router->map('GET', 'welcome', 'Welcome/index')->add('Dummy', $params = array());
+$router->map('GET', 'welcome', 'WelcomeController->index')->add('Dummy', $params = array());
 ```
 
 ## Middleware filtreleri
@@ -274,9 +288,7 @@ $router->group(
                     'GET',
                     '(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
-                        
                         $response->getBody()->write("It works !");
-
                         return $response;
                     }
 
@@ -304,9 +316,7 @@ $router->group(
                     'GET',
                     '(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
-                        
                         $response->getBody()->write("It works !");
-
                         return $response;
                     }
 
@@ -334,9 +344,7 @@ $router->group(
                     'GET',
                     '(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
-                        
                         $response->getBody()->write("It works !");
-
                         return $response;
                     }
 
@@ -365,9 +373,7 @@ $router->group(
                     'GET',
                     '(\w+)/(.*)',
                     function ($request, $response) use ($router) {
-                        
                         $response->getBody()->write("It works !");
-
                         return $response;
                     }
 

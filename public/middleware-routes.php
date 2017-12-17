@@ -12,7 +12,7 @@ $router->group(
                 $router->map(
                     'GET',
                     'dummy.*',
-                    function ($request, $response, $args = null) use ($router) {
+                    function ($request, $response, $mapper) use ($router) {
                         $response->getBody()->write("It works !");
                         return $response;
                     }
@@ -24,19 +24,9 @@ $router->group(
         $router->group(
             'group/',
             function ($request, $response) use ($router) {
-                
-                $router->map(
-                    'GET',
-                    'test.*', function(){
-                    
-                })->add('Dummy');
-                
-                $response->getBody()->write("It works !");
-                return $response;
+                $router->map('GET','test.*','MiddlewareController->test') ->add('Dummy');
             }
         );
-
-
     }
 );
 

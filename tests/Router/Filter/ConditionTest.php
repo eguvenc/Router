@@ -2,8 +2,6 @@
 
 class ConditionTest extends PHPUnit_Framework_TestCase
 {
-    protected $condition;
-
     public function setUp()
     {
         $this->condition = new Obullo\Router\Filter\Condition("test/foo/123");

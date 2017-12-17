@@ -13,9 +13,7 @@ $router->group(
                     'GET',
                     '(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
-                        
                         $response->getBody()->write("It works !");
-
                         return $response;
                     }
 

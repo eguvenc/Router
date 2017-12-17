@@ -8,11 +8,12 @@ namespace Obullo\Router;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class Dispatcher
+class Dispatcher implements DispatcherInterface
 {
-    protected $path;
     protected $router;
+    protected $methods;
     protected $request;
+    protected $handler;
     protected $response;
     protected $args = array();
 
@@ -28,61 +29,47 @@ class Dispatcher
         $this->router   = $router;
         $this->request  = $request;
         $this->response = $response;
-        $this->path     = $router->getPath();
-    }
 
-    /**
-     * Dispatch route
-     * 
-     * @param array $pattern pattern
-     * 
-     * @return boolean
-     */
-    public function dispatch($pattern)
-    {
-        $rule = '#^'."/".ltrim($pattern, "/").'$#';
-        $args = array();
-        if (trim($pattern, "/") == trim($this->path, "/") ||
-            preg_match($rule, $this->path, $args)
-        ) {
-            array_shift($args);
-            $this->args = $args;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Executer dispatch process
-     *
-     * @param mixed $queue middleware is optional
-     * 
-     * @return mixed handler
-     */
-    public function execute()
-    {
         $this->router->init();
+    }
 
-        $handler = null;
-        $groupHandler = $this->router->popGroup();
+    /**
+     * Dsipatch request
+     * 
+     * @param  UrlMapperInterface $mapper object
+     * @return mixed
+     */
+    public function dispatch(UrlMapperInterface $mapper)
+    {
+        $g = $this->router->popGroup();
+        $r = $this->router->popRoute();
+        if (! empty($r)) {
+            $this->handler = $r['handler'];
+            $this->methods = $r['method'];
+            $this->args    = $r['args'];
+            $mapper->execute($this);
+        }
+        if ($this->handler == null) {
+            $this->handler = $g;
+        }
+        if (is_callable($this->handler)) {
+            $callable = $this->handler;
+            $this->handler = $callable($this->request, $this->response, $mapper);
+        }
+        if (is_string($this->handler)) {
+            $this->handler = $mapper;
+        }
+        return $this->handler;
+    }
 
-        foreach ($this->router->fetchRoutes() as $r) {
-            if ($this->dispatch($r['pattern'])) {
-                if (! in_array($this->request->getMethod(), (array)$r['method'])) {
-                    continue; // stop process
-                }
-                if (is_string($r['handler'])){
-                    $handler = $r['handler'];
-                }
-                if (is_callable($r['handler'])) {
-                    $handler = $r['handler']($this->request, $this->response, $this->getArgs());
-                }
-            }
-        }
-        if ($handler == null) {
-            $handler = $groupHandler;
-        }
-        return $handler;
+    /**
+     * Returns to matched route methods
+     * 
+     * @return array
+     */
+    public function getMethods()
+    {
+        return $this->methods;
     }
 
     /**
@@ -93,5 +80,15 @@ class Dispatcher
     public function getArgs()
     {
         return $this->args;
+    }
+
+    /**
+     * Returns to handler
+     * 
+     * @return mixed
+     */
+    public function getHandler()
+    {
+        return $this->handler;
     }
 }

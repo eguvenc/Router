@@ -2,6 +2,7 @@
 
 namespace Obullo\Router;
 
+use SplQueue;
 use Obullo\Router\Group;
 use InvalidArgumentException;
 use Obullo\Middleware\Argument;
@@ -19,18 +20,17 @@ class Router implements RouterInterface
     use FilterTrait;
 
     protected $path;
+    protected $queue;
+    protected $server;
     protected $method;
     protected $request;
+    protected $pattern;
     protected $response;
-    protected $server;
     protected $group = null;
+    protected $match = false;
     protected $groupLevel = 0;
     protected $groupPath  = "";
     protected $segments = array();
-    protected $count = 0;
-    protected $routes = array();
-    protected $restful = false;  // default web router
-    protected $queue;
     
     /**
      * Constructor
@@ -47,30 +47,7 @@ class Router implements RouterInterface
         $this->method   = $request->getMethod();
         $this->server   = $request->getServerParams();
         $this->queue    = $queue;
-    }
-
-    /**
-     * Restful flag
-     * 
-     * Enable api routing / disable web routing
-     *
-     * @param boolean $bool on / off
-     *
-     * @return void
-     */
-    public function restful($bool = true)
-    {
-        $this->restful = $bool;
-    }
-
-    /**
-     * Returns to restful variable
-     * 
-     * @return boolean
-     */
-    public function isRestful()
-    {
-        return $this->restful;
+        $this->route    = new Route(new SplQueue);
     }
 
     /**
@@ -116,8 +93,12 @@ class Router implements RouterInterface
         if ($this->groupLevel > 0) {
            $prefix = $this->groupPath;
         }
-        ++$this->count;
-        $this->routes[$this->count] = ['method' => (array)$method,'pattern' => $prefix.$rule,'handler' => $handler];
+        $payload = [
+            'method' => (array)$method,
+            'pattern' => $prefix.$rule,
+            'handler' => $handler
+        ];
+        $this->route->enqueue($payload);
         return $this;
     }
 
@@ -135,14 +116,42 @@ class Router implements RouterInterface
             throw new InvalidArgumentException("Group method second parameter must be callable.");
         }
         $this->group = ($this->group == null) ? new Group($this->queue) : $this->group;
-        $this->group->enqueue($pattern, $callable);
+        $this->group->enqueue(['pattern' => $pattern,'callable' => $callable]);
         return $this->group;
+    }
+
+    /**
+     * Route process
+     * 
+     * @return array|null
+     */
+    public function popRoute()
+    {
+        $r = $this->route->dequeue();
+        $path      = trim($this->path, "/");
+        $pattern   = trim($r['pattern'], "/");
+        $regexRule = '#^'.$pattern.'$#';
+        $args = array();
+        if ($path == $pattern OR preg_match($regexRule, $path, $args)) {
+            array_shift($args);
+            $this->match = true;
+            $this->pattern = $regexRule;
+            $r['args'] = $args;
+            return $r;
+        }
+        if (! $this->route->isEmpty()) {
+            $r = $this->popRoute();
+            if (is_array($r)) {
+                return $r;
+            }
+        }
+        return null;
     }
 
     /**
      * Group process
      * 
-     * @return void
+     * @return mixed|null
      */
     public function popGroup()
     {
@@ -165,16 +174,6 @@ class Router implements RouterInterface
         }
         $this->groupLevel = 0;
         return $handler;
-    }
-
-    /**
-     * Returns to defined routes
-     *
-     * @return array
-     */
-    public function fetchRoutes()
-    {
-        return $this->routes;
     }
 
     /**
@@ -205,6 +204,26 @@ class Router implements RouterInterface
     public function getQueue()
     {
         return $this->queue;
+    }
+
+    /**
+     * Returns to true if route match otherwise false
+     * 
+     * @return boolean
+     */
+    public function hasMatch()
+    {
+        return $this->match;
+    }
+
+    /**
+     * Returns to matched pattern
+     * 
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->pattern;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Obullo\Router;
 
+use SplQueue;
 use Obullo\Middleware\Argument;
 use Obullo\Router\Filter\FilterTrait;
 use Obullo\Middleware\QueueInterface;
@@ -12,15 +13,13 @@ use Obullo\Middleware\QueueInterface;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class Group
+class Group extends SplQueue
 {
     use AddTrait;
     use FilterTrait;
 
     protected $queue;
-    protected $count = 0;
-    protected $groups = array();
-
+    
     /**
      * Constructor
      * 
@@ -29,40 +28,6 @@ class Group
     public function __construct(QueueInterface $queue = null)
     {
         $this->queue = $queue;
-    }
-
-    /**
-     * Queue group
-     *
-     * @param string   $pattern  pattern
-     * @param callable $callable callable
-     *
-     * @return void
-     */
-    public function enqueue($pattern, $callable)
-    {
-        ++$this->count;
-        $this->groups[$this->count] = ['pattern' => $pattern,'callable' => $callable];
-    }
-
-    /**
-     * Dequeue the group array
-     *
-     * @return array|null
-     */
-    public function dequeue()
-    {
-        return array_shift($this->groups);
-    }
-
-    /**
-     * Returns to true if we have no group
-     *
-     * @return boolean
-     */
-    public function isEmpty()
-    {
-        return empty($this->groups);
     }
 
     /**

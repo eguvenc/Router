@@ -2,9 +2,6 @@
 
 class GroupTest extends PHPUnit_Framework_TestCase
 {
-    protected $queue;
-    protected $group;
-
     public function setUp()
     {
 		$this->queue = new Obullo\Middleware\Queue;
@@ -14,9 +11,12 @@ class GroupTest extends PHPUnit_Framework_TestCase
 
     public function testEnqueue()
     {
-    	$this->group->enqueue("foo", function() {
-    		return "bar";
-    	});
+    	$this->group->enqueue([
+            'pattern' => 'foo',
+            'callable' => function() {
+                return "bar";
+            }
+        ]);
     	$array = $this->group->dequeue();
     	$this->assertEquals($array['pattern'], "foo");
     	$this->assertEquals($array['callable'](), "bar");
@@ -25,9 +25,12 @@ class GroupTest extends PHPUnit_Framework_TestCase
     public function testIsEmpty()
     {
     	$this->assertEquals(true, $this->group->isEmpty());
-    	$this->group->enqueue("foo", function() {
-    		return "bar";
-    	});
+        $this->group->enqueue([
+            'pattern' => 'foo',
+            'callable' => function() {
+                return "bar";
+            }
+        ]);
     	$this->assertEquals(false, $this->group->isEmpty());
     	$this->group->dequeue();
     	$this->assertEquals(true, $this->group->isEmpty());
