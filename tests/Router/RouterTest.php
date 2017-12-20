@@ -38,6 +38,72 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("WelcomeController->index", $r['handler']);
     }
 
+    public function testGet()
+    {
+        $this->createRequest("http://example.com/welcome");
+
+        $this->router->get('welcome.*', 'WelcomeController->index');
+        $r = $this->router->popRoute();
+        $this->assertEquals("GET", $r['method'][0]);
+        $this->assertEquals("welcome.*", $r['pattern']);
+        $this->assertEquals("WelcomeController->index", $r['handler']);
+    }
+
+    public function testPost()
+    {
+        $this->createRequest("http://example.com/welcome");
+
+        $this->router->post('welcome.*', 'WelcomeController->index');
+        $r = $this->router->popRoute();
+        $this->assertEquals("POST", $r['method'][0]);
+        $this->assertEquals("welcome.*", $r['pattern']);
+        $this->assertEquals("WelcomeController->index", $r['handler']);
+    }
+
+    public function testPut()
+    {
+        $this->createRequest("http://example.com/welcome");
+
+        $this->router->put('welcome.*', 'WelcomeController->index');
+        $r = $this->router->popRoute();
+        $this->assertEquals("PUT", $r['method'][0]);
+        $this->assertEquals("welcome.*", $r['pattern']);
+        $this->assertEquals("WelcomeController->index", $r['handler']);
+    }
+
+    public function testPatch()
+    {
+        $this->createRequest("http://example.com/welcome");
+
+        $this->router->patch('welcome.*', 'WelcomeController->index');
+        $r = $this->router->popRoute();
+        $this->assertEquals("PATCH", $r['method'][0]);
+        $this->assertEquals("welcome.*", $r['pattern']);
+        $this->assertEquals("WelcomeController->index", $r['handler']);
+    }
+
+    public function testDelete()
+    {
+        $this->createRequest("http://example.com/welcome");
+
+        $this->router->delete('welcome.*', 'WelcomeController->index');
+        $r = $this->router->popRoute();
+        $this->assertEquals("DELETE", $r['method'][0]);
+        $this->assertEquals("welcome.*", $r['pattern']);
+        $this->assertEquals("WelcomeController->index", $r['handler']);
+    }
+
+    public function testOptions()
+    {
+        $this->createRequest("http://example.com/welcome");
+
+        $this->router->map('OPTIONS', 'welcome.*', 'WelcomeController->index');
+        $r = $this->router->popRoute();
+        $this->assertEquals("OPTIONS", $r['method'][0]);
+        $this->assertEquals("welcome.*", $r['pattern']);
+        $this->assertEquals("WelcomeController->index", $r['handler']);
+    }
+
     public function testGroup()
     {
         $dispatcher = $this->createRequest("http://example.com/group/test/a/1");

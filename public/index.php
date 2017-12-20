@@ -42,13 +42,10 @@ $router->map('GET', 'welcome', 'WelcomeController->index');
 $router->map('GET', 'welcome/index', 'WelcomeController->index');
 $router->map('GET', 'welcome/index/(\d+)', 'WelcomeController->index');
 
-include 'group-routes.php';
 include 'argument-routes.php';
-include 'middleware-routes.php';
-include 'filter-contains.php';
-include 'filter-not-contains.php';
 include 'filter-regex.php';
-include 'filter-not-regex.php';
+include 'group-routes.php';
+include 'middleware-routes.php';
 
 //--------------------------------------------------------------------
 // Dispatch

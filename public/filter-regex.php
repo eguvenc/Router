@@ -1,5 +1,6 @@
 <?php
 
+use Obullo\Router\AddFilter\Regex;
 
 $router->group(
     'filter-regex/',
@@ -9,15 +10,14 @@ $router->group(
             'test/',
             function () use ($router) {
 
-                $router->map(
-                    'GET',
+                $router->get(
                     '(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
                         $response->getBody()->write("It works !");
                         return $response;
                     }
 
-                )->filter('regex', '.*?abc/(\d+)')->add('Dummy');
+                )->filter(new Regex('.*?abc/(\d+)'))->add('Dummy');
             }
         );
 

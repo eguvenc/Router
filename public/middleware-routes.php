@@ -9,8 +9,7 @@ $router->group(
             'test/',
             function ($request, $response) use ($router) {
 
-                $router->map(
-                    'GET',
+                $router->get(
                     'dummy.*',
                     function ($request, $response, $mapper) use ($router) {
                         $response->getBody()->write("It works !");
@@ -24,7 +23,7 @@ $router->group(
         $router->group(
             'group/',
             function ($request, $response) use ($router) {
-                $router->map('GET','test.*','MiddlewareController->test') ->add('Dummy');
+                $router->get('test.*','MiddlewareController->test') ->add('Dummy');
             }
         );
     }

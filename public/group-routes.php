@@ -11,8 +11,7 @@ $router->group(
             'test/',
             function () use ($router) {
 
-                $router->map(
-                    'GET',
+                $router->get(
                     '(\w+)/(\d+).*',
                     function ($request, $response, $args = null) use ($router) {
                         $response->getBody()->write("It works !");

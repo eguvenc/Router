@@ -4,8 +4,8 @@ namespace Obullo\Router;
 
 use SplQueue;
 use Obullo\Middleware\Argument;
-use Obullo\Router\Filter\FilterTrait;
 use Obullo\Middleware\QueueInterface;
+use Obullo\Router\AddFilter\FilterTrait;
 
 /**
  * Route group
@@ -25,9 +25,20 @@ class Group extends SplQueue
      * 
      * @param QueueInterface|null $queue middleware
      */
-    public function __construct(QueueInterface $queue = null)
+    public function __construct(RouterInterface $router, QueueInterface $queue = null)
     {
         $this->queue = $queue;
+        $this->router = $router;
+    }
+
+    /**
+     * Returns to path
+     * 
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->router->getPath();
     }
 
     /**

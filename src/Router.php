@@ -6,7 +6,7 @@ use SplQueue;
 use Obullo\Router\Group;
 use InvalidArgumentException;
 use Obullo\Middleware\Argument;
-use Obullo\Router\Filter\FilterTrait;
+use Obullo\Router\AddFilter\FilterTrait;
 
 /**
  * Router
@@ -79,6 +79,78 @@ class Router implements RouterInterface
     }
 
     /**
+     * GET
+     * 
+     * @param string $pattern rule
+     * @param mixed  $handler handler
+     * @return object
+     */
+    public function get($pattern, $handler = null)
+    {
+        return $this->map("GET", $pattern, $handler);
+    }
+
+    /**
+     * POST
+     * 
+     * @param string $pattern rule
+     * @param mixed  $handler handler
+     * @return object
+     */
+    public function post($pattern, $handler = null)
+    {
+        return $this->map("POST", $pattern, $handler);
+    }
+
+    /**
+     * PUT
+     * 
+     * @param string $pattern rule
+     * @param mixed  $handler handler
+     * @return object
+     */
+    public function put($pattern, $handler = null)
+    {
+        return $this->map("PUT", $pattern, $handler);
+    }
+
+    /**
+     * PATCH
+     * 
+     * @param string $pattern rule
+     * @param mixed  $handler handler
+     * @return object
+     */
+    public function patch($pattern, $handler = null)
+    {
+        return $this->map("PATCH", $pattern, $handler);
+    }
+
+    /**
+     * DELETE
+     * 
+     * @param string $pattern rule
+     * @param mixed  $handler handler
+     * @return object
+     */
+    public function delete($pattern, $handler = null)
+    {
+        return $this->map("DELETE", $pattern, $handler);
+    }
+
+    /**
+     * OPTIONS
+     * 
+     * @param string $pattern rule
+     * @param mixed  $handler handler
+     * @return object
+     */
+    public function options($pattern, $handler = null)
+    {
+        return $this->map("OPTIONS", $pattern, $handler);
+    }
+
+    /**
      * Create a route
      *
      * @param string $method  method
@@ -115,7 +187,7 @@ class Router implements RouterInterface
         if (! is_callable($callable)) {
             throw new InvalidArgumentException("Group method second parameter must be callable.");
         }
-        $this->group = ($this->group == null) ? new Group($this->queue) : $this->group;
+        $this->group = ($this->group == null) ? new Group($this, $this->queue) : $this->group;
         $this->group->enqueue(['pattern' => $pattern,'callable' => $callable]);
         return $this->group;
     }

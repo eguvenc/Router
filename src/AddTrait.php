@@ -14,11 +14,11 @@ trait AddTrait
      */
     public function add($name, $args = array())
     {
-        if ($this->condition == null) {
+        if ($this->filter == null) {
             $this->middleware($name, $args);
             return $this;
         }
-        if ($this->condition->hasMatch()) {
+        if ($this->filter->hasMatch($this->getPath())) {
             $this->middleware($name, $args);
         }
         return $this;

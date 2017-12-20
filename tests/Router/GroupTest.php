@@ -6,7 +6,9 @@ class GroupTest extends PHPUnit_Framework_TestCase
     {
 		$this->queue = new Obullo\Middleware\Queue;
 		$this->queue->register('\App\Middleware\\');
-        $this->group = new Obullo\Router\Group($this->queue);
+
+        $this->createRequest("http://example.com/welcome/index");
+        $this->group = new Obullo\Router\Group($this->router, $this->queue);
     }
 
     public function testEnqueue()
@@ -48,6 +50,32 @@ class GroupTest extends PHPUnit_Framework_TestCase
 
     	$this->assertEquals($params[0], "foo");
     	$this->assertEquals($params[1], "bar");
+    }
+
+    public function testGetPath()
+    {
+        $this->assertEquals("/welcome/index", $this->group->getPath());
+    }
+
+    protected function createRequest($uri)
+    {
+        // Create a request
+        $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $request  = $request->withUri(new Zend\Diactoros\Uri($uri));
+
+        $response = new Zend\Diactoros\Response;
+        $this->router = new Obullo\Router\Router($request, $response, $this->queue);
+        $this->router->init();
+
+        $this->dispatcher = new Obullo\Router\Dispatcher($request, $response, $this->router);
+        $this->urlMapper  = new Obullo\Router\UrlMapper(
+            $this->dispatcher,
+            [
+                'path' => $this->router->getPath(),
+                'separator' => '->',
+                'default.method' => 'index'
+            ]
+        );
     }
 
 }
