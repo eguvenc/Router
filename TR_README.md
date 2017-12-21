@@ -5,11 +5,11 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
-> Obullo router, hafif yükte yüksek performans hedeflenerek geliştirilmiş bağımsız bir php router paketidir.
+> Obullo router, yüksek performans hedeflenerek geliştirilmiş bağımsız bir php router paketidir.
 
 Bununla birlikte `Route grupları`, `Route middleware`, `Restful Routing` gibi modern web router özelliklerini de destekler.
 
-## Install
+## Yükleme
 
 Via Composer
 
@@ -44,13 +44,13 @@ $handler = $dispatcher->dispatch(
 var_dump($handler);  // (string) "HelloWorldController->index"
 ```
 
-## Host configuration
+## Host configurasyonu
 
 [CONFIGURATION.md](CONFIGURATION.md)
 
-## Requirements
+## Gereksinimler
 
-The following versions of PHP are supported by this version.
+Bu versiyon aşağıdaki PHP sürümleri tarafından destekleniyor.
 
 * 5.6
 * 7.0
@@ -70,14 +70,59 @@ $ vendor/bin/phpunit
 * [TR_README.md](TR_README.md)
 
 
-## Kurallar
+## Route kuralları
+
+### GET metodu
 
 ```php
-$router->map('GET', '/', 'WelcomeConroller->index');
-$router->map('GET', 'welcome', 'WelcomeController->index');
+$router->get('/', 'WelcomeConroller->index');
+$router->get('welcome', 'WelcomeController->index');
+```
+
+Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkenini `"WelcomeController->index"` çıktılamayı sağlar.
+
+### POST metodu
+
+```php
+$router->post('foo/bar', 'PostConroller->index');
+```
+
+### PUT metodu
+
+```php
+$router->put('foo/bar', 'PutConroller->index');
+```
+
+### PATCH metodu
+
+```php
+$router->patch('foo/bar', 'PatchConroller->index');
+```
+
+### DELETE metodu
+
+```php
+$router->delete('foo/bar', 'DeleteConroller->index');
+```
+
+### OPTIONS metodu
+
+```php
+$router->options('foo/bar', 'OptionsConroller->index');
 ```
 
 Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkeninden `"WelcomeController->index"` olarak çıktı elde edilmesini sağlar.
+
+### Map metodu
+
+Birden fazla metot desteği için yada özel bir metot için map kullanılır.
+
+```php
+$router->map(array('GET','POST','CUSTOM'), '/', function ($request, $response, $mapper) use($router) {
+         $response->getBody()->write('Welcome user !');
+       return $response;
+});
+```
 
 ## Çözümleme
 
@@ -106,18 +151,6 @@ if ($handler instanceof UrlMapperInterface) {  // parse mapped variables
 echo $response->getBody();  // print body
 ```
 
-## Http tabanlı kurallar
-
-Eğer birden fazla http metodu tanımlamak isterseniz bu metotları bir dizi içerisinde tanımlamanız gerekir.
-
-```php
-$router->map(['GET','POST','PATCH'], 'users/.*',
-     function ($request, $response, $mapper) use($router) {
-         $response->getBody()->write('Welcome user !');
-       return $response;
-});
-```
-
 ## Yeniden yazım
 
 ```php
@@ -127,16 +160,16 @@ $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or
 Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa `rewrite` metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
 
 
-## Kesin türler belirleme
+## Kesin türler
 
 ```php
-$router->map('GET', 'WelcomeController->index/(?<id>\d+)/(?<month>\w+)', 'WelcomeController->index');
+$router->get('welcome/index/(?<id>\d+)/(?<month>\w+)', 'WelcomeController->index');
 ```
 
 `$mapper` nesnesi kullanılarak dışarıdan map edilen argümanlar elde edilmiş olur.
 
 ```php
-$router->map('GET', 'arguments/index/(?<id>\d+)/(?<month>\w+)',
+$router->get('welcome/index/(?<id>\d+)/(?<month>\w+)',
     function($request, $response, $mapper) use($router) {
         $response->getBody()->write(print_r($mapper->getArgs(), true));
         return $response;
@@ -169,7 +202,7 @@ $router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $args) u
 });
 ```
 
-## Kural grupları
+## Gruplar
 
 Group fonksiyonu ile içe içe route grupları oluşturabilir. Grup adı ile url segmentleri eşleşmediği sürece grup fonksiyonları çalışmaz.
 
@@ -182,8 +215,7 @@ $router->group(
             'test/',
             function () use ($router) {
 
-                $router->map(
-                    'GET',
+                $router->get(
                     '(\w+)/(\d+).*',
                     function ($request, $response, $mapper) use ($router) {
                         $response->getBody()->write("It works !");
@@ -198,7 +230,7 @@ $router->group(
 
 ## Middleware
 
-> Obullo router opsiyonel olarak `obullo\middleware` paketi ile route kurallarına http katmanları ekleyebilmeyi destekler.
+> Obullo router opsiyonel olarak `obullo/middleware` composer paketi ile route kurallarına http katmanları ekleyebilmeyi destekler.
 
 Aşağıdaki örnekte bir route kuralına `Dummy` adlı http katmanı ekleniyor.
 
@@ -221,7 +253,7 @@ $queue = new Queue;
 $queue->register('\App\Middleware\\');
 
 $router = new Router($request, $response, $queue);
-$router->map('GET', 'welcome', 'WelcomeController->index')->add('Dummy');
+$router->get('welcome', 'WelcomeController->index')->add('Dummy');
 
 $dispatcher = new Dispatcher($request, $response, $router);
 $handler = $dispatcher->dispatch(
@@ -247,8 +279,7 @@ $router->group(
     'test/',
     function ($request, $response) use ($router) {
 
-        $router->map(
-            'GET',
+        $router->get(
             'dummy.*',
             function ($request, $response, $mapper) use ($router) {
                 $response->getBody()->write("It works !");
@@ -263,74 +294,20 @@ $router->group(
 Add metodu ikinci parametresi opsiyonel olarak parametre gönderilmeyi destekler.
 
 ```php
-$router->map('GET', 'welcome', 'WelcomeController->index')->add('Dummy', $params = array());
+$router->get('welcome', 'WelcomeController->index')->add('Dummy', array('foo' => 'bar'));
 ```
 
-## Middleware filtreleri
+## Add filtresi
 
-> Http katmanları, http uri filtreleri kullanılarak belirli route kuralları yada gruplarına atanabilirler. Bu filtreler aşağıda sıralanmıştır.
-
-### Contains filtresi
-
-Aşağıdaki tanımlada route kuralı `test/foo/123` veya `test/foo/1234` segmentlerini içeriyorsa `Dummy` middleware sınıfı uygulamaya eklenmiş olur.
-
-```php
-$router->group(
-    'example/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->map(
-                    'GET',
-                    '(\w+)/(\d+).*',
-                    function ($request, $response) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-
-                )->filter('contains', ['test/foo/123', 'test/foo/1234'])->add('Dummy');
-            }
-        );
-    }
-);
-```
-
-### NotContains filtresi
-
-Contains metodunun zıt yönlü filtresidir.
-
-```php
-$router->group(
-    'example/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->map(
-                    'GET',
-                    '(\w+)/(\d+).*',
-                    function ($request, $response) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-
-                )->filter('notContains', ['test/foo/888', 'test/foo/999'])->add('Dummy');
-            }
-        );
-    }
-);
-```
+> Http katmanları, http uri filtrelenerek belirli route kuralları yada gruplarına atanabilirler. 
 
 ### Regex filtresi
 
 Aşağıdaki tanımlada route kuralı `.*?abc/(\d+)` düzenli ifadesini sağlayan segmentler için uygulamaya `Dummy` middleware sınıfını ekler.
 
 ```php
+use Obullo\Router\AddFilter\Regex;
+
 $router->group(
     'example/',
     function () use ($router) {
@@ -339,44 +316,14 @@ $router->group(
             'test/',
             function () use ($router) {
 
-                $router->map(
-                    'GET',
+                $router->get(
                     '(\w+)/(\d+).*',
                     function ($request, $response) use ($router) {
                         $response->getBody()->write("It works !");
                         return $response;
                     }
 
-                )->filter('regex', '.*?abc/(\d+)')->add('Dummy');
-            }
-        );
-
-    }
-);
-```
-
-### NotRegex filtresi
-
-Regex metodunun zıt yönlü filtresidir.
-
-```php
-$router->group(
-    'example/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->map(
-                    'GET',
-                    '(\w+)/(.*)',
-                    function ($request, $response) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-
-                )->filter('notRegex', '.*?abc/(\d+)')->add('Dummy');
+                )->filter(new Regex('.*?abc/(\d+)'))->add('Dummy');
             }
         );
 
