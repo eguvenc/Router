@@ -297,7 +297,7 @@ $router->get('welcome', 'WelcomeController->index')->add('Dummy', array('foo' =>
 
 > Http layers can be assigned to certain route rules or route groups using http uri filters.
 
-### Regex filtresi
+### Regex filter
 
 In the definition below, the route rule adds the `Dummy` middleware class to application for the segments matching the regex `.*?abc/(\d+)`.
 
