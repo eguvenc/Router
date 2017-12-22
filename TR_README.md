@@ -197,8 +197,9 @@ Başka bir örnek yazım
 
 ```php
 $router->map('GET', 'users/(\w+)/(\d+)', 'UserController->index');
-$router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $args) use($router) {
-     var_dump($args);
+$router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $mapper) use($router) {
+    $response->getBody()->write(print_r($mapper->getArgs(), true));
+    return $response;
 });
 ```
 
