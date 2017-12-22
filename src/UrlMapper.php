@@ -23,14 +23,15 @@ class UrlMapper implements UrlMapperInterface
     protected $segments = array();
 
     /**
-     * Constructor
+     * Contructor
      * 
-     * @param DispatcherInterface $dispatcher object
-     * @param array               $config     
+     * @param DispatcherInterface $dispatcher dispatcher
+     * @param RouterInterface     $router     router
+     * @param array               $config     config
      */
-    public function __construct(DispatcherInterface $dispatcher, $config = array())
+    public function __construct(DispatcherInterface $dispatcher, RouterInterface $router, $config = array())
     {
-        $this->path = $config['path'];
+        $this->path = $router->getPath();
         $this->dispatcher = $dispatcher;
         $this->separator = isset($config['separator']) ? $config['separator'] : '->';
         $this->method = isset($config['default.method']) ? $config['default.method'] : 'index';

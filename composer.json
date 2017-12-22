@@ -1,8 +1,8 @@
 {
     "name": "obullo/router",
     "type": "library",
-    "description": "Php router that supports http middlewares and rest.",
-    "keywords": ["router","restful","middleware","http route"],
+    "description": "Php lightweight router solution which works with zend-diactoros package.In addition, it supports the modern web router features like Route groups, Route middleware and Restful Routing.",
+    "keywords": ["router","restful","middleware","http","zend-diactoros","zend"],
     "homepage": "http://router.obullo.com",
     "license": "MIT",
     "authors": [

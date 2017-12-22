@@ -101,8 +101,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher = new Obullo\Router\Dispatcher($request, $response, $this->router);
         $this->urlMapper  = new Obullo\Router\UrlMapper(
             $this->dispatcher,
+            $this->router,
             [
-                'path' => $this->router->getPath(),
                 'separator' => '->',
                 'default.method' => 'index'
             ]

@@ -34,8 +34,8 @@ $dispatcher = new Dispatcher($request, $response, $router);
 $handler = $dispatcher->dispatch(
     new UrlMapper(
         $dispatcher,
+        $router,
         [
-            'path' => $router->getPath(),
             'separator' => '->',
             'default.method' => 'index'
         ]
@@ -131,8 +131,8 @@ $dispatcher = new Dispatcher($request, $response, $router);
 $handler = $dispatcher->dispatch(
     new UrlMapper(
         $dispatcher,
+        $router,
         [
-            'path' => $router->getPath(),
             'separator' => '->',
             'default.method' => 'index'
         ]

@@ -43,4 +43,12 @@ interface RouterInterface
      * @return void
      */
     public function map($method, $pattern, $handler = null);
+
+    /**
+     * Returns to true if route match otherwise false
+     * 
+     * @return boolean
+     */
+    public function hasMatch();
+
 }

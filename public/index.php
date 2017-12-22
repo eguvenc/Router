@@ -55,8 +55,8 @@ $dispatcher = new Dispatcher($request, $response, $router); // creates dispatche
 $handler = $dispatcher->dispatch(
 	new UrlMapper(
 		$dispatcher,
+		$router,
 		[
-			'path' => $router->getPath(),
 			'separator' => '->',
 			'default.method' => 'index'
 		]
@@ -72,6 +72,8 @@ if ($handler instanceof UrlMapperInterface) {
 	$html.= "<b>First Argument: </b>".$handler->getArgs(0)."<br />";
 	$response->getBody()->write($html);
 }
+
+// If response is not available show 404
 
 echo '<h3>Pattern</h3>';
 echo $router->getPattern();
@@ -98,3 +100,4 @@ if ($queue instanceof QueueInterface) {
 	var_dump($queue);
 	echo '</pre>';
 }
+
