@@ -5,13 +5,13 @@
 
 ### Apache web server
 
-Apache konfigürasyon dosyanızda `DocumentRoot` konfigürasyonu `projeniz/public/` klasörüne ayarlanmış olmalıdır.
+Apache konfigürasyon dosyanızda `DocumentRoot` konfigürasyonu `projeniz/demo/public/` klasörüne ayarlanmış olmalıdır.
 
 ```
 <VirtualHost *:80>
 
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/Router/public/
+        DocumentRoot /var/www/Router/demo/public/
 
         ServerName router
         DirectoryIndex index.php

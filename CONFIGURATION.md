@@ -5,13 +5,13 @@ This file contains information of how to set up the router package on your local
 
 ### Apache web server
 
-In your Apache configuration file, `DocumentRoot` should be set to directory `your-project/public/`.
+In your Apache configuration file, `DocumentRoot` should be set to directory `your-project/demo/public/`.
 
 ```
 <VirtualHost *:80>
 
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/Router/public/
+        DocumentRoot /var/www/Router/demo/public/
 
         ServerName router
         DirectoryIndex index.php
