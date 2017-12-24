@@ -9,7 +9,6 @@ require '../../vendor/autoload.php';
 
 use Obullo\Router\Router;
 use Obullo\Router\UrlMapper;
-use Obullo\Router\UrlMapperInterface;
 
 use Obullo\Middleware\Queue;
 use Obullo\Middleware\QueueInterface;
