@@ -11,66 +11,30 @@ namespace Obullo\Router;
 interface UrlMapperInterface
 {
     /**
-     * Execute url mapper
+     * Executer dispatch process
      * 
-     * @param  DispatcherInterface $dispatcher object
-     * @return void
+     * @return boolean
      */
-    public function execute();
+    public function dispatch();
 
     /**
-     * Set a bundle
-     *
-     * @param string $bundle name
-     *
-     * @return object FrontController
-     */
-    public function setBundle($bundle);
-
-    /**
-     * Set the class name
-     *
-     * @param string $class classname
-     *
-     * @return object FrontController
-     */
-    public function setClass($class);
-
-    /**
-     * Set current method
-     *
-     * @param string $method name
-     *
-     * @return object FrontController
-     */
-    public function setMethod($method);
-
-    /**
-     * Get bundle name
-     *
-     * @return string
-     */
-    public function getBundle();
-
-    /**
-     * Get class name
-     *
-     * @return string
-     */
-    public function getClass();
-
-    /**
-     * Get method name
-     *
-     * @return string
-     */
-    public function getMethod();
-
-    /**
-     * Get argument(s)
+     * Returns to handler
      * 
-     * @param  string|null index $key string or number
      * @return mixed
      */
-    public function getArgs($key = null);
+    public function getHandler();
+
+    /**
+     * Returns to matched route methods
+     * 
+     * @return array
+     */
+    public function getMethods();
+
+    /**
+     * Get dispatched route arguments
+     * 
+     * @return array
+     */
+    public function getArgs();
 }

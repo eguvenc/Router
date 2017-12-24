@@ -9,11 +9,11 @@ $router->group(
         
         $router->group(
             'test/',
-            function () use ($router) {
+            function ($request, $response, $folder) use ($router) {
 
                 $router->get(
                     '(\w+)/(\d+).*',
-                    function ($request, $response, $args = null) use ($router) {
+                    function ($request, $response, $mapper) use ($router) {
                         $response->getBody()->write("It works !");
                         return $response;
                     }

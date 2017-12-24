@@ -29,8 +29,9 @@ class Router implements RouterInterface
     protected $group = null;
     protected $match = false;
     protected $groupLevel = 0;
-    protected $groupPath  = "";
-    protected $segments = array();
+    protected $groupPath = "";
+    protected $pathArray = array();
+    protected $gPathArray = array();
     
     /**
      * Constructor
@@ -45,7 +46,6 @@ class Router implements RouterInterface
         $this->response = $response;
         $this->path     = $request->getUri()->getPath();
         $this->method   = $request->getMethod();
-        $this->server   = $request->getServerParams();
         $this->queue    = $queue;
         $this->route    = new Route(new SplQueue);
     }
@@ -75,7 +75,7 @@ class Router implements RouterInterface
      */
     public function init()
     {
-        $this->segments = explode("/", trim($this->path, "/"));
+        $this->pathArray = $this->gPathArray = explode("/", trim($this->path, "/"));
     }
 
     /**
@@ -235,11 +235,11 @@ class Router implements RouterInterface
         $g = $this->group->dequeue();
         $folder = trim($g['pattern'], "/");
         
-        if (! empty($this->segments[0]) && $this->segments[0] == $folder) { // Execute the group if segment equal to group name.
+        if (! empty($this->gPathArray[0]) && $this->gPathArray[0] == $folder) { // Execute the group if segment equal to group name.
             ++$this->groupLevel;
             $this->groupPath.= $folder."/";
-            $handler = $g['callable']($this->request, $this->response);
-            array_shift($this->segments); // Remove first segment from the path array
+            $handler = $g['callable']($this->request, $this->response, $folder);
+            array_shift($this->gPathArray); // Remove first segment from the group path array
         }
         if (! $this->group->isEmpty()) {
             $handler = $this->popGroup();
@@ -269,16 +269,6 @@ class Router implements RouterInterface
     }
 
     /**
-     * Returns to middleware queue
-     * 
-     * @return object
-     */
-    public function getQueue()
-    {
-        return $this->queue;
-    }
-
-    /**
      * Returns to true if route match otherwise false
      * 
      * @return boolean
@@ -299,13 +289,13 @@ class Router implements RouterInterface
     }
 
     /**
-     * Return to uri segments
+     * Return to path array
      * 
      * @return array
      */
-    public function getSegments()
+    public function getPathArray()
     {
-        return $this->segments;
+        return $this->pathArray;
     }
 
     /**

@@ -4,98 +4,137 @@ class UrlMapperTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->createRequest("http://example.com/foo/bar/first/second/third");
+        $this->queue = new Obullo\Middleware\Queue;
+        $this->queue->register('\App\Middleware\\');
     }
 
-    public function testExecute()
+    public function testDispatch()
     {
-        $this->router->map('GET', 'foo/bar/([a-z]+)/([a-z]+)/([a-z]+)', 'WelcomeController->index');
+        $this->createRequest("http://example.com/welcome/index/a/1");
+        $this->router->map('GET', 'welcome/index/(\w)/(\d)', 'WelcomeController->index');
 
-        $this->dispatcher->dispatch($this->urlMapper);
-        $this->urlMapper->execute();
+        $this->mapper->dispatch();
+        $handler = $this->mapper->getHandler();
+        $path    = explode("->", $handler);
+        $methods = $this->mapper->getMethods();
 
-        $this->assertEquals("Foo", $this->urlMapper->getClass());
-        $this->assertEquals("bar", $this->urlMapper->getMethod());
+        $this->assertEquals("GET", $methods[0]);
+        $this->assertEquals('WelcomeController', $path[0]);
+        $this->assertEquals('index', $path[1]);
+        $this->assertEquals('a', $this->mapper->getArgs(0));
+        $this->assertEquals('1', $this->mapper->getArgs(1));
 
-        $this->assertEquals("first", $this->urlMapper->getArgs(0));
-        $this->assertEquals("second", $this->urlMapper->getArgs(1));
-        $this->assertEquals("third", $this->urlMapper->getArgs(2));
+        $this->createRequest("http://example.com/arg/test/123/bar");
+        $this->router->map('POST', 'arg/test/(?<id>\d+)/(?<foo>\w+)', 'ArgumentController->index');
+
+        $handler = $this->mapper->dispatch();
+        $path    = explode("->", $handler);
+        $methods = $this->mapper->getMethods();
+
+        $this->assertEquals("POST", $methods[0]);
+        $this->assertEquals('ArgumentController', $path[0]);
+        $this->assertEquals('index', $path[1]);
+        $this->assertEquals('123', $this->mapper->getArgs('id'));
+        $this->assertEquals('bar', $this->mapper->getArgs('foo'));
     }
 
-    public function testSetBundle()
+    public function testGroupDispatch()
     {
-        $this->urlMapper->setBundle("backend");
-        $this->assertEquals("Backend", $this->urlMapper->getBundle());
+        $this->createRequest("http://example.com/welcome/index/az/110");
+        $router = $this->router;
+
+        $router->group(
+            'welcome/',
+            function () use ($router) {
+                $router->group(
+                    'index/',
+                    function () use ($router) {
+                        $router->map(
+                            'GET',
+                            '([a-z]+)/(\d+).*',
+                            function ($request, $response, $mapper) use ($router) {
+                                $path = $mapper->getPathArray();
+                                $response->getBody()->write($path[0]."-".$path[1]."-".$mapper->getArgs(0)."-".$mapper->getArgs(1));
+                                return $response;
+                            }
+                        );
+                    }
+                );
+            }
+        );
+        $handler  = $this->mapper->dispatch();
+        $response = $handler($this->request, $this->response, $this->mapper);
+        ob_start();
+        echo $response->getBody();
+        $this->assertEquals("welcome-index-az-110", ob_get_clean());
     }
 
-    public function testSetClass()
+    public function testMiddleware()
     {
-        $this->urlMapper->setClass("welcome");
-        $this->assertEquals("Welcome", $this->urlMapper->getClass());
-    }
+        $this->createRequest("http://example.com/welcome/index/az/110");
+        $router = $this->router;
+        $router->group(
+            'welcome/',
+            function () use ($router) {
+                $router->group(
+                    'index/',
+                    function () use ($router) {
+                        $router->map('GET','/(\w+)/(\d+).*')->add('ParsedBody');
+                    }
+                );
+            }
+        );
+        $handler = $this->mapper->dispatch();
+        $data    = $this->queue->dequeue();
+        $params  = $data['argument']->getParams();
 
-    public function testSetMethod()
-    {
-        $this->urlMapper->setMethod("index");
-        $this->assertEquals("index", $this->urlMapper->getMethod());
-    }
-
-    public function testUnsetBundle()
-    {
-        $this->urlMapper->setBundle("backend");
-        $this->urlMapper->unsetBundle();
-        $this->assertEquals(null, $this->urlMapper->getBundle());
-    }
-
-    public function testUnsetClass()
-    {
-        $this->urlMapper->setClass("welcome");
-        $this->urlMapper->unsetClass();
-        $this->assertEquals(null, $this->urlMapper->getClass());
-    }
-
-    public function testUnsetMethod()
-    {
-        $this->urlMapper->setMethod("test");
-        $this->urlMapper->unsetMethod();
-        $this->assertEquals(null, $this->urlMapper->getMethod());
+        $this->assertInstanceOf("App\Middleware\ParsedBody", $data['callable']);
+        $this->assertInstanceOf("Obullo\Middleware\Argument", $data['argument']);
     }
 
     public function testUnsetArgs()
-    {
-        $this->urlMapper->setArgs(
+    {   
+        $this->createRequest("http://example.com/welcome/index/101");
+        $this->mapper->setArgs(
             [
                 'foo',
                 'bar'
             ]
         );
-        $this->urlMapper->unsetArgs();
-        $this->assertEquals(array(), $this->urlMapper->getArgs());
+        $this->mapper->unsetArgs();
+        $this->assertEquals(array(), $this->mapper->getArgs());
     }
 
-    public function createRequest($uri)
+    public function testGetPathArray()
     {
-        $this->queue = new Obullo\Middleware\Queue;
-        $this->queue->register('\App\Middleware\\');
+        $this->createRequest("http://example.com/welcome/index/101");
 
+        $array = $this->mapper->getPathArray();
+
+        $this->assertEquals($array[0], "welcome");
+        $this->assertEquals($array[1], "index");
+        $this->assertEquals($array[2], "101");
+    }
+
+    public function testGetPattern()
+    {
+        $this->createRequest("http://example.com/arg/test/18/text");
+        $this->router->map(array('POST','GET'), 'arg/test/(?<id>\d+)/(?<text>\w+)', 'TestController->test');
+        $this->router->popRoute();
+        $this->assertEquals("#^arg/test/(?<id>\d+)/(?<text>\w+)$#", $this->mapper->getPattern());
+    }
+
+    protected function createRequest($uri)
+    {
         // Create a request
         $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $request  = $request->withUri(new Zend\Diactoros\Uri($uri));
+        $this->request  = $request->withUri(new Zend\Diactoros\Uri($uri));
 
-        $response = new Zend\Diactoros\Response;
-        $this->router = new Obullo\Router\Router($request, $response, $this->queue);
+        $this->response = new Zend\Diactoros\Response;
+        $this->router = new Obullo\Router\Router($this->request, $this->response, $this->queue);
         $this->router->init();
 
-        $this->dispatcher = new Obullo\Router\Dispatcher($request, $response, $this->router);
-        $this->urlMapper  = new Obullo\Router\UrlMapper(
-            $this->dispatcher,
-            $this->router,
-            [
-                'separator' => '->',
-                'default.method' => 'index'
-            ]
-        );
+        $this->mapper = new Obullo\Router\UrlMapper($this->router);
     }
-
 
 }

@@ -8,7 +8,6 @@ ini_set('display_errors', 1);
 require '../../vendor/autoload.php';
 
 use Obullo\Router\Router;
-use Obullo\Router\Dispatcher;
 use Obullo\Router\UrlMapper;
 use Obullo\Router\UrlMapperInterface;
 
@@ -37,10 +36,10 @@ $router = new Router($request, $response, $queue);
 
 $router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
 
-$router->map('GET', '/', 'WelcomeController->index');
-$router->map('GET', 'welcome', 'WelcomeController->index');
-$router->map('GET', 'welcome/index', 'WelcomeController->index');
-$router->map('GET', 'welcome/index/(\d+)', 'WelcomeController->index');
+$router->get('/', 'WelcomeController->index');
+$router->get('welcome', 'WelcomeController->index');
+$router->get('welcome/index', 'WelcomeController->index');
+$router->get('welcome/index/(\d+)', 'WelcomeController->index');
 
 include 'argument-routes.php';
 include 'filter-regex.php';
@@ -51,51 +50,42 @@ include 'middleware-routes.php';
 // Dispatch
 //--------------------------------------------------------------------
 
-$dispatcher = new Dispatcher($request, $response, $router); // creates dispatcher with middleware functionality
-$handler = $dispatcher->dispatch(
-	new UrlMapper(
-		$dispatcher,
-		$router,
-		[
-			'separator' => '->',
-			'default.method' => 'index'
-		]
-	)
-);
+$mapper  = new UrlMapper($router);
+$handler = $mapper->dispatch();
+
+if (is_callable($handler)) {
+    $handler = $handler($request, $response, $mapper);
+}
 if ($handler instanceof Zend\Diactoros\Response) {
     $response = $handler;
 }
-if ($handler instanceof UrlMapperInterface) {
-	$html = "<br /><br />";
-	$html.= "<b>Class: </b>".$handler->getClass()."<br />";
-	$html.= "<b>Method: </b>".$handler->getMethod()."<br />";
-	$html.= "<b>First Argument: </b>".$handler->getArgs(0)."<br />";
-	$response->getBody()->write($html);
+if (is_string($handler)) {
+	echo '<h3>String Handler</h3>';
+	echo $handler;
 }
 
-// If response is not available show 404
-
 echo '<h3>Pattern</h3>';
-echo $router->getPattern();
+echo '<pre>';
+echo $mapper->getPattern();
+echo '</pre>';
 
+echo '<h3>Arguments</h3>';
+echo '<pre>';
+print_r($mapper->getArgs());
+echo '</pre>';
 /*
-if ($router->hasMatch() && ! in_array($request->getMethod(), $dispatcher->getMethods())) {
-	$queue->enqueue('NotAllowed', new Obullo\Middleware\Argument($dispatcher->getMethods()));
+if ($router->hasMatch() && ! in_array($request->getMethod(), $mapper->getMethods())) {
+	$queue->enqueue('NotAllowed', new Obullo\Middleware\Argument($mapper->getMethods()));
 }
 */
 echo '<h3>Response</h3>';
 echo '<hr size="1">';
-echo '<b>Handler Output: </b>';
 echo '<pre>';
 echo $response->getBody();
 echo '</pre>';
-echo '<br>';
-echo '<b>Arguments: </b>';
-echo '<pre>';
-var_dump($dispatcher->getArgs());
-echo '</pre>';
 
 if ($queue instanceof QueueInterface) {
+	echo '<h3>Middleware</h3>';
 	echo '<pre>';
 	var_dump($queue);
 	echo '</pre>';

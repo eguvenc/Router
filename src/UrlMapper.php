@@ -3,138 +3,87 @@
 namespace Obullo\Router;
 
 /**
- * Mapper
- *
- * Helps mapped route variables to set your application
- * 
- *     (B)undle / (C)lass / (M)ethod
+ * UrlMapper
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
 class UrlMapper implements UrlMapperInterface
 {
-    protected $class;
-    protected $bundle;
-    protected $method;
-    protected $separator;
-    protected $dispatcher;
+    protected $router;
+    protected $handler;
+    protected $methods = array();
     protected $args = array();
-    protected $segments = array();
 
     /**
-     * Contructor
+     * Constructor
      * 
-     * @param DispatcherInterface $dispatcher dispatcher
-     * @param RouterInterface     $router     router
-     * @param array               $config     config
+     * @param object $router   router
      */
-    public function __construct(DispatcherInterface $dispatcher, RouterInterface $router, $config = array())
+    public function __construct(RouterInterface $router)
     {
-        $this->path = $router->getPath();
-        $this->dispatcher = $dispatcher;
-        $this->separator = isset($config['separator']) ? $config['separator'] : '->';
-        $this->method = isset($config['default.method']) ? $config['default.method'] : 'index';
+        $this->router = $router;
+        $this->router->init();
     }
 
     /**
-     * Execute url mapper
+     * Dsipatch request
      * 
-     * @param  DispatcherInterface $dispatcher object
-     * @return void
+     * @return mixed
      */
-    public function execute()
+    public function dispatch()
     {
-        $this->args = $this->dispatcher->getArgs();
-        $handler    = $this->dispatcher->getHandler();
-        if (is_string($handler)){
-            $this->segments = explode($this->separator, trim($handler, "/"));
-        } else {
-            $this->segments = explode("/", trim($this->path, "/"));
+        $g = $this->router->popGroup();
+        $r = $this->router->popRoute();
+        if (! empty($r)) {
+            $this->handler = $r['handler'];
+            $this->methods = $r['method'];
+            $this->args    = $r['args'];
         }
-        $this->mapHandler();
-    }
-
-    /**
-     * Map handler
-     * 
-     * @return void
-     */
-    protected function mapHandler()
-    {
-        $this->setClass($this->segments[0]);
-        if (! empty($this->segments[1])) {
-            $this->setMethod($this->segments[1]);        
+        if ($this->handler == null) {
+            $this->handler = $g;
         }
+        return $this->handler;
     }
 
     /**
-     * Set a bundle
-     *
-     * @param string $bundle name
-     *
-     * @return object FrontController
+     * Returns to path array
+     * 
+     * @return array
      */
-    public function setBundle($bundle)
+    public function getPathArray()
     {
-        $this->bundle = $bundle;
-        return $this;
+        return $this->router->getPathArray();
     }
 
     /**
-     * Set the class name
-     *
-     * @param string $class classname
-     *
-     * @return object FrontController
-     */
-    public function setClass($class)
-    {
-        $this->class = $class;
-        return $this;
-    }
-
-    /**
-     * Set current method
-     *
-     * @param string $method name
-     *
-     * @return object FrontController
-     */
-    public function setMethod($method)
-    {
-        $this->method = $method;
-        return $this;
-    }
-
-    /**
-     * Get bundle name
-     *
+     * Returns to pattern
+     * 
      * @return string
      */
-    public function getBundle()
+    public function getPattern()
     {
-        return ucfirst($this->bundle); // bundle name first letter must be Uppercase
+        return $this->router->getPattern();
     }
 
     /**
-     * Get class name
-     *
-     * @return string
+     * Returns to handler
+     * 
+     * @return mixed
      */
-    public function getClass()
+    public function getHandler()
     {
-        return ucfirst($this->class);  // class name first letter must be Uppercase
+        return $this->handler;
     }
 
     /**
-     * Get method name
-     *
-     * @return string
+     * Returns to matched route methods
+     * 
+     * @return array
      */
-    public function getMethod()
+    public function getMethods()
     {
-        return lcfirst($this->method); // method name first letter must be Lowercase
+        return $this->methods;
     }
 
     /**
@@ -160,39 +109,6 @@ class UrlMapper implements UrlMapperInterface
     public function setArgs($args)
     {
         $this->args = $args;
-        return $this;
-    }
-
-    /**
-     * Unset bundle variable
-     * 
-     * @return object
-     */
-    public function unsetBundle()
-    {
-        $this->bundle = null;
-        return $this;
-    }
-
-    /**
-     * Unset class variable
-     * 
-     * @return object
-     */
-    public function unsetClass()
-    {
-        $this->class = null;
-        return $this;
-    }
-
-    /**
-     * Unset class variable
-     * 
-     * @return object
-     */
-    public function unsetMethod()
-    {
-        $this->method = null;
         return $this;
     }
 

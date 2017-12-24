@@ -65,17 +65,7 @@ class GroupTest extends PHPUnit_Framework_TestCase
 
         $response = new Zend\Diactoros\Response;
         $this->router = new Obullo\Router\Router($request, $response, $this->queue);
-        $this->router->init();
-
-        $this->dispatcher = new Obullo\Router\Dispatcher($request, $response, $this->router);
-        $this->urlMapper  = new Obullo\Router\UrlMapper(
-            $this->dispatcher,
-            $this->router,
-            [
-                'separator' => '->',
-                'default.method' => 'index'
-            ]
-        );
+        $this->mapper = new Obullo\Router\UrlMapper($this->router);
     }
 
 }

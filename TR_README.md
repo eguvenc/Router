@@ -28,20 +28,18 @@ $request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
 $response = new Zend\Diactoros\Response;
 
 $router = new Router($request, $response);
-$router->map('GET', 'hello.*', 'HelloWorldController->index');
+$router->get('welcome.*', 'WelcomeController->index');
 
-$dispatcher = new Dispatcher($request, $response, $router);
-$handler = $dispatcher->dispatch(
-    new UrlMapper(
-        $dispatcher,
-        $router,
-        [
-            'separator' => '->',
-            'default.method' => 'index'
-        ]
-    )
-);
-var_dump($handler);  // (string) "HelloWorldController->index"
+$mapper  = new UrlMapper($router);
+$handler = $mapper->dispatch();
+
+if (is_callable($handler)) {
+    $handler = $handler($request, $response, $mapper);
+}
+if ($handler instanceof Zend\Diactoros\Response) {
+    $response = $handler;
+}
+var_dump($handler);  // (string) "WelcomeController->index"
 ```
 
 ## Host configurasyonu
@@ -70,7 +68,7 @@ $ vendor/bin/phpunit
 * [TR_README.md](TR_README.md)
 
 
-## Route kuralları
+## Route
 
 ### GET metodu
 
@@ -127,28 +125,22 @@ $router->map(array('GET','POST','CUSTOM'), '/', function ($request, $response, $
 ## Çözümleme
 
 ```php
-$dispatcher = new Dispatcher($request, $response, $router);
-$handler = $dispatcher->dispatch(
-    new UrlMapper(
-        $dispatcher,
-        $router,
-        [
-            'separator' => '->',
-            'default.method' => 'index'
-        ]
-    )
-);
+$mapper  = new UrlMapper($router);
+$handler = $mapper->dispatch();
+
+if (is_callable($handler)) {
+    $handler = $handler($request, $response, $mapper);
+}
 if ($handler instanceof Zend\Diactoros\Response) {
     $response = $handler;
 }
-if ($handler instanceof UrlMapperInterface) {  // parse mapped variables
-    $html = "<br /><br />";
-    $html.= "<b>Class: </b>".$handler->getClass()."<br />";
-    $html.= "<b>Method: </b>".$handler->getMethod()."<br />";
-    $html.= "<b>First Argument: </b>".$handler->getArgs(0)."<br />";
-    $response->getBody()->write($html);
-}
 echo $response->getBody();  // print body
+
+$mapper->getHandler(); // returns to handler
+$mapper->getArgs(); // mapped arguments
+$mapper->getMethods();  // current route methods
+$mapper->getPattern();  // current route regex pattern
+$mapper->getPathArray();  // exploded path of current route
 ```
 
 ## Yeniden yazım
@@ -239,9 +231,7 @@ Aşağıdaki örnekte bir route kuralına `Dummy` adlı http katmanı ekleniyor.
 require '../vendor/autoload.php';
 
 use Obullo\Router\Router;
-use Obullo\Router\Dispatcher;
 use Obullo\Router\UrlMapper;
-use Obullo\Router\UrlMapperInterface;
 
 use Obullo\Middleware\Queue;
 use Obullo\Middleware\QueueInterface;
@@ -256,18 +246,16 @@ $queue->register('\App\Middleware\\');
 $router = new Router($request, $response, $queue);
 $router->get('welcome', 'WelcomeController->index')->add('Dummy');
 
-$dispatcher = new Dispatcher($request, $response, $router);
-$handler = $dispatcher->dispatch(
-    new UrlMapper(
-        $dispatcher,
-        $router,
-        [
-            'separator' => '->',
-            'default.method' => 'index'
-        ]
-    )
-);
-var_dump($handler);  // "object(UrlMapper)"
+$mapper  = new UrlMapper($router);
+$handler = $mapper->dispatch();
+
+if (is_callable($handler)) {
+    $handler = $handler($request, $response, $mapper);
+}
+if ($handler instanceof Zend\Diactoros\Response) {
+    $response = $handler;
+}
+var_dump($handler);  // "WelcomeController->index"
 var_dump($queue->dequeue());    // ["callable"]=> object(App\Middleware\Dummy)#22 (0) {}
 ```
 

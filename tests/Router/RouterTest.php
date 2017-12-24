@@ -14,17 +14,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');
         $this->router->map('GET', 'welcome.*', 'WelcomeController->index');
         
-        $handler = $this->dispatcher->dispatch($this->urlMapper);
+        $handler = $this->mapper->dispatch();
+        $exp = explode("->", $handler);
 
-        $this->assertEquals('WelcomeController', $handler->getClass());
-        $this->assertEquals('index', $handler->getMethod());
+        $this->assertEquals('WelcomeController', $exp[0]);
+        $this->assertEquals('index', $exp[1]);
     }
 
     public function testInit()
     {
-        $segments = $this->router->getSegments();
-        $this->assertEquals($segments[0], "foo");
-        $this->assertEquals($segments[1], "bar");
+        $array = $this->router->getPathArray();
+        $this->assertEquals($array[0], "foo");
+        $this->assertEquals($array[1], "bar");
     }
 
     public function testMap()
@@ -126,7 +127,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
                 );
             }
         );
-        $response = $this->dispatcher->dispatch($this->urlMapper);
+        $handler  = $this->mapper->dispatch();
+        $response = $handler($this->request, $this->response, $this->mapper);
         ob_start();
         echo $response->getBody();
         $result = ob_get_clean();
@@ -155,11 +157,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf("Obullo\Router\Group", $this->router->getGroup());
     }
 
-    public function testGetQueue()
-    {
-        $this->assertInstanceOf("Obullo\Middleware\Queue", $this->router->getQueue());
-    }
-
     public function testHasMatch()
     {
         $this->createRequest("http://example.com/welcome");
@@ -171,14 +168,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testGetPattern()
     {
         $this->createRequest("http://example.com/arg/test/18/text");
-        $this->router->map(array('POST','GET'), 'arg/test/(?<id>\d+)/(?<text>\w+)', 'TestController/test');
+        $this->router->map(array('POST','GET'), 'arg/test/(?<id>\d+)/(?<text>\w+)', 'TestController->test');
         $this->router->popRoute();
         $this->assertEquals("#^arg/test/(?<id>\d+)/(?<text>\w+)$#", $this->router->getPattern());
     }
 
-    public function testGetSegments()
+    public function testGetPathArray()
     {
-        $segments = $this->router->getSegments();
+        $segments = $this->router->getPathArray();
         $this->assertEquals("foo", $segments[0]);
         $this->assertEquals("bar", $segments[1]);
     }
@@ -202,21 +199,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->queue->register('\App\Middleware\\');
 
         // Create a request
-        $request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $request  = $request->withUri(new Zend\Diactoros\Uri($uri));
+        $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $this->request = $request->withUri(new Zend\Diactoros\Uri($uri));
 
-        $response = new Zend\Diactoros\Response;
-        $this->router = new Obullo\Router\Router($request, $response, $this->queue);
-        $this->router->init();
-
-        $this->dispatcher = new Obullo\Router\Dispatcher($request, $response, $this->router);
-        $this->urlMapper  = new Obullo\Router\UrlMapper(
-            $this->dispatcher,
-            $this->router,
-            [
-                'separator' => '->',
-                'default.method' => 'index'
-            ]
-        );
+        $this->response = new Zend\Diactoros\Response;
+        $this->router = new Obullo\Router\Router($this->request, $this->response, $this->queue);
+        $this->mapper = new Obullo\Router\UrlMapper($this->router);
     }
 }
