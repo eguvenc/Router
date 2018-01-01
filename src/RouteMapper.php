@@ -2,16 +2,19 @@
 
 namespace Obullo\Router;
 
+use Exception;
+
 /**
- * UrlMapper
+ * RouteMapper
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class UrlMapper implements UrlMapperInterface
+class RouteMapper implements RouteMapperInterface
 {
     protected $router;
     protected $handler;
+    protected $collection;
     protected $methods = array();
     protected $args = array();
 
@@ -20,32 +23,33 @@ class UrlMapper implements UrlMapperInterface
      * 
      * @param object $router   router
      */
-    public function __construct(RouterInterface $router)
+    public function __construct($collection)
     {
-        $this->router = $router;
-        $this->router->init();
+        $this->collection = $collection;
     }
 
     /**
-     * Dsipatch request
+     * Dispatch request
      * 
      * @return mixed
      */
-    public function dispatch()
+    public function mapCurrentRequest()
     {
-        $g = $this->router->popGroup();
-        $r = $this->router->popRoute();
-        if (! empty($r)) {
-            $this->handler = $r['handler'];
-            $this->methods = $r['method'];
-            $this->args    = $r['args'];
+        // $g = $this->collection->popGroup();
+        $this->collection->popRoute();
+
+        if ($this->collection->hasMatch()) {
+            // $this->handler = $r->getHandler();
+            // $this->methods = $r->getMethods();
+            $this->args = $this->collection->getArgs();
+            // $this->mapParameters();
         }
         if ($this->handler == null) {
-            $this->handler = $g;
+            // $this->handler = $g;
         }
         return $this->handler;
     }
-
+    
     /**
      * Returns to path array
      * 

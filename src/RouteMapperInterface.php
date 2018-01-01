@@ -3,19 +3,19 @@
 namespace Obullo\Router;
 
 /**
- * UrlMapper Interface
+ * RouteMapper Interface
  * 
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-interface UrlMapperInterface
+interface RouteMapperInterface
 {
     /**
-     * Executer dispatch process
+     * Execute dispatch process
      * 
      * @return boolean
      */
-    public function dispatch();
+    public function mapCurrentRequest();
 
     /**
      * Returns to handler

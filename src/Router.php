@@ -26,6 +26,7 @@ class Router implements RouterInterface
     protected $request;
     protected $pattern;
     protected $response;
+    protected $collection;
     protected $group = null;
     protected $match = false;
     protected $groupLevel = 0;
@@ -33,21 +34,23 @@ class Router implements RouterInterface
     protected $pathArray = array();
     protected $gPathArray = array();
     
-    /**
-     * Constructor
-     * 
-     * @param object $request  request
-     * @param obejct $response response
-     * @param obejct $queue    middleware
-     */
-    public function __construct($request, $response, $queue = null)
+    public function setUriPath($path)
     {
+        $this->path = $path;
+    }
+
+    public function __construct($collection)
+    {
+        $this->collection = $collection;
+
+        /*
         $this->request  = $request;
         $this->response = $response;
-        $this->path     = $request->getUri()->getPath();
-        $this->method   = $request->getMethod();
-        $this->queue    = $queue;
-        $this->route    = new Route(new SplQueue);
+        */
+
+        // $this->method = $request->getMethod();
+        // $this->queue    = $queue;
+        // $this->route    = new Route(new SplQueue);
     }
 
     /**
@@ -150,46 +153,10 @@ class Router implements RouterInterface
         return $this->map("OPTIONS", $pattern, $handler);
     }
 
-    /**
-     * Create a route
-     *
-     * @param string $method  method
-     * @param string $pattern regex pattern
-     *
-     * @return object
-     */
-    public function map($method, $pattern, $handler = null)
-    {
-        $prefix = '';
-        $rule = trim($pattern, "/");
-        if ($this->groupLevel > 0) {
-           $prefix = $this->groupPath;
-        }
-        $payload = [
-            'method' => (array)$method,
-            'pattern' => $prefix.$rule,
-            'handler' => $handler
-        ];
-        $this->route->enqueue($payload);
-        return $this;
-    }
 
-    /**
-     * Create group
-     *
-     * @param string   $pattern  pattern
-     * @param callable $callable callable
-     *
-     * @return object
-     */
-    public function group($pattern, $callable)
+    public function getCollection()
     {
-        if (! is_callable($callable)) {
-            throw new InvalidArgumentException("Group method second parameter must be callable.");
-        }
-        $this->group = ($this->group == null) ? new Group($this, $this->queue) : $this->group;
-        $this->group->enqueue(['pattern' => $pattern,'callable' => $callable]);
-        return $this->group;
+        return $this->collection;        
     }
 
     /**
@@ -197,56 +164,32 @@ class Router implements RouterInterface
      * 
      * @return array|null
      */
+    /*
     public function popRoute()
     {
-        $r = $this->route->dequeue();
+        $queue = $this->collection->getRuleQueue();
+        $route = $queue->dequeue();
         $path      = trim($this->path, "/");
-        $pattern   = trim($r['pattern'], "/");
+        $pattern   = trim($route->getPattern(), "/");
         $regexRule = '#^'.$pattern.'$#';
         $args = array();
         if ($path == $pattern OR preg_match($regexRule, $path, $args)) {
             array_shift($args);
             $this->match = true;
             $this->pattern = $regexRule;
-            $r['args'] = $args;
-            return $r;
+            $route->setArgs($args);
+            return $route;
         }
-        if (! $this->route->isEmpty()) {
-            $r = $this->popRoute();
-            if (is_array($r)) {
-                return $r;
+        if (! $queue->isEmpty()) {
+            $route = $this->popRoute();
+            if (is_object($route)) {
+                return $route;
             }
         }
         return null;
     }
+    */
 
-    /**
-     * Group process
-     * 
-     * @return mixed|null
-     */
-    public function popGroup()
-    {
-        $args = array();
-        $handler = null;
-        if ($this->group == null) {
-            return;
-        }
-        $g = $this->group->dequeue();
-        $folder = trim($g['pattern'], "/");
-        
-        if (! empty($this->gPathArray[0]) && $this->gPathArray[0] == $folder) { // Execute the group if segment equal to group name.
-            ++$this->groupLevel;
-            $this->groupPath.= $folder."/";
-            $handler = $g['callable']($this->request, $this->response, $folder);
-            array_shift($this->gPathArray); // Remove first segment from the group path array
-        }
-        if (! $this->group->isEmpty()) {
-            $handler = $this->popGroup();
-        }
-        $this->groupLevel = 0;
-        return $handler;
-    }
 
     /**
     * Returns to rewrited uri path
