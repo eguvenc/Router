@@ -10,6 +10,6 @@ ini_set('session.use_cookies', 0);
 $autoloader = require ROOT . 'vendor/autoload.php';
 
 // require dirname(__FILE__) . '/getallheaders.php';
-
+// 
 // Register test classes
-// $autoloader->addPsr4('Tests\\', __DIR__);
+$autoloader->addPsr4('Tests\\', 'tests/');

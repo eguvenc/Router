@@ -2,142 +2,105 @@
 
 namespace Obullo\Router;
 
-use SplQueue;
-use Obullo\Router\RouteRuleInterface as RouteRule;
+use Obullo\Router\Exception\UndefinedTypeException;
+use Obullo\Router\RequestContext;
+use ArrayAccess;
 
 /**
- * RouteCollection
+ * Collection
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
 class RouteCollection
 {
-	protected $group;
-	protected $route;
-	protected $args = array();
-	protected $match = false;
-	protected $groupPath = '';
-	protected $regexPattern;
-	protected $patterns = array();
-	protected $nestedGroupCount = 0;
-	// protected $tags = array();
-	protected $types = array();
-	protected $labels = array();
-
-	public function __construct(array $patterns)
-	{
-		$this->group = new SplQueue;
-		$this->route = new SplQueue;
-		$this->patterns = $patterns;
-
-		foreach ($patterns as $object) {
-			$label 			= $object->getLabel();
-			$firstTag 		= $object->getFirstTag();
-			$convertedLabel = $object->convert();
-			// $this->tags[$label]     = $firstTag;
-			$this->labels[$label]   = $convertedLabel;
-			$this->types[$firstTag] = $object->getType();
-		}
-	}
-
-	public function setUriPath($path)
-	{
-		$this->path = $path;
-		$this->resolvePath();
-	}
-
-	public function getUriPath()
-	{
-		return $this->path;
-	}
-
-	public function resolvePath()
-	{
-		$this->gPathArray = explode("/", trim($this->path, "/"));
-	}
-
-	public function attach($class)
-	{
-		$className = get_class($class);
-		$exp = explode('\\', $className);
-		$methodName = 'attach'.end($exp);
-		$this->{$methodName}($class);
-	}
-
-	public function attachRewriteRule()
-	{
-        if (in_array($this->method, (array)$method)) {
-            $pattern    = "/".ltrim($pattern, "/");
-            $path       = preg_replace('#^'.$pattern.'$#', $rewrite, $this->path);
-            $this->path = '/'.ltrim($path, '/');
-        }
-
-		// Rewrite kuralından sonra init edilmeli
-		$this->resolvePath();
-	}
-
-	protected function attachRouteRule(RouteRule $routeRule)
-	{
-		$patternLabel = $routeRule->getPatternLabel();
-		$pattern = str_replace(array_keys($this->labels), array_values($this->labels), $patternLabel);		
-		// $index   = str_replace(array_keys($this->tags), array_values($this->tags), $patternLabel);
-
-		$routeRule->setPattern($pattern);
-		$this->route->enqueue($routeRule);
-
-		// echo htmlspecialchars(print_r($this->tags, true));
-
-		// echo "<pre>".htmlspecialchars($pattern)."</pre>";
-	 	// echo "<pre>".htmlspecialchars($patternLabel)."</pre>";
-
-		// $this->routes[$index] = $routeRule; // /welcome/index/id/name
-		// echo $index."<br>";
-		
-	}
-
-	protected function attachRouteGroup()
-	{
-
-	}
+    protected $root;
+    protected $g = 0;
+    protected $r = 0;
+    protected $path;
+    protected $handler;
+    protected $methods;
+    protected $request;
+    protected $routeRule;
+    protected $pathHandler;
+    protected $requestContext;
+    protected $route = array();
+    protected $group = array();
+    protected $match = false;
+    protected $types = array();
+    protected $rules = array();
+    protected $groupCount = 0;
+    protected $middlewares = array();
+    protected $groupMatches  = array();
+    protected $groupSegments = array();
+	protected $routeSegments = array();
 
     /**
-     * Add middleware
-     *
-     * @param string $name middleware name
-     * @param array  $args arguments
-     *
-     * @return void
+     * Constructor
+     * 
+     * @param RequestContext $context context
+     * @param ArrayAccess    $config  config
      */
-    protected function middleware($name, array $args)
+    public function __construct(RequestContext $context, ArrayAccess $config)
     {
-        $this->queue->enqueue($name, new Argument($args));
+        $this->requestContext = $context;
+        $this->path = trim($context->getPath(), '/');
+        foreach ($config['types'] as $object) {
+            $type = $object->getType();
+            $tag  = $object->getTag();
+            $this->rules[$type] = $object->convert()->getValue();
+            $this->types[$tag]  = $object;
+        }
+        $this->routeSegments = $this->groupSegments = explode('/', $this->getPath());
     }
 
-	/**
-	 * Returns to all types
-	 * 
-	 * @return array
-	 */
-	public function getTypes()
-	{
-		return $this->types;
-	}
+    /**
+     * Build route variables
+     * 
+     * @return object
+     */
+    public function build()
+    {
+        return $this;
+    }
 
-	/**
-	 * Returns defined patterns
-	 * 
-	 * @return array
-	 */
-	public function getPatterns()
-	{
-		return $this->patterns;
-	}
+    /**
+     * Add route
+     * 
+     * @param mixed  $name name of the route
+     * @param mixed  $method  method name it can be array
+     * @param string $pattern regex pattern
+     * @param mixed  $handler string or callable
+     * 
+     * @return void
+     */
+    public function route($name, $method, $pattern, $handler = null)
+    {
+        $this->validatePattern($pattern);
+        $this->route[$name] = new Route($name, $method, $pattern, $handler);
+        $this->route[$name]->setRoot($this->root);
+        $pattern = str_replace(
+            array_keys($this->rules),
+            array_values($this->rules),
+            $this->route[$name]->getRule()
+        );
+        $this->route[$name]->setPattern($pattern);
+        return $this->route[$name];
+    }
 
-	public function getRoutes()
-	{
-		return $this->routes;
-	}
+    /**
+     * Create group
+     * 
+     * @param  string   $pattern  pattern
+     * @param  callable $callable callable
+     * @return void
+     */
+    public function group($pattern, callable $callable)
+    {
+        ++$this->g;
+        $this->group[$this->g] = new RouteGroup($pattern, $callable);
+        return $this->group[$this->g];
+    }
 
     /**
      * Route process
@@ -146,77 +109,29 @@ class RouteCollection
      */
     public function popRoute()
     {
-        $routeRule = $this->route->dequeue();
-        $path      = trim($this->path, "/");
+        if (0 === count($this->route)) {
+            return;
+        }
+        $routeRule = array_shift($this->route);
         $pattern   = $routeRule->getPattern();
         $regexRule = '#^'.$pattern.'$#';
         $args = array();
-        if ($path == $pattern OR preg_match($regexRule, $path, $args)) {
+        if ($this->getPath() == $pattern OR preg_match($regexRule, $this->getPath(), $args)) {
             array_shift($args);
-            $this->args = $this->mapTypes($args);
             $this->match = true;
-            $this->regexPattern = $regexRule;
+            $newArgs = $this->formatArgs($args);
+            $routeRule->setArgs($newArgs);
+            $this->routeRule = $routeRule;
+            $this->buildStack($routeRule);
             return $routeRule;
         }
-        if (! $this->route->isEmpty()) {
+        if (0 !== count($this->route)) {
             $routeRule = $this->popRoute();
-            if (! empty($routeRule)) {
+            if (null != $routeRule) {
                 return $routeRule;
             }
         }
         return null;
-    }
-
-    /**
-     * Map arguments to type casting
-     * 
-     * @param $args arguments
-     * 
-     * @return array
-     */
-    protected function mapTypes($args)
-    {
-    	$newArgs = array();
-    	foreach ($args as $key => $value) {
-    		$newArgs[$key] = $value;
-    		if (isset($this->types[$key])) {
-    			switch ($this->types[$key]) {
-    				case 'integer':
-    					$newArgs[$key] = (int)$value;
-    					break;
-    				case 'string':
-    					$newArgs[$key] = (string)$value;
-    					break;
-    				case 'boolean':
-    					$newArgs[$key] = (boolean)$value;
-    					break;
-    				case 'float':
-    					$newArgs[$key] = (float)$value;
-    					break;	
-    			}
-    		}
-    	}
-    	return $newArgs;
-    }
-
-    /**
-     * Returns to matched regex pattern
-     * 
-     * @return strign
-     */
-	public function getRegexPattern()
-	{
-		return $this->regexPattern;
-	}
-
-	/**
-	 * Returns to matched arguments
-	 * 
-	 * @return array
-	 */
-    public function getArgs()
-    {
-    	return $this->args;
     }
 
     /**
@@ -226,24 +141,64 @@ class RouteCollection
      */
     public function popGroup()
     {
-        $args = array();
-        $handler = null;
-        if ($this->group->isEmpty()) {
+        if (0 === count($this->group)) { // If group empty
             return;
         }
-        $g = $this->group->dequeue();
-        $folder = trim($g['pattern'], "/");
-        if (! empty($this->gPathArray[0]) && $this->gPathArray[0] == $folder) { // Execute the group if segment equal to group name.
-            ++$this->nestedGroupCount;
-            $this->groupPath.= $folder."/";
-            $handler = $g['callable']($this->request, $this->response, $folder);
-            array_shift($this->gPathArray); // Remove first segment from the group path array
+        $args = array();
+        $handler = null;
+        $group = array_shift($this->group);
+        $name     = $group->getName();
+        $callable = $group->getCallable();
+        if (! empty($this->groupSegments[0]) && $this->groupSegments[0] == $name) { // Run group if segment equal to group name.
+            ++$this->groupCount;
+            $this->groupMatches[] = $group;
+            $this->root.= $name.'/';
+            $handler = $callable($group);
+            array_shift($this->groupSegments); // Remove first segment from the group path array
+            $this->buildStack($group);
         }
-        if (! $this->group->isEmpty()) {
+        if (0 !== count($this->group)) {
             $handler = $this->popGroup();
         }
-        $this->nestedGroupCount = 0;
+        $this->groupCount = 0;
         return $handler;
+    }
+
+    /**
+     * Dispatch request
+     * 
+     * @return object
+     */
+    public function matchRequest() : self
+    {
+        $g = $this->popGroup();
+        $r = $this->popRoute();
+
+        if ($this->hasRouteMatch()) {
+            $this->handler = $r->getHandler();
+            $this->methods = $r->getMethods();
+        }
+        return $this;
+    }
+
+    /**
+     * Returns to path
+     * 
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Returns to stack handler object
+     * 
+     * @return object
+     */
+    public function getStack() : array
+    {
+        return $this->middlewares;
     }
 
     /**
@@ -251,11 +206,108 @@ class RouteCollection
      * 
      * @return boolean
      */
-    public function hasMatch()
+    public function hasRouteMatch() : bool
     {
         return $this->match;
     }
 
+    /**
+     * Returns to matched route
+     * 
+     * @return string
+     */
+    public function getMatchedRoute() : RouteInterface
+    {
+        return $this->routeRule;
+    }
 
+    /**
+     * Returns to true if group match otherwise false
+     * 
+     * @return boolean
+     */
+    public function hasGroupMatch() : bool
+    {
+        return empty($this->groupMatches) ? false : true;
+    }
+
+    /**
+     * Returns to matched group
+     * 
+     * @return object|boolean
+     */
+    public function getMatchedGroup(int $key = 0)
+    {
+        return isset($this->groupMatches[$key]) ? $this->groupMatches[$key] : false;
+    }
+
+    /**
+     * Returns to all matched groups
+     * 
+     * @return array
+     */
+    public function getMatchedGroups() : array
+    {
+        return $this->groupMatches;
+    }
+
+    /**
+     * Returns to handler
+     * 
+     * @return mixed
+     */
+    public function getMatchedHandler()
+    {
+        return $this->handler;
+    }
+
+    /**
+     * Validate route types
+     * 
+     * @param  string $pattern types
+     * @return void
+     */
+    protected function validatePattern(string $pattern)
+    {
+        foreach (explode('/', $pattern) as $value) {
+            if ((substr($value, 0, 1) == '<' && substr($value, -1) == '>') && ! array_key_exists($value, $this->rules))  {
+                throw new UndefinedTypeException(
+                    sprintf(
+                        'The route type %s you used is undefined.',
+                        $value
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * Format arguments
+     * 
+     * @param $args matched arguments
+     * 
+     * @return array arguments
+     */
+    protected function formatArgs(array $args) : array
+    {
+        $newArgs  = array();
+        foreach ($args as $key => $value) {
+            if (! is_numeric($key) && isset($this->types[$key])) {
+                $newArgs[$key] = $this->types[$key]->toPhp($value);
+            }
+        }
+        return $newArgs;
+    }
+            
+    /**
+     * Attach middlewares to stack object
+     * 
+     * @param RouteRule|RouteGroup $object route objects
+     */
+    protected function buildStack($object)
+    {
+        foreach ($object->getStack() as $value) {
+            $this->middlewares[] = $value;
+        }
+    }
 }
-

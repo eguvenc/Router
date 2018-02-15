@@ -1,11 +1,11 @@
 
-# Obullo Router
+# Obullo - Php7 Router
 
 [![Build Status](https://travis-ci.org/obullo/Router.svg?branch=master)](https://travis-ci.org/obullo/Router)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
-> Obullo router, yüksek performans hedeflenerek geliştirilmiş bağımsız bir php router paketidir.
+> Obullo Php7 router Django Url Dispatcher kütühanesinden ilham alınarak geliştirilmiştir. Güvenli ve hızlıdır.
 
 Bununla birlikte `Route grupları`, `Route middleware`, `Restful Routing` gibi modern web router özelliklerini de destekler.
 

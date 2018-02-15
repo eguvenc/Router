@@ -1,13 +1,13 @@
 
-# Obullo Router
+# Obullo - Php7 Router
 
 [![Build Status](https://travis-ci.org/obullo/Router.svg?branch=master)](https://travis-ci.org/obullo/Router)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
-> Obullo router, is a standalone php router package that aims high performance. 
+> Php7 router inspired from Django Url Dispatcher. Secure and Fast.
 
-In addition, it supports the modern web router features like `Route groups`, `Route middleware`, `Restful Routing`.
+In addition, it supports the modern web router features like `Route groups`, `Route middleware` and `Restful Routing`.
 
 ## Install
 

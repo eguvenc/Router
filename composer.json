@@ -1,8 +1,17 @@
 {
     "name": "obullo/router",
     "type": "library",
-    "description": "Php lightweight router solution which works with zend-diactoros package.In addition, it supports the modern web router features like Route groups, Route middleware and Restful Routing.",
-    "keywords": ["router","restful","middleware","http","zend-diactoros","zend"],
+    "description": "Php7 router inspired from Django Url Dispatcher. Secure and Fast.",
+    "keywords": [
+        "router",
+        "psr-7",
+        "restful",
+        "middleware",
+        "psr-15",
+        "http",
+        "zend-diactoros",
+        "zend"
+    ],
     "homepage": "http://router.obullo.com",
     "license": "MIT",
     "authors": [
@@ -16,12 +25,15 @@
     "autoload": {
         "psr-4": {
             "Obullo\\Router\\": "src/",
-            "": "demo/classes/"
+            "": ""
         }
     },
     "require": {
+        "php": "^7.0",
         "phpunit/phpunit": "^4.8",
         "zendframework/zend-diactoros": "^1.3",
-        "obullo/middleware": "^0.0.1"
+        "obullo/stack": "^1.0",
+        "symfony/yaml": "^3.0",
+        "zendframework/zend-config": "^3.1"
     }
 }

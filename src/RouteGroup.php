@@ -2,34 +2,67 @@
 
 namespace Obullo\Router;
 
+use Obullo\Router\{
+	Stack\StackAwareTrait,
+	Stack\StackAwareInterface,
+	Exception\BadRouteGroupException
+};
 /**
- * RouteGroup
+ * Route group
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class RouteGroup implements RouteGroupInterface
+class RouteGroup implements StackAwareInterface, RouteGroupInterface
 {
-	protected $pattern;
-	protected $callable;
+    use StackAwareTrait;
 
-	public function __construct($pattern, $callable)
+	protected $path;
+	protected $callable;
+	protected $middlewares = array();
+
+	/**
+	 * Constructor
+	 * 
+	 * @param string $path string group path
+	 * @param object $callable class|function
+	 */
+	public function __construct($path, callable $callable)
 	{
         if (! is_callable($callable)) {
-            throw new InvalidArgumentException("Group method second parameter must be callable.");
+        	throw new BadRouteGroupException('Group method second parameter must be callable.');
         }
-        $this->pattern  = $pattern;
+        $this->path = $path;
         $this->callable = $callable;
 	}
 
-	public function getPattern()
+	/**
+	 * Returns to group name with slash
+	 * 
+	 * @return string
+	 */
+	public function getPath() : string
 	{
-		return $this->pattern;
+		return $this->path;
 	}
 
-	public function getCallable()
+	/**
+	 * Returns to of the group
+	 * 
+	 * @return string
+	 */
+	public function getName() : string
+	{
+		return trim($this->path, "/");
+	}
+
+	/**
+	 * Returns to callable
+	 * 
+	 * @return object
+	 */
+	public function getCallable() : callable
 	{
 		return $this->callable;
 	}
-
 }
