@@ -3,7 +3,7 @@
 namespace Obullo\Router;
 
 /**
- * Url path
+ * Route
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
@@ -11,26 +11,26 @@ namespace Obullo\Router;
 interface RouteInterface
 {
 	/**
+	 * Set pipe
+	 * 
+	 * @param string $pipe pipe
+	 */
+	public function setPipe(string $pipe);
+
+	/**
+	 * Set route name
+	 * 
+	 * @param string $name name
+	 */
+	public function setName($name);
+
+	/**
 	 * Returns to path name
 	 * 
 	 * @return string
 	 */
 	public function getName() : string;
 
-	/**
-	 * Sets group based collection path
-	 * 
-	 * @param string $root root
-	 */
-	public function setRoot($root = null);
-
-	/**
-	 * Returns to root
-	 * 
-	 * @return string
-	 */
-	public function getRoot();
-	
 	/**
 	 * Returns to route methods
 	 * 
@@ -61,16 +61,9 @@ interface RouteInterface
     public function getArgs($key = null);
 
 	/**
-	 * Returns to pure route string
-	 * 
-	 * @return string
-	 */
-	public function getRule() : string;
-
-	/**
 	 * Set pattern
 	 * 
-	 * @param string $pattern pattern
+	 * @param string $pattern 
 	 */
 	public function setPattern(string $pattern);
 

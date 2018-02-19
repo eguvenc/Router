@@ -3,88 +3,68 @@
 namespace Obullo\Router\Loader;
 
 use Obullo\Router\{
-    Exception\BadRouteException,
-    Exception\RouteLengthException
+    Pipe,
+    Route,
+    RouteCollection,
+    Exception\BadRouteException
 };
 use Symfony\Component\Yaml\Yaml;
 
 class YamlFileLoader
 {
-    protected $file;
+    protected $collection;
+
+    /**
+     * Constructor
+     * 
+     * @param RouteCollection $collection object
+     */
+    public function __construct(RouteCollection $collection)
+    {
+        $this->collection = $collection;
+    }
 
     /**
      * Load file
      * 
      * @param string $file file
-     * @return object
      */
-	public function load($file) : self
-	{
-        $this->file = $file;
-        return $this;
-	}
-
-    /**
-     * Parse file
-     * 
-     * @return void
-     */
-    public function parse()
+    public function load(string $file) : RouteCollection
     {
-        $data = Yaml::parseFile($this->file);
+        $config = Yaml::parseFile($file);
 
-        // var_dump($data);
-
-        foreach ($data as $name => $route) {
-
+        foreach ($config as $name => $route) {
             if (strpos($name, '/') === false) { // routes
                 Self::ValidateRoute($name, $route);
-                $method = empty($route['method']) ? 'GET' : $route['method'];
-                $path   = $route['path'] == '/' ? $route['path'] : trim($route['path'], '/');
-                $this->collection->add(
-                    $name,
-                    new Route(explode(' ',$method), $path, $route['handler'])
-                );
-            } else {  // route groups
-
-
-
+                $method = isset($route['method']) ? $route['method'] : 'GET';
+                $this->collection->add($name, new Route($method, $route['path'], $route['handler'], Self::getMiddlewares($route)));
+            } else {  // pipes
+                $pipe = new Pipe($name, Self::getMiddlewares($route));
+                unset($route['middleware']);
+                $keys = array_keys($route);
+                foreach ($keys as $key) {
+                    Self::ValidateRoute($key, $route[$key]);
+                    $method = isset($route[$key]['method']) ? $route[$key]['method'] : 'GET';
+                    $pipe->add($key, new Route($method, $route[$key]['path'], $route[$key]['handler'], Self::getMiddlewares($route[$key])));
+                }
+                $this->collection->add($pipe);
             }
         }
-
-    /*
-  ["route_home"]=&gt;
-  array(2) {
-    ["welcome"]=&gt;
-    array(4) {
-      ["method"]=&gt;
-      string(8) "GET POST"
-      ["path"]=&gt;
-      string(1) "/"
-      ["handler"]=&gt;
-      string(39) "App\Controller\WelcomeController::index"
-      ["middleware"]=&gt;
-      string(19) "App\Middleware\Auth"
-    }
-    ["dummy"]=&gt;
-    array(3) {
-      ["method"]=&gt;
-      string(3) "GET"
-      ["path"]=&gt;
-      string(14) "/welcome/dummy"
-      ["handler"]=&gt;
-      string(37) "App\Controller\DummyController::index"
-    }
-  }
-}
-*/
+        return $this->collection;
     }
 
-    protected function parseGroup(array $routes)
+    /**
+     * Returns to array
+     * 
+     * @param  array  $route route
+     * @return array
+     */
+    protected static function getMiddlewares(array $route) : array
     {
-        foreach ($routes as $route) {
-            
+        if (empty($route['middleware'])) {
+            return array();
         }
+        return (array)$route['middleware'];
     }
 
     /**

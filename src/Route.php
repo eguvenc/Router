@@ -16,9 +16,7 @@ class Route implements StackAwareInterface, RouteInterface
 {
     use StackAwareTrait;
 
-	protected $root;
 	protected $name;
-	protected $rule;
 	protected $pattern;
 	protected $args = array();
 	protected $methods = array();
@@ -26,22 +24,43 @@ class Route implements StackAwareInterface, RouteInterface
 	protected $handler = null;
 
 	 /**
-     * Create a new path
+     * Create a new route
      *
-     * @param string $name route name
      * @param string|array $method  http method
      * @param string $pattern regex pattern
-     * @param mixed  $handler null
+     * @param string|callable $handler handler
+     * @param string|array $middlewares string|array
      *
      * @return object
      */
-	public function __construct(string $name, $method, string $pattern, $handler = null)
+	public function __construct($method, string $pattern, $handler, $middlewares = null)
+	{
+        foreach ((array)$method as $name) {
+        	$this->methods[] = strtoupper($name);
+        }
+        $this->handler = $handler;
+        $this->pattern = '/'.ltrim($pattern, '/');
+        $this->middlewares = (array)$middlewares;
+	}
+
+	/**
+	 * Set pipe
+	 * 
+	 * @param string $pipe pipe
+	 */
+	public function setPipe(string $pipe)
+	{
+		$this->pattern = '/'.ltrim($pipe, '/').ltrim($this->pattern, '/');	
+	}
+
+	/**
+	 * Set route name
+	 * 
+	 * @param string $name name
+	 */
+	public function setName($name)
 	{
 		$this->name = $name;
-        $rule = trim($pattern, "/");
-        $this->methods = (array)$method;
-        $this->handler = $handler;
-        $this->rule = $rule;
 	}
 
 	/**
@@ -52,26 +71,6 @@ class Route implements StackAwareInterface, RouteInterface
 	public function getName() : string
 	{
 		return $this->name;
-	}
-
-	/**
-	 * Sets group based collection path
-	 * 
-	 * @param string $root root
-	 */
-	public function setRoot($root = null)
-	{
-		$this->root = $root;
-	}
-
-	/**
-	 * Returns to root
-	 * 
-	 * @return string
-	 */
-	public function getRoot()
-	{
-		return $this->root;
 	}
 
 	/**
@@ -119,32 +118,22 @@ class Route implements StackAwareInterface, RouteInterface
     }
 
 	/**
-	 * Returns to pure route pattern (static)
-	 * 
-	 * @return string
-	 */
-	public function getRule() : string
-	{
-		return $this->rule;
-	}
-
-	/**
 	 * Set pattern
 	 * 
-	 * @param string $pattern pattern
+	 * @param string $pattern 
 	 */
 	public function setPattern(string $pattern)
 	{
-		$this->pattern = $pattern;
+		$this->pattern = (string)$pattern;
 	}
 
 	/**
-	 * Returns to pattern (dynamic)
+	 * Returns to pattern
 	 * 
 	 * @return string
 	 */
 	public function getPattern() : string
 	{
-		return $this->getRoot().$this->pattern;
+		return $this->pattern;
 	}
 }
