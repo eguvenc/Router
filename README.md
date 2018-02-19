@@ -17,30 +17,120 @@ Via Composer
 $ composer require obullo/router
 ```
 
-## Hello world
+## Getting Started
 
 ```php
 require '../vendor/autoload.php';
 
-$request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
-            ->withUri(new Zend\Diactoros\Uri("http://example.com/hello"));
+use Obullo\Router\Route;
+use Obullo\Router\Router;
+use Obullo\Router\Pipe;
+use Obullo\Router\RequestContext;
+use Obullo\Router\RouteCollection;
+use Obullo\Router\Loader\PhpFileLoader;
+use Obullo\Router\Loader\YamlFileLoader;
+use Obullo\Router\Types\{
+    StrType,
+    IntType,
+    SlugType,
+    AnyStrType,
+    FourDigitYearType,
+    TwoDigitMonthType,
+    TwoDigitDayType
+};
+$request  = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
-$response = new Zend\Diactoros\Response;
+$start = microtime(true);
 
-$router = new Router($request, $response);
-$router->get('welcome.*', 'WelcomeController->index');
+$configArray = array(
+    'types' => [
+        new IntType('<int:id>'),  // \d+
+        new StrType('<str:name>'),     // \w+
+        new StrType('<str:word>'),     // \w+
+        new AnyStrType('<str:any>'),
+        new AnyStrType('<str:any2>'),
+        // new AnyPattern('<any:int>'),
+        new IntType('<int:page>'),
+        new SlugType('<slug:slug>'),
+        new SlugType('<slug:slug_>', '(?<$name>[\w-_]+)$'), // slug with underscore
+    ]
+);
+$config = new Zend\Config\Config($configArray);
 
-$mapper  = new UrlMapper($router);
-$handler = $mapper->dispatch();
 
-if (is_callable($handler)) {
-    $handler = $handler($request, $response, $mapper);
+$collection = new RouteCollection($config);
+
+$pipe = new Pipe('users/example/', [App\Middleware\Dummy::class]);
+$pipe->add('test', new Route('GET', '/test', 'App\Controller\DefaultController::test'));
+$collection->add($pipe);
+
+$collection->add(
+    'home',
+    new Route('GET', '/', 'App\Controller\DefaultController::index')
+);
+$collection->add(
+    'welcome',
+    new Route('GET', '/welcome/index/<int:id>/<str:name>', 'App\Controller\WelcomeController::index')
+);
+
+$context = new RequestContext;
+$context->fromRequest($request);
+
+$router = new Router(
+    $context,
+    $collection
+);
+
+$router->matchRequest();
+
+if ($router->hasRouteMatch()) {
+    
+    $route   = $router->getMatchedRoute();
+    $handler = $router->getMatchedHandler();
+
+    $response = null;
+    $args = array_merge(array('request' => $request), $route->getArgs());
+
+    // Parse handlers
+
+    if (is_callable($handler)) {
+        $exp = explode('::', $handler);
+        $class = new $exp[0];
+        $method = $exp[1];
+        $response = call_user_func_array(array($class, $method), $args);
+    }
+
+    // Emit response
+    
+    if ($response instanceof Psr\Http\Message\ResponseInterface) {
+        echo '<h3>Response</h3>';
+        echo '<hr size="1">';
+        echo '<pre>';
+        echo $response->getBody();
+        echo '</pre>';
+    }
+
+    echo '<h3>Arguments</h3>';
+    echo '<pre>';
+    var_dump($route->getArgs());
+    echo '</pre>';
+
+    echo '<h3>Methods</h3>';
+    echo '<pre>';
+    var_dump($route->getMethods());
+    echo '</pre>';
+
+    echo '<h3>Pattern</h3>';
+    echo '<pre>';
+    echo htmlspecialchars($route->getPattern());
+    echo '</pre>';
 }
-if ($handler instanceof Zend\Diactoros\Response) {
-    $response = $handler;
-}
-var_dump($handler);  // (string) "WelcomeController->index"
 ```
+
+## Php Loader
+
+## Yaml Loader
+
 
 ## Host configuration
 
@@ -68,254 +158,20 @@ $ vendor/bin/phpunit
 * [TR_README.md](TR_README.md)
 
 
-## Routing
-
-### GET
-
-```php
-$router->get('/', 'WelcomeConroller->index');
-$router->get('welcome', 'WelcomeController->index');
-```
-These route rules enables getting the output from the `$handler` variable as `"WelcomeController->index"` when receiving `"/"` or `"welcome"` requests.
-
-### POST
-
-```php
-$router->post('foo/bar', 'PostConroller->index');
-```
-
-### PUT
-
-```php
-$router->put('foo/bar', 'PutConroller->index');
-```
-
-### PATCH
-
-```php
-$router->patch('foo/bar', 'PatchConroller->index');
-```
-
-### DELETE
-
-```php
-$router->delete('foo/bar', 'DeleteConroller->index');
-```
-
-### OPTIONS
-
-```php
-$router->options('foo/bar', 'OptionsConroller->index');
-```
-
-### Map
-
-If you want to use more than one http methods, you need to define these methods within an array.
-
-```php
-$router->map(array('GET','POST','CUSTOM'), '/', function ($request, $response, $mapper) use($router) {
-         $response->getBody()->write('Welcome user !');
-       return $response;
-});
-```
-
-## Dispatching url
-
-```php
-$mapper  = new UrlMapper($router);
-$handler = $mapper->dispatch();
-
-if (is_callable($handler)) {
-    $handler = $handler($request, $response, $mapper);
-}
-if ($handler instanceof Zend\Diactoros\Response) {
-    $response = $handler;
-}
-echo $response->getBody();  // print body
-
-$mapper->getHandler(); // returns to handler
-$mapper->getArgs(); // mapped arguments
-$mapper->getMethods();  // current route methods
-$mapper->getPattern();  // current route regex pattern
-$mapper->getPathArray();  // exploded path of current route
-```
 
 ## Rewriting
 
-```php
-$router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
-```
-
 If you want to change all route rules like above, use `rewrite` method at the top. So, you don't have to make changes in existing rules.
 
-## Defining strict types
+## Types
 
-```php
-$router->get('welcome/index/(?<id>\d+)/(?<month>\w+)', 'WelcomeController->index');
-```
 
-using `$mapper` object, you can get the arguments mapped from outside.
+## Pipes
 
-```php
-$router->get('welcome/index/(?<id>\d+)/(?<month>\w+)',
-    function($request, $response, $mapper) use($router) {
-        $response->getBody()->write(print_r($mapper->getArgs(), true));
-        return $response;
-    }
-);
-```
-
-`$args` are printed like below.
-
-```php
-/*
-Çıktı
-array(2) {
-  "id" => 155
-  [0]=>
-  string(3) "155"
-  "month" => "October"
-  [1]=>
-  string(2) "October"
-}
-*/
-```
-
-another example
-
-```php
-$router->map('GET', 'users/(\w+)/(\d+)', 'UserController->index');
-$router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $mapper) use($router) {
-    $response->getBody()->write(print_r($mapper->getArgs(), true));
-    return $response;
-});
-```
-
-## Groups
-
-Nested route groups can be created with Group function. Unless group name and the url segments match, group functions do not run.
-
-```php
-$router->group(
-    'group/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->get(
-                    '(\w+)/(\d+).*',
-                    function ($request, $response, $mapper) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-                );
-            }
-        );
-    }
-);
-```
+Route groups can be created with pipe function. Unless group name and the url segments match, group functions do not run.
 
 ## Middleware
 
 > Optionally, Obullo router supports adding http layers to route rules with `obullo/middleware` composer package.
 
 In the example below, a route rule is added a http layer named `Dummy`.
-
-```php
-require '../vendor/autoload.php';
-
-use Obullo\Router\Router;
-use Obullo\Router\UrlMapper;
-
-use Obullo\Middleware\Queue;
-use Obullo\Middleware\QueueInterface;
-
-$request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
-            ->withUri(new Zend\Diactoros\Uri("http://example.com/welcome"));
-$response = new Zend\Diactoros\Response;
-
-$queue = new Queue;
-$queue->register('\App\Middleware\\');
-
-$router = new Router($request, $response, $queue);
-$router->get('welcome', 'WelcomeController->index')->add('Dummy');
-
-$mapper  = new UrlMapper($router);
-$handler = $mapper->dispatch();
-
-if (is_callable($handler)) {
-    $handler = $handler($request, $response, $mapper);
-}
-if ($handler instanceof Zend\Diactoros\Response) {
-    $response = $handler;
-}
-var_dump($handler);  // "WelcomeController->index"
-var_dump($queue->dequeue());    // ["callable"]=> object(App\Middleware\Dummy)#22 (0) {}
-```
-
-### Add method
-
-Middleware can be added to a route rule or route group using the method `add`.
-
-```php
-$router->group(
-    'test/',
-    function ($request, $response) use ($router) {
-
-        $router->get(
-            'dummy.*',
-            function ($request, $response, $mapper) use ($router) {
-                $response->getBody()->write("It works !");
-                return $response;
-            }
-        );
-    }
-
-)->add('Dummy');
-```
-
-The second parameter of the add method optionally supports sending parameter.  
-
-```php
-$router->get('welcome', 'WelcomeController->index')->add('Dummy', array('foo' => 'bar'));
-```
-
-## Add filter
-
-> Http layers can be assigned to certain route rules or route groups using http uri filters.
-
-### Regex filter
-
-In the definition below, the route rule adds the `Dummy` middleware class to application for the segments matching the regex `.*?abc/(\d+)`.
-
-```php
-use Obullo\Router\AddFilter\Regex;
-
-$router->group(
-    'example/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->get(
-                    '(\w+)/(\d+).*',
-                    function ($request, $response) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-
-                )->filter(new Regex('.*?abc/(\d+)'))->add('Dummy');
-            }
-        );
-
-    }
-);
-```
-
-## Examples
-
-More examples can be found under the directory `/public`.
