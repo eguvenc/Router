@@ -48,12 +48,9 @@ class Router
         if (0 === $count) {
             return;
         }
-        foreach ($this->pipes as $pipe) {
+        $pipes = $this->collection->pipeAll();
+        foreach ($pipes as $pipe) {
             if ($routes = $pipe->match($this->path)) {
-                foreach ($routes as $name => $route) {
-                    $route->setPipe($pipe->getPipe());
-                    $this->collection->add($name, $route);
-                }
                 $this->buildStack($pipe);
             }
         }
@@ -66,7 +63,7 @@ class Router
      */
     public function popRoute()
     {
-        $count = $this->collection->routeCount();
+        $count = $this->collection->count();
         if (0 === $count OR empty($this->routes)) {
             return;
         }
@@ -91,18 +88,16 @@ class Router
      * 
      * @return object
      */
-    public function matchRequest() : self
+    public function matchRequest() : bool
     {
-        $this->pipes = $this->collection->pipeAll();
         $this->popPipe();
-        $this->routes = $this->collection->routeAll();
-        // print_r($this->routes);
+        $this->routes = $this->collection->all();
         $route = $this->popRoute();
-        if ($this->hasRouteMatch()) {
+        if ($this->match) {
             $this->handler = $route->getHandler();
             $this->methods = $route->getMethods();
         }
-        return $this;
+        return $this->match;
     }
 
     /**
@@ -130,7 +125,7 @@ class Router
      * 
      * @return boolean
      */
-    public function hasRouteMatch() : bool
+    public function hasMatch() : bool
     {
         return $this->match;
     }
@@ -143,36 +138,6 @@ class Router
     public function getMatchedRoute() : RouteInterface
     {
         return $this->route;
-    }
-
-    /**
-     * Returns to true if group match otherwise false
-     * 
-     * @return boolean
-     */
-    public function hasGroupMatch() : bool
-    {
-        return empty($this->groupMatches) ? false : true;
-    }
-
-    /**
-     * Returns to matched group
-     * 
-     * @return object|boolean
-     */
-    public function getMatchedGroup(int $key = 0)
-    {
-        return isset($this->groupMatches[$key]) ? $this->groupMatches[$key] : false;
-    }
-
-    /**
-     * Returns to all matched groups
-     * 
-     * @return array
-     */
-    public function getMatchedGroups() : array
-    {
-        return $this->groupMatches;
     }
 
     /**
@@ -195,9 +160,10 @@ class Router
     protected function formatArgs(array $args) : array
     {
         $newArgs = array();
+        $types = $this->collection->getTypes();
         foreach ($args as $key => $value) {
-            if (! is_numeric($key) && isset($this->types[$key])) {
-                $newArgs[$key] = $this->types[$key]->toPhp($value);
+            if (! is_numeric($key) && isset($types[$key])) {
+                $newArgs[$key] = $types[$key]->toPhp($value);
             }
         }
         return $newArgs;

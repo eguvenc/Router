@@ -47,10 +47,12 @@ class Route implements StackAwareInterface, RouteInterface
 	 * Set pipe
 	 * 
 	 * @param string $pipe pipe
+	 * @return object
 	 */
-	public function setPipe(string $pipe)
+	public function setPipe(string $pipe) : RouteInterface
 	{
-		$this->pattern = '/'.ltrim($pipe, '/').ltrim($this->pattern, '/');	
+		$this->pattern = '/'.ltrim($pipe, '/').ltrim($this->pattern, '/');
+		return $this;	
 	}
 
 	/**

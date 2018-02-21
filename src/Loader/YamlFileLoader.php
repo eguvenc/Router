@@ -3,8 +3,7 @@
 namespace Obullo\Router\Loader;
 
 use Obullo\Router\{
-    Pipe,
-    Route,
+    Builder,
     RouteCollection,
     Exception\BadRouteException
 };
@@ -32,6 +31,10 @@ class YamlFileLoader
     public function load(string $file) : RouteCollection
     {
         $config = Yaml::parseFile($file);
+
+        $builder = new Builder($this->collection);
+        $builder->build();
+
 
         foreach ($config as $name => $route) {
             if (strpos($name, '/') === false) { // routes

@@ -15,7 +15,7 @@ interface RouteInterface
 	 * 
 	 * @param string $pipe pipe
 	 */
-	public function setPipe(string $pipe);
+	public function setPipe(string $pipe) : RouteInterface;
 
 	/**
 	 * Set route name

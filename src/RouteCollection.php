@@ -4,10 +4,11 @@ namespace Obullo\Router;
 
 use Obullo\Router\{
 	Exception\BadRouteException,
-	Exception\UndefinedTypeException,
-	RouteInterface
+	Exception\UndefinedTypeException
 };
 use ArrayAccess;
+use IteratorAggregate;
+use Countable;
 
 /**
  * Route collection
@@ -15,12 +16,12 @@ use ArrayAccess;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class RouteCollection
+class RouteCollection implements IteratorAggregate, Countable
 {
-	protected $rules = array();
-	protected $types = array();
-	protected $pipes = array();
-	protected $routes = array();
+    protected $rules = array();
+    protected $types = array();
+    protected $pipes = array();
+    protected $routes = array();
 
 	/**
 	 * Constructor
@@ -46,18 +47,23 @@ class RouteCollection
     public function add($nameOrPipe, $route = null)
     {
     	if ($nameOrPipe instanceof PipeInterface) {
-    		$this->pipes[] = $nameOrPipe;
+            $pipe = $nameOrPipe;
+            foreach ($pipe->getRoutes() as $name => $route) {
+                $this->add($name, $route);
+            }
+    		$this->pipes[] = $pipe;
     		return;
     	}
     	if (! $route instanceof RouteInterface) {
     		throw new BadRouteException('Route parameter must be object of RouteInterface.');	
     	}
+        $name = $nameOrPipe;
 		$unformatted = $route->getPattern();
         $this->validateUnformattedPattern($unformatted);
         $formatted = $this->formatPattern($unformatted);
-        $route->setName($nameOrPipe);
+        $route->setName($name);
         $route->setPattern($formatted);
-        $this->routes[$nameOrPipe] = $route;
+        $this->routes[$name] = $route;
     }
 
     /**
@@ -85,7 +91,7 @@ class RouteCollection
      * 
      * @return int
      */
-    public function routeCount() : int
+    public function count() : int
     {
     	return count($this->routes);
     }
@@ -95,9 +101,31 @@ class RouteCollection
      * 
      * @return array
      */
-    public function routeAll() : array
+    public function all() : array
     {
     	return $this->routes;
+    }
+
+    /**
+     * Gets the current RouteCollection as an Iterator that includes all routes.
+     *
+     * It implements IteratorAggregate.
+     *
+     * @return ArrayIterator object
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->routes);
+    }
+
+    /**
+     * Returns types
+     * 
+     * @return array
+     */
+    public function getTypes()
+    {
+        return $this->types;
     }
 
     /**

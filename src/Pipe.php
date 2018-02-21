@@ -3,6 +3,7 @@
 namespace Obullo\Router;
 
 use Obullo\Router\{
+    Route\RouteInterface,
 	Stack\StackAwareTrait,
 	Stack\StackAwareInterface
 };
@@ -41,7 +42,7 @@ class Pipe implements PipeInterface, StackAwareInterface
      */
     public function add(string $name, RouteInterface $route)
     {
-        $this->routes[$this->pipe.$name] = $route;
+        $this->routes[$this->pipe.$name] = $route->setPipe($this->getPipe());
     }
 
     /**
