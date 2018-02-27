@@ -3,8 +3,9 @@
 namespace Obullo\Router;
 
 use Obullo\Router\{
-	Exception\BadRouteException,
-	Exception\UndefinedTypeException
+    Exception\BadRouteException,
+    Exception\UndefinedTypeException,
+    Traits\RequestContextAwareTrait
 };
 use ArrayAccess;
 use IteratorAggregate;
@@ -18,6 +19,8 @@ use Countable;
  */
 class RouteCollection implements IteratorAggregate, Countable
 {
+    use RequestContextAwareTrait;
+
     protected $rules = array();
     protected $types = array();
     protected $pipes = array();
@@ -38,30 +41,32 @@ class RouteCollection implements IteratorAggregate, Countable
         }
 	}
 
-	/**
-	 * Add route to collection
-	 * 
-	 * @param mixed $nameOrPipe route name or PipeInterface
-	 * @param RouteInterface $route 
-	 */
-    public function add($nameOrPipe, $route = null)
+    /**
+     * Add pipe
+     * 
+     * @param PipeInterface $pipe object
+     */
+    public function addPipe(PipeInterface $pipe)
     {
-    	if ($nameOrPipe instanceof PipeInterface) {
-            $pipe = $nameOrPipe;
-            foreach ($pipe->getRoutes() as $name => $route) {
-                $this->add($name, $route);
-            }
-    		$this->pipes[] = $pipe;
-    		return;
-    	}
-    	if (! $route instanceof RouteInterface) {
-    		throw new BadRouteException('Route parameter must be object of RouteInterface.');	
-    	}
-        $name = $nameOrPipe;
+        $host = $this->formatPattern($pipe->getHost());
+        $pipe->setHost($host);
+        $this->pipes[] = $pipe;
+    }
+
+    /**
+     * Add route
+     * 
+     * @param string         $name  route name
+     * @param RouteInterface $route object
+     */
+    public function add(string $name, RouteInterface $route)
+    {
 		$unformatted = $route->getPattern();
         $this->validateUnformattedPattern($unformatted);
         $formatted = $this->formatPattern($unformatted);
+        $host = $this->formatPattern($route->getHost());
         $route->setName($name);
+        $route->setHost($host);
         $route->setPattern($formatted);
         $this->routes[$name] = $route;
     }
@@ -156,7 +161,7 @@ class RouteCollection implements IteratorAggregate, Countable
      * @param  string $unformatted string
      * @return string
      */
-    protected function formatPattern(string $unformatted)
+    public function formatPattern(?string $unformatted = '')
     {
     	return str_replace(
             array_keys($this->rules),

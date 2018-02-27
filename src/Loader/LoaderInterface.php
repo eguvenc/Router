@@ -17,5 +17,13 @@ interface LoaderInterface
      * 
      * @param string $file file
      */
-    public function load(string $file) : RouteCollection;
+    public function load(string $file);
+
+    /**
+     * Build collection
+     * 
+     * @param  RouteCollection $collection collection
+     * @return RouteCollection object
+     */
+    public function build(RouteCollection $collection) : RouteCollection;
 }

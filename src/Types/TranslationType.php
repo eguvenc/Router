@@ -5,23 +5,23 @@ namespace Obullo\Router\Types;
 use Obullo\Router\Type;
 
 /**
- * Month <mm:month>
- *
+ * Translation <locale:locale>
+ * 
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class TwoDigitMonthType extends Type
+class TranslationType extends Type
 {
 	/**
 	 * Regex
 	 *
-	 * <mm:month>   // before convertion
-	 * %s = month //  group name
-	 * (?<month>[0-9]{2}) // after convertion
+	 * <locale:locale>   // before convertion
+	 * %s = locale //  group name
+	 * (?<locale>[a-z]{2}) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<%s>[0-9]{2})';
+	protected $regex = '(?<%s>[a-z]{2})';
 
 	/**
 	 * Php format
@@ -31,7 +31,7 @@ class TwoDigitMonthType extends Type
 	 */
 	public function toPhp($value)
 	{
-		return (int)$value;
+		return (string)$value;
 	}
 
 	/**
@@ -42,6 +42,6 @@ class TwoDigitMonthType extends Type
 	 */
 	public function toUrl($value)
 	{
-		return sprintf('%02d', $value);
+		return sprintf('%02s', $value);
 	}
 }

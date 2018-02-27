@@ -5,7 +5,7 @@ namespace Obullo\Router\Types;
 use Obullo\Router\Type;
 
 /**
- * Bool <bool:name>
+ * Bool <bool:bool>
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
@@ -15,13 +15,13 @@ class BoolType extends Type
 	/**
 	 * Regex
 	 *
-	 * <true:bool>   // before convertion
-	 * $name 	 = group name
-	 * (?<name>[0-1]) // after convertion
+	 * <bool:true>   // before convertion
+	 * %s = group name
+	 * (?<bool>[0-1]) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<$name>[0-1])';
+	protected $regex = '(?<%s>[0-1])';
 
 	/**
 	 * Php format
@@ -44,5 +44,4 @@ class BoolType extends Type
 	{
 		return sprintf('%01d', $value);
 	}
-
 }

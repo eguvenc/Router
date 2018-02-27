@@ -16,12 +16,12 @@ class IntType extends Type
 	 * Regex
 	 *
 	 * <id:int>   // before convertion
-	 * $name = id //  group name
+	 * %s = id //  group name
 	 * (?<id>\d+) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<$name>\d+)';
+	protected $regex = '(?<%s>\d+)';
 
 	/**
 	 * Php format

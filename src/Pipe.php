@@ -3,10 +3,10 @@
 namespace Obullo\Router;
 
 use Obullo\Router\{
-    Route\RouteInterface,
 	Stack\StackAwareTrait,
 	Stack\StackAwareInterface
 };
+
 /**
  * Route pipe
  *
@@ -18,7 +18,9 @@ class Pipe implements PipeInterface, StackAwareInterface
     use StackAwareTrait;
 
     protected $pipe;
+    protected $host;
     protected $routes = array();
+    protected $schemes = array();
     protected $middlewares = array();
 
     /**
@@ -28,9 +30,11 @@ class Pipe implements PipeInterface, StackAwareInterface
      * @param array  $routes      routes
      * @param array  $middlewares middlewares
      */
-    public function __construct(string $pipe, $middlewares = null)
+    public function __construct(string $pipe, $middlewares = null, ?string $host = '', $schemes = array())
     {
-    	$this->pipe = $pipe;
+    	$this->pipe = ltrim($pipe, '/');
+        $this->host = $host;
+        $this->schemes = (array)$schemes;
     	$this->middlewares = (array)$middlewares;
     }
 
@@ -66,19 +70,32 @@ class Pipe implements PipeInterface, StackAwareInterface
     }
 
     /**
-     * Returns to matched routes
+     * Set host value
      * 
-     * @param  string $path path
-     * @return array|false
+     * @param string $host host
      */
-    public function match(string $path)
+    public function setHost(string $host)
     {
-    	$path = ltrim($path, '/');
-    	$matchedUri = substr($path, 0, strlen($this->pipe));
-    	if ($this->pipe == $matchedUri) {
-    		return $this->getRoutes();
-    	}
-    	return false;
+        $this->host = $host;
     }
 
+    /**
+     * Returns to host
+     * 
+     * @return null|string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Returns to schemes
+     * 
+     * @return array
+     */
+    public function getSchemes() : array
+    {
+        return $this->schemes;
+    }
 }

@@ -13,8 +13,8 @@ use Psr\Http\Message\RequestInterface as Request;
 class RequestContext
 {
 	protected $path;
-	protected $method;
 	protected $host;
+    protected $method;
 	protected $scheme;
 
     /**
@@ -24,10 +24,11 @@ class RequestContext
      */
     public function fromRequest(Request $request)
     {
-        $this->setPath($request->getUri()->getPath());
+        $uri = $request->getUri();
+        $this->setPath($uri->getPath());
         $this->setMethod($request->getMethod());
-        $this->setHost($request->getUri()->getHost());
-        $this->setScheme($request->getUri()->getScheme());
+        $this->setHost($uri->getHost());
+        $this->setScheme($uri->getScheme());
         return $this;
     }
 

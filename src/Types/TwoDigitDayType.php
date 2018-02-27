@@ -16,12 +16,12 @@ class TwoDigitDayType extends Type
 	 * Regex
 	 *
 	 * <dd:day>   // before convertion
-	 * $name = day //  group name
+	 * %s = day //  group name
 	 * (?<day>[0-9]{2}) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<$name>[0-9]{4})';
+	protected $regex = '(?<%s>[0-9]{2})';
 
 	/**
 	 * Php format

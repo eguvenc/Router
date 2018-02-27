@@ -2,7 +2,10 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\Exception\UndefinedTypeException;
+use Obullo\Router\Matcher\{
+    PipeMatcher,
+    RouteMatcher
+};
 
 /**
  * Router
@@ -13,67 +16,69 @@ use Obullo\Router\Exception\UndefinedTypeException;
 class Router
 {
     protected $path;
+    protected $host;
     protected $route;
+    protected $method;
+    protected $scheme;
     protected $handler;
-    protected $methods;
     protected $collection;
     protected $match = false;
-    protected $pipes = array();
     protected $routes = array();
-    protected $requestContext;
     protected $middlewares = array();
-    protected $pipeMatches = array();
 
     /**
      * Constructor
-     * 
-     * @param RequestContext  $context    context
+     *
      * @param RouteCollection $collection collection
      */
-    public function __construct(RequestContext $context, RouteCollection $collection)
+    public function __construct(RouteCollection $collection)
     {
+        $request = $collection->getContext();
         $this->collection = $collection;
-        $this->requestContext = $context;
-        $this->path = $context->getPath();
+        $this->path = $request->getPath();
+        $this->method = $request->getMethod();
+        $this->host = $request->getHost();
+        $this->scheme = $request->getScheme();
     }
 
     /**
-     * Pop process
+     * Pipe process
      * 
      * @return void
      */
     public function popPipe()
     {
-        $count = $this->collection->pipeCount();
-        if (0 === $count) {
+        $pipes = $this->collection->pipeAll();
+        if (empty($pipes)) {
             return;
         }
-        $pipes = $this->collection->pipeAll();
         foreach ($pipes as $pipe) {
-            if ($routes = $pipe->match($this->path)) {
+            $matcher = new PipeMatcher($pipe);
+            if ($matcher->matchScheme($this->scheme) && $matcher->matchHost($this->host) && $matcher->matchPath($this->path)) {
+                foreach ($pipe->getRoutes() as $name => $route) {
+                    $this->collection->add($name, $route);
+                }
                 $this->buildStack($pipe);
             }
         }
+        $this->routes = $this->collection->all();
     }
 
     /**
      * Route process
      * 
-     * @return null|RouteInterface
+     * @return false|RouteInterface
      */
     public function popRoute()
     {
-        $count = $this->collection->count();
-        if (0 === $count OR empty($this->routes)) {
-            return;
+        if (empty($this->routes)) {
+            return false;
         }
-        $route   = array_shift($this->routes);
-        $pattern = $route->getPattern();
-        $regex   = '#^'.$pattern.'$#';
-        $args = array();
-        if ($this->getPath() == $pattern OR preg_match($regex, $this->getPath(), $args)) {
-            array_shift($args);
+        $route = array_shift($this->routes);
+        $matcher = new RouteMatcher($route);
+        if ($matcher->matchScheme($this->scheme) && $matcher->matchHost($this->host) && $matcher->matchPath($this->path)) {
             $this->match = true;
+            $args = $matcher->getMatchedArgs();
             $newArgs = $this->formatArgs($args);
             $route->setArgs($newArgs);
             $this->route = $route;
@@ -84,30 +89,33 @@ class Router
     }
 
     /**
-     * Dispatch request
+     * Match path
      * 
-     * @return object
+     * @param  string $path path
+     * @return false|RouteInterface
      */
-    public function matchRequest() : bool
+    public function match(string $path, ?string $host = '', ?string $scheme = '')
     {
-        $this->popPipe();
-        $this->routes = $this->collection->all();
-        $route = $this->popRoute();
-        if ($this->match) {
-            $this->handler = $route->getHandler();
-            $this->methods = $route->getMethods();
+        $this->path = $path;
+        if ($host != '') {
+            $this->host = $host;
         }
-        return $this->match;
+        if ($scheme != '') {
+            $this->scheme = $scheme;
+        }
+        $this->popPipe();
+        return $this->popRoute();
     }
 
     /**
-     * Returns to path
+     * Dispatch request
      * 
-     * @return string
+     * @return false|RouteInterface
      */
-    public function getPath()
+    public function matchRequest()
     {
-        return $this->path;
+        $this->popPipe();
+        return $this->popRoute();
     }
 
     /**
@@ -138,16 +146,6 @@ class Router
     public function getMatchedRoute() : RouteInterface
     {
         return $this->route;
-    }
-
-    /**
-     * Returns to handler
-     * 
-     * @return mixed
-     */
-    public function getMatchedHandler()
-    {
-        return $this->handler;
     }
 
     /**

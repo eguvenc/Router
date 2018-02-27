@@ -35,7 +35,7 @@ abstract class Type
 	}
 
 	/**
-	 * Int format
+	 * Php format
 	 * 
 	 * @param  number $value 
 	 * @return int
@@ -91,14 +91,14 @@ abstract class Type
 	}
 
 	/**
-	 * Convert rule to fast route format
+	 * Convert rule
 	 * 
 	 * @return object
 	 */
 	public function convert() : self
 	{
 		Self::validateType($this->getType(), $this->tags);
-		$this->value = str_replace('$name', $this->tag, $this->getRegex());
+		$this->value = sprintf($this->getRegex(), $this->tag);
 		return $this;
 	}
 

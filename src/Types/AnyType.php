@@ -5,23 +5,23 @@ namespace Obullo\Router\Types;
 use Obullo\Router\Type;
 
 /**
- * Any <str:any>
+ * Any <any:any>
  * 
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class AnyStrType extends Type
+class AnyType extends Type
 {
 	/**
 	 * Regex
 	 *
-	 * <any:str>   // before convertion
-	 * $name = any //  group name
+	 * <any:any>  // before convertion
+	 * %s = any   //  group name
 	 * (?<any>.*) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<$name>.*)';
+	protected $regex = '(?<%s>.*)';
 
 	/**
 	 * Php format

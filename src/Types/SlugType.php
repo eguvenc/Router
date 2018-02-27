@@ -16,12 +16,12 @@ class SlugType extends Type
 	 * Regex
 	 *
 	 * <name:str>   // before convertion
-	 * $name 	 = group name
-	 * (?<slug>\w+) // after convertion
+	 * %s 	 = group name
+	 * (?<%s>\w+) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<$name>[\w-]+)$';
+	protected $regex = '(?<%s>[\w-]+)$';
 
 	/**
 	 * Php format

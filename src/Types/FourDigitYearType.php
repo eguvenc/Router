@@ -16,12 +16,12 @@ class FourDigitYearType extends Type
 	 * Regex
 	 *
 	 * <yyyy:year>   // before convertion
-	 * $name = year //  group name
+	 * %s = year //  group name
 	 * (?<year>[0-9]{4}) // after convertion
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<$name>[0-9]{4})';
+	protected $regex = '(?<%s>[0-9]{4})';
 
 	/**
 	 * Php format

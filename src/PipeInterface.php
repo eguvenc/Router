@@ -18,10 +18,23 @@ interface PipeInterface
     public function getPipe() : string;
 
     /**
-     * Returns to matched routes
-     * 
-     * @param  string $path path
-     * @return array|false
+     * Returns to routes
+     *
+     * @return array
      */
-    public function match(string $path);
+    public function getRoutes() : array;
+
+    /**
+     * Returns to host
+     * 
+     * @return null|string
+     */
+    public function getHost();
+
+    /**
+     * Returns to schemes
+     * 
+     * @return array
+     */
+    public function getSchemes() : array;
 }

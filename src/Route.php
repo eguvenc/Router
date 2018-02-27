@@ -17,23 +17,27 @@ class Route implements StackAwareInterface, RouteInterface
     use StackAwareTrait;
 
 	protected $name;
+	protected $host;
 	protected $pattern;
 	protected $args = array();
 	protected $methods = array();
 	protected $middlewares = array();
 	protected $handler = null;
+	protected $schemes = array();
 
 	 /**
      * Create a new route
      *
-     * @param string|array $method  http method
+     * @param string|array $method http method
      * @param string $pattern regex pattern
      * @param string|callable $handler handler
      * @param string|array $middlewares string|array
+     * @param string $host the host pattern to match
+     * @param string|array $schemes A required URI scheme or an array of restricted schemes
      *
      * @return object
      */
-	public function __construct($method, string $pattern, $handler, $middlewares = null)
+	public function __construct($method, string $pattern, $handler, $middlewares = array(), ?string $host = '', $schemes = array())
 	{
         foreach ((array)$method as $name) {
         	$this->methods[] = strtoupper($name);
@@ -41,6 +45,8 @@ class Route implements StackAwareInterface, RouteInterface
         $this->handler = $handler;
         $this->pattern = '/'.ltrim($pattern, '/');
         $this->middlewares = (array)$middlewares;
+        $this->host = $host;
+        $this->schemes = (array)$schemes;
 	}
 
 	/**
@@ -93,6 +99,36 @@ class Route implements StackAwareInterface, RouteInterface
 	public function getHandler()
 	{
 		return $this->handler;
+	}
+
+	/**
+	 * Set host value
+	 * 
+	 * @param string $host host
+	 */
+	public function setHost(string $host)
+	{
+		$this->host = $host;
+	}
+
+	/**
+	 * Returns to host
+	 * 
+	 * @return null|string
+	 */
+	public function getHost()
+	{
+		return $this->host;
+	}
+
+	/**
+	 * Returns to schemes
+	 * 
+	 * @return array
+	 */
+	public function getSchemes() : array
+	{
+		return $this->schemes;
 	}
 
 	/**
