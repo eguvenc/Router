@@ -11,6 +11,14 @@ namespace Obullo\Router;
 interface PipeInterface
 {
     /**
+     * Add route
+     * 
+     * @param string         $name  route name
+     * @param RouteInterface $route route object
+     */
+    public function add(string $name, RouteInterface $route);
+
+    /**
      * Returns to pipe
      * 
      * @return string
@@ -25,6 +33,13 @@ interface PipeInterface
     public function getRoutes() : array;
 
     /**
+     * Set host value
+     * 
+     * @param string $host host
+     */
+    public function setHost($host);
+
+    /**
      * Returns to host
      * 
      * @return null|string
@@ -37,4 +52,11 @@ interface PipeInterface
      * @return array
      */
     public function getSchemes() : array;
+
+    /**
+     * Returns to middleware class names
+     * 
+     * @return array
+     */
+    public function getMiddlewares() : array;    
 }

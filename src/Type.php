@@ -5,7 +5,7 @@ namespace Obullo\Router;
 use Obullo\Router\Exception\BadTypeException;
 
 /**
- * Abstract pattern <group_name:int>
+ * Abstract type
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
@@ -81,7 +81,8 @@ abstract class Type
 	}
 
 	/**
-	 * Returns to first tag of rule
+	 * Returns to tag name of the rule 
+	 * e.g. <str:name>, tag = name
 	 * 
 	 * @return string
 	 */
@@ -124,5 +125,4 @@ abstract class Type
 			);
 		}
 	}
-
 }

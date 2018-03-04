@@ -59,6 +59,7 @@ class Router
                     $this->collection->add($name, $route);
                 }
                 $this->buildStack($pipe);
+                $this->hostMatches = $matcher->getHostMatches();
             }
         }
         $this->routes = $this->collection->all();
@@ -78,10 +79,14 @@ class Router
         $matcher = new RouteMatcher($route);
         if ($matcher->matchScheme($this->scheme) && $matcher->matchHost($this->host) && $matcher->matchPath($this->path)) {
             $this->match = true;
-            $args = $matcher->getMatchedArgs();
-            $newArgs = $this->formatArgs($args);
-            $route->setArgs($newArgs);
+            $args = $matcher->getArguments();
+            $newArgs = $this->formatArguments($args);
+            $route->setArguments($newArgs);
             $this->route = $route;
+            $hostMatches = $matcher->getHostMatches();
+            if (! empty($hostMatches)) {
+                $this->hostMatches = $hostMatches;
+            }
             $this->buildStack($route);
             return $route;
         }
@@ -89,12 +94,14 @@ class Router
     }
 
     /**
-     * Match path
+     * Match
      * 
-     * @param  string $path path
+     * @param  string $path   path
+     * @param  string $host   host optional
+     * @param  mixed  $scheme scheme optional
      * @return false|RouteInterface
      */
-    public function match(string $path, ?string $host = '', ?string $scheme = '')
+    public function match(string $path, $host = null, $scheme = null)
     {
         $this->path = $path;
         if ($host != '') {
@@ -149,13 +156,23 @@ class Router
     }
 
     /**
+     * Returns to matched host params
+     * 
+     * @return array
+     */
+    public function getHostMatches() : array
+    {
+        return $this->hostMatches;
+    }
+
+    /**
      * Format arguments
      * 
      * @param $args matched arguments
      * 
      * @return array arguments
      */
-    protected function formatArgs(array $args) : array
+    protected function formatArguments(array $args) : array
     {
         $newArgs = array();
         $types = $this->collection->getTypes();

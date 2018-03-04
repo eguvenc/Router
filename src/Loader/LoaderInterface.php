@@ -17,7 +17,14 @@ interface LoaderInterface
      * 
      * @param string $file file
      */
-    public function load(string $file);
+    public function load(string $file): LoaderInterface;
+
+    /**
+     * Returns to route data
+     * 
+     * @return array
+     */
+    public function all() : array;
 
     /**
      * Build collection

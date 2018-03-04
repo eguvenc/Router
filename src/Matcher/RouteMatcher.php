@@ -48,7 +48,7 @@ class RouteMatcher extends Matcher
 	 * 
 	 * @return array
 	 */
-	public function getMatchedArgs() : array
+	public function getArguments() : array
 	{
 		return $this->args;
 	}

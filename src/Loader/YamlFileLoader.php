@@ -17,9 +17,20 @@ class YamlFileLoader implements LoaderInterface
      * 
      * @param string $file file
      */
-    public function load(string $file)
+    public function load(string $file) : LoaderInterface
     {
         $this->routes = Yaml::parseFile($file);
+        return $this;
+    }
+
+    /**
+     * Returns to route data
+     * 
+     * @return array
+     */
+    public function all() : array
+    {
+        return $this->routes;
     }
 
     /**
@@ -33,5 +44,4 @@ class YamlFileLoader implements LoaderInterface
         $builder = new Builder($collection);
         return $builder->build($this->routes);
     }
-
 }

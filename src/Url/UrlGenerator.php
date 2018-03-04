@@ -3,8 +3,9 @@
 namespace Obullo\Router\Url;
 
 use Obullo\Router\{
+    RouteCollection,
+    Exception\BadParameterException,
     Exception\RouteNotFoundException,
-    Exception\ParameterLengthException,
     Exception\UndefinedParameterException
 };
 use InvalidArgumentException;
@@ -53,40 +54,32 @@ class UrlGenerator implements UrlGeneratorInterface
         if (false == Self::isAssoc($params)) {
             throw new InvalidArgumentException('The url generator parameters must be key-value pairs.');
         }
-        // preg_match_all('#(<(.*?)>)#', 'welcome/(?<name>\w+)/(?<id>\d+)', $matches);
-
-        $urlArray = explode('/', trim($pattern,'/'));
-        $numberOfParams = 0;
-        foreach ($urlArray as $value) {
-            if (strpos($value, '(') !== false && strpos($value, ')') !== false) {
-                ++$numberOfParams;
-            }
-        }
-        if (count($params) != $numberOfParams) {
-            throw new ParameterLengthException(
-                sprintf(
-                    'The expected number of parameters for the named "%s" route is "%d" but the number sent is "%d".',
-                    $name,
-                    $numberOfParams,
-                    count($params)
-                )
-            );
-        }
         $types = $this->collection->getTypes();
-        $urlParams = '';
-        foreach ($params as $name => $value) {
-            if (! isset($types[$name])) {
+        $paramPattern = array();
+        $paramReplace = array();
+        foreach ($params as $key => $value) {
+            if (! isset($types[$key])) {
                 throw new UndefinedParameterException(
                     sprintf(
-                        'The named "%s" parameter could not be resolved to generate the URL.',
+                        'The named "%s" parameter could not be resolved to generate the "%s" URL.',
+                        $key,
                         $name
                     )
                 );
             }
-            array_pop($urlArray);
-            $urlParams.= '/'.$types[$name]->toUrl($value);
+            $paramPattern[] = '#\([^(]+\<'.$key.'\>[^)]+\)#';
+            $paramReplace[] = $types[$key]->toUrl($value);
         }
-        return '/'.implode('/', $urlArray).$urlParams;
+        $urlString = preg_replace($paramPattern, $paramReplace, $pattern);
+        if (strpos($urlString, '(') !== false) {
+            throw new BadParameterException(
+                sprintf(
+                    'Some parameters could not be resolved for the "%s" URL.',
+                    $urlString
+                )
+            );
+        }
+        return rtrim($urlString, '/');
     }
 
     /**
@@ -102,5 +95,4 @@ class UrlGenerator implements UrlGeneratorInterface
         }
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
-
 }

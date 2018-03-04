@@ -3,6 +3,7 @@
 namespace Obullo\Router;
 
 use Obullo\Router\{
+    RequestContext,
     Exception\BadRouteException,
     Exception\UndefinedTypeException,
     Traits\RequestContextAwareTrait
@@ -26,19 +27,21 @@ class RouteCollection implements IteratorAggregate, Countable
     protected $pipes = array();
     protected $routes = array();
 
-	/**
-	 * Constructor
-	 * 
-	 * @param ArrayAccess $config config
-	 */
-	public function __construct(ArrayAccess $config)
+    /**
+     * Constructor
+     * 
+     * @param ArrayAccess    $config  config
+     * @param RequestContext $context optional context
+     */
+	public function __construct(ArrayAccess $config, RequestContext $context = null)
 	{
-		foreach ($config['types'] as $object) {
+        foreach ($config['types'] as $object) {
             $type = $object->getType();
             $tag  = $object->getTag();
             $this->rules[$type] = $object->convert()->getValue();
             $this->types[$tag]  = $object;
         }
+        $this->setContext($context);
 	}
 
     /**
@@ -109,6 +112,16 @@ class RouteCollection implements IteratorAggregate, Countable
     public function all() : array
     {
     	return $this->routes;
+    }
+
+    /**
+     * Returns to all pipes
+     * 
+     * @return array
+     */
+    public function getPipes() : array
+    {
+        return $this->pipes;
     }
 
     /**
@@ -189,5 +202,4 @@ class RouteCollection implements IteratorAggregate, Countable
             }
         }
     }
-
 }

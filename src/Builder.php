@@ -6,7 +6,8 @@ use Obullo\Router\{
 	Pipe,
     Route,
 	RouteCollection,
-	Exception\BadRouteException
+    Exception\BadRouteException,
+	Exception\UndefinedRouteNameException
 };
 
 /**
@@ -36,27 +37,25 @@ class Builder
 	 * @return RouteCollection object
 	 */
 	public function build(array $routes) : RouteCollection
-	{
+	{    
         foreach ($routes as $name => $route) {
-            if (strpos($name, '/') === false) { // routes
-                Self::ValidateRoute($name, $route);
-                $method = isset($route['method']) ? $route['method'] : 'GET';
-                $this->collection->add(
-                    $name,
-                    new Route(
-                        $method,
-                        $route['path'],
-                        $route['handler'],
-                        Self::getMiddlewares($route),
-                        Self::getHost($route),
-                        Self::getScheme($route)
-                    )
-                );
-            } else {  // pipes
+            if (! is_array($route)) {
+                throw new BadRouteException('A route rule does not have route name in your routes.');
+            }
+            if ($name != '/' && substr($name, -1) == '/') { // pipes
                 $pipe = new Pipe($name, Self::getMiddlewares($route), Self::getHost($route), Self::getScheme($route));
                 unset($route['middleware'], $route['host'], $route['scheme']);
+
                 $keys = array_keys($route);
                 foreach ($keys as $key) {
+                    if (! is_array($route[$key])) {
+                        throw new UndefinedRouteNameException(
+                            sprintf(
+                                'There is a undefined route name under the "%s" pipe.',
+                                $name
+                            )
+                        );
+                    }
                     Self::ValidateRoute($key, $route[$key]);
                     $method = isset($route[$key]['method']) ? $route[$key]['method'] : 'GET';
                     $pipe->add(
@@ -72,6 +71,20 @@ class Builder
                     );
                 }
                 $this->collection->addPipe($pipe);
+            } else {  // routes
+                Self::ValidateRoute($name, $route);
+                $method = isset($route['method']) ? $route['method'] : 'GET';
+                $this->collection->add(
+                    $name,
+                    new Route(
+                        $method,
+                        $route['path'],
+                        $route['handler'],
+                        Self::getMiddlewares($route),
+                        Self::getHost($route),
+                        Self::getScheme($route)
+                    )
+                );
             }
         }
         return $this->collection;
@@ -123,15 +136,11 @@ class Builder
      * Validate route
 
      * @param  string $name  name
-     * @param  array  $route route
      * 
      * @return void
      */
-    protected static function validateRoute(string $name, array $route)
+    protected static function validateRoute(string $name, $route)
     {
-        if (empty($name)) {
-            throw new BadRouteException('Route name is undefined.');
-        }
         if (empty($route['path'])) {
             throw new BadRouteException('Route path is undefined.');
         }

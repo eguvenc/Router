@@ -14,9 +14,9 @@ class PhpFileLoader implements LoaderInterface
     /**
      * Load file
      * 
-     * @param string $file file
+     * @param object
      */
-    public function load(string $file)
+    public function load(string $file) : LoaderInterface
     {
         if (! file_exists($file)) {
             throw new ParseException(
@@ -24,6 +24,17 @@ class PhpFileLoader implements LoaderInterface
             ); 
         }
         $this->routes = require $file;
+        return $this;
+    }
+
+    /**
+     * Returns to route data
+     * 
+     * @return array
+     */
+    public function all() : array
+    {
+        return $this->routes;
     }
 
     /**
@@ -37,5 +48,4 @@ class PhpFileLoader implements LoaderInterface
         $builder = new Builder($collection);
         return $builder->build($this->routes);
     }
-
 }

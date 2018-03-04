@@ -21,7 +21,7 @@ class SlugType extends Type
 	 * 
 	 * @var string
 	 */
-	protected $regex = '(?<%s>[\w-]+)$';
+	protected $regex = '(?<%s>[\w-]+)';
 
 	/**
 	 * Php format

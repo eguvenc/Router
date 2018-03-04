@@ -4,6 +4,6 @@ namespace Obullo\Router\Exception;
 
 use LengthException;
 
-class ParameterLengthException extends LengthException
+class BadParameterException extends LengthException
 {
 }

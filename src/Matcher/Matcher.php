@@ -1,4 +1,4 @@
- <?php
+<?php
 
 namespace Obullo\Router\Matcher;
 
@@ -52,7 +52,7 @@ abstract class Matcher
 	 * 
 	 * @return array
 	 */
-	public function getMatchedHost() : array
+	public function getHostMatches() : array
 	{
 		return $this->hostMatches;
 	}

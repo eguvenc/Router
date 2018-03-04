@@ -37,7 +37,7 @@ class Route implements StackAwareInterface, RouteInterface
      *
      * @return object
      */
-	public function __construct($method, string $pattern, $handler, $middlewares = array(), ?string $host = '', $schemes = array())
+	public function __construct($method, string $pattern, $handler, $middlewares = array(), $host = null, $schemes = array())
 	{
         foreach ((array)$method as $name) {
         	$this->methods[] = strtoupper($name);
@@ -55,10 +55,9 @@ class Route implements StackAwareInterface, RouteInterface
 	 * @param string $pipe pipe
 	 * @return object
 	 */
-	public function setPipe(string $pipe) : RouteInterface
+	public function setPipe(string $pipe)
 	{
-		$this->pattern = '/'.ltrim($pipe, '/').ltrim($this->pattern, '/');
-		return $this;	
+		$this->pattern = '/'.ltrim($pipe, '/').ltrim($this->pattern, '/');	
 	}
 
 	/**
@@ -106,7 +105,7 @@ class Route implements StackAwareInterface, RouteInterface
 	 * 
 	 * @param string $host host
 	 */
-	public function setHost(string $host)
+	public function setHost($host)
 	{
 		$this->host = $host;
 	}
@@ -122,6 +121,16 @@ class Route implements StackAwareInterface, RouteInterface
 	}
 
 	/**
+	 * Set schemes
+	 * 
+	 * @param array $schemes schemes
+	 */
+	public function setSchemes($schemes)
+	{
+		$this->schemes = (array)$schemes;
+	}
+
+	/**
 	 * Returns to schemes
 	 * 
 	 * @return array
@@ -132,14 +141,46 @@ class Route implements StackAwareInterface, RouteInterface
 	}
 
 	/**
+	 * Returns to middleware class names
+	 * 
+	 * @return array
+	 */
+	public function getMiddlewares() : array
+	{
+		return $this->middlewares;
+	}
+
+	/**
 	 * Set arguments
 	 * 
 	 * @param array $args matched argumets
 	 */
-	public function setArgs(array $args)
+	public function setArguments(array $args)
 	{
 		$this->args = $args;
 	}
+
+	/**
+	 * Remove argument
+	 * 
+	 * @param  string $key name
+	 * @return void
+	 */
+	public function removeArgument(string $key)
+	{
+		unset($this->args[$key]);
+	}
+
+    /**
+     * Get argument
+     * 
+     * @param  string index $key string
+     * @return mixed
+     */
+    public function getArgument(string $key)
+    {
+        return isset($this->args[$key]) ? $this->args[$key] : false;
+    }
 
     /**
      * Get argument(s)
@@ -147,12 +188,9 @@ class Route implements StackAwareInterface, RouteInterface
      * @param  string|null index $key string or number
      * @return mixed
      */
-    public function getArgs($key = null)
+    public function getArguments() : array
     {
-        if ($key === null) {
-            return $this->args;
-        }
-        return isset($this->args[$key]) ? $this->args[$key] : false;
+        return $this->args;
     }
 
 	/**

@@ -30,7 +30,7 @@ class Pipe implements PipeInterface, StackAwareInterface
      * @param array  $routes      routes
      * @param array  $middlewares middlewares
      */
-    public function __construct(string $pipe, $middlewares = null, ?string $host = '', $schemes = array())
+    public function __construct(string $pipe, $middlewares = null, $host = null, $schemes = array())
     {
     	$this->pipe = ltrim($pipe, '/');
         $this->host = $host;
@@ -46,7 +46,8 @@ class Pipe implements PipeInterface, StackAwareInterface
      */
     public function add(string $name, RouteInterface $route)
     {
-        $this->routes[$this->pipe.$name] = $route->setPipe($this->getPipe());
+        $route->setPipe($this->getPipe());
+        $this->routes[$this->pipe.$name] = $route; 
     }
 
     /**
@@ -74,7 +75,7 @@ class Pipe implements PipeInterface, StackAwareInterface
      * 
      * @param string $host host
      */
-    public function setHost(string $host)
+    public function setHost($host)
     {
         $this->host = $host;
     }
@@ -97,5 +98,15 @@ class Pipe implements PipeInterface, StackAwareInterface
     public function getSchemes() : array
     {
         return $this->schemes;
+    }
+
+    /**
+     * Returns to middleware class names
+     * 
+     * @return array
+     */
+    public function getMiddlewares() : array
+    {
+        return $this->middlewares;
     }
 }
