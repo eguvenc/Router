@@ -99,14 +99,4 @@ class Pipe implements PipeInterface, StackAwareInterface
     {
         return $this->schemes;
     }
-
-    /**
-     * Returns to middleware class names
-     * 
-     * @return array
-     */
-    public function getMiddlewares() : array
-    {
-        return $this->middlewares;
-    }
 }

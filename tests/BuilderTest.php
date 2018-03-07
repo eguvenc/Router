@@ -29,7 +29,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
                 new IntType('<int:id>'),  // \d+
                 new StrType('<str:name>'),     // \w+
                 new StrType('<str:word>'),     // \w+
-                new AnyType('<str:any>'),
+                new AnyType('<any:any>'),
                 new BoolType('<bool:status>'),
                 new IntType('<int:page>'),
                 new SlugType('<slug:slug>'),
@@ -40,7 +40,10 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $context = new RequestContext;
         $context->fromRequest($request);
 
-        $this->builder = new Builder(new RouteCollection($config, $context));
+        $collection = new RouteCollection($config);
+        $collection->setContext($context);
+
+        $this->builder = new Builder($collection);
     }
 
     public function testBuild()
@@ -62,11 +65,11 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $userRoute = $collection->get('user/dummy');
         $this->assertEquals('App\Controller\DefaultController::dummy', $userRoute->getHandler());
         $this->assertEquals('/user/dummy/(?<name>\w+)/(?<id>\d+)', $userRoute->getPattern());
-        $this->assertEquals('App\Middleware\Dummy', $userRoute->getMiddlewares()[0]);
+        $this->assertEquals('App\Middleware\Dummy', $userRoute->getStack()[0]);
 
         $testRoute = $collection->get('test_host/dummy');
         $this->assertEquals('/test_host/dummy/(?<name>\w+)/(?<id>\d+)', $testRoute->getPattern());
         $this->assertEquals('(?<name>\w+).example.com', $testRoute->getHost());
-        $this->assertEquals(array('http', 'https'), $testRoute->getSchemes());
+        $this->assertEquals(['http','https'], $testRoute->getSchemes());
     }
 }

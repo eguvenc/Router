@@ -11,7 +11,7 @@ In your Apache configuration file, `DocumentRoot` should be set to directory `yo
 <VirtualHost *:80>
 
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/Router/demo/public/
+        DocumentRoot /var/www/Router/public/
 
         ServerName router
         DirectoryIndex index.php

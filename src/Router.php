@@ -20,6 +20,7 @@ class Router
     protected $route;
     protected $method;
     protected $scheme;
+    protected $matcher;
     protected $handler;
     protected $collection;
     protected $match = false;
@@ -48,8 +49,9 @@ class Router
      */
     public function popPipe()
     {
-        $pipes = $this->collection->pipeAll();
+        $pipes = $this->collection->getPipes();
         if (empty($pipes)) {
+            $this->routes = $this->collection->all();
             return;
         }
         foreach ($pipes as $pipe) {
@@ -79,14 +81,11 @@ class Router
         $matcher = new RouteMatcher($route);
         if ($matcher->matchScheme($this->scheme) && $matcher->matchHost($this->host) && $matcher->matchPath($this->path)) {
             $this->match = true;
+            $this->matcher = $matcher;
             $args = $matcher->getArguments();
             $newArgs = $this->formatArguments($args);
             $route->setArguments($newArgs);
             $this->route = $route;
-            $hostMatches = $matcher->getHostMatches();
-            if (! empty($hostMatches)) {
-                $this->hostMatches = $hostMatches;
-            }
             $this->buildStack($route);
             return $route;
         }
@@ -162,7 +161,7 @@ class Router
      */
     public function getHostMatches() : array
     {
-        return $this->hostMatches;
+        return $this->matcher->getHostMatches();
     }
 
     /**

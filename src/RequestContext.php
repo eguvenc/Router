@@ -22,7 +22,7 @@ class RequestContext
      *
      * @return $this
      */
-    public function fromRequest(Request $request)
+    public function fromRequest(Request $request) : Self
     {
         $uri = $request->getUri();
         $this->setPath($uri->getPath());

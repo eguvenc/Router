@@ -51,12 +51,5 @@ interface PipeInterface
      * 
      * @return array
      */
-    public function getSchemes() : array;
-
-    /**
-     * Returns to middleware class names
-     * 
-     * @return array
-     */
-    public function getMiddlewares() : array;    
+    public function getSchemes() : array;  
 }

@@ -74,13 +74,6 @@ interface RouteInterface
 	public function getHandler();
 
 	/**
-	 * Returns to middleware class names
-	 * 
-	 * @return array
-	 */
-	public function getMiddlewares() : array;
-
-	/**
 	 * Set arguments
 	 * 
 	 * @param array $args matched argumets

@@ -69,5 +69,4 @@ class TypeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('02', (new TwoDigitDayType('<dd:day>'))->toUrl('02'));
         $this->assertEquals('11', (new TwoDigitMonthType('<mm:month>'))->toUrl('11'));
     }
-
 }

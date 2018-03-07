@@ -26,7 +26,7 @@ class PhpFileLoaderTest extends PHPUnit_Framework_TestCase
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
-                new AnyType('<str:any>'),
+                new AnyType('<any:any>'),
                 new BoolType('<bool:status>'),
                 new IntType('<int:page>'),
                 new SlugType('<slug:slug>'),
@@ -55,19 +55,20 @@ class PhpFileLoaderTest extends PHPUnit_Framework_TestCase
         $file = dirname(__DIR__).'/Resources/routes.php';
         $this->loader->load($file);
 
-        $collection = new RouteCollection($this->config, $this->context);
+        $collection = new RouteCollection($this->config);
+        $collection->setContext($this->context);
         $collection = $this->loader->build($collection);
 
         //------------------ Pipes -------------------------//
         //
-        $pipes = $collection->pipeAll();
+        $pipes = $collection->getPipes();
         $user  = $pipes[0];
         $host  = $pipes[1];
 
         $this->assertEquals('user/', $user->getPipe());
         $this->assertEquals('test_host/', $host->getPipe());
 
-        $this->assertEquals('App\Middleware\Dummy', $user->getMiddlewares()[0]);
+        $this->assertEquals('App\Middleware\Dummy', $user->getStack()[0]);
         $this->assertEquals(null, $user->getHost());
         $this->assertEquals(array(), $user->getSchemes());
 
@@ -91,7 +92,7 @@ class PhpFileLoaderTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('user/lucky', $routes);
         $this->assertArrayHasKey('test_host/dummy', $routes);
 
-        $this->assertEquals('App\Middleware\Dummy', $routes['home']->getMiddlewares()[0]);
+        $this->assertEquals('App\Middleware\Dummy', $routes['home']->getStack()[0]);
         $this->assertEquals('GET', $routes['home']->getMethods()[0]);
         $this->assertEquals('App\Controller\DefaultController::index', $routes['home']->getHandler());
         $this->assertEquals('/', $routes['home']->getPattern());
@@ -111,7 +112,7 @@ class PhpFileLoaderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('App\Controller\DefaultController::dummy', $routes['test_host']->getHandler());
         $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $routes['test_host']->getPattern());
 
-        $this->assertEquals('App\Middleware\Dummy', $routes['user/dummy']->getMiddlewares()[0]);
+        $this->assertEquals('App\Middleware\Dummy', $routes['user/dummy']->getStack()[0]);
         $this->assertEquals('GET', $routes['user/dummy']->getMethods()[0]);
         $this->assertEquals('App\Controller\DefaultController::dummy', $routes['user/dummy']->getHandler());
         $this->assertEquals('/user/dummy/(?<name>\w+)/(?<id>\d+)', $routes['user/dummy']->getPattern());

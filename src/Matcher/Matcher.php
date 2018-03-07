@@ -19,10 +19,11 @@ abstract class Matcher
 	 * @param  string $host value
 	 * @return bool
 	 */
-	public function matchHost(string $host) : bool
+	public function matchHost($host = null) : bool
 	{
 		$routeHost = $this->route->getHost(); 
 		if (empty($routeHost) || $routeHost == $host) {
+			$this->hostMatches = (array)$host;
 			return true;
 		}
 		$matches = array();
@@ -38,7 +39,7 @@ abstract class Matcher
 	 * @param  string $scheme uri scheme
 	 * @return bool
 	 */
-	public function matchScheme(string $scheme) : bool
+	public function matchScheme($scheme = null) : bool
 	{
 		$routeSchemes = $this->route->getSchemes();
 		if (empty($routeSchemes)) {

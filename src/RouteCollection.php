@@ -9,6 +9,7 @@ use Obullo\Router\{
     Traits\RequestContextAwareTrait
 };
 use ArrayAccess;
+use ArrayIterator;
 use IteratorAggregate;
 use Countable;
 
@@ -30,10 +31,9 @@ class RouteCollection implements IteratorAggregate, Countable
     /**
      * Constructor
      * 
-     * @param ArrayAccess    $config  config
-     * @param RequestContext $context optional context
+     * @param ArrayAccess $config config
      */
-	public function __construct(ArrayAccess $config, RequestContext $context = null)
+	public function __construct(ArrayAccess $config)
 	{
         foreach ($config['types'] as $object) {
             $type = $object->getType();
@@ -41,7 +41,6 @@ class RouteCollection implements IteratorAggregate, Countable
             $this->rules[$type] = $object->convert()->getValue();
             $this->types[$tag]  = $object;
         }
-        $this->setContext($context);
 	}
 
     /**
@@ -72,26 +71,6 @@ class RouteCollection implements IteratorAggregate, Countable
         $route->setHost($host);
         $route->setPattern($formatted);
         $this->routes[$name] = $route;
-    }
-
-    /**
-     * Returns to number of pipes
-     * 
-     * @return int
-     */
-    public function pipeCount() : int
-    {
-    	return count($this->pipes);
-    }
-
-    /**
-     * Returns to all pipes
-     * 
-     * @return array
-     */
-    public function pipeAll() : array
-    {
-    	return $this->pipes;
     }
 
     /**

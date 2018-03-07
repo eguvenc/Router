@@ -19,10 +19,10 @@ class Route implements StackAwareInterface, RouteInterface
 	protected $name;
 	protected $host;
 	protected $pattern;
-	protected $args = array();
 	protected $methods = array();
 	protected $middlewares = array();
 	protected $handler = null;
+	protected $arguments = array();
 	protected $schemes = array();
 
 	 /**
@@ -37,7 +37,7 @@ class Route implements StackAwareInterface, RouteInterface
      *
      * @return object
      */
-	public function __construct($method, string $pattern, $handler, $middlewares = array(), $host = null, $schemes = array())
+	public function __construct($method, string $pattern, $handler, $middlewares = array(), $host = null, $schemes = null)
 	{
         foreach ((array)$method as $name) {
         	$this->methods[] = strtoupper($name);
@@ -141,23 +141,13 @@ class Route implements StackAwareInterface, RouteInterface
 	}
 
 	/**
-	 * Returns to middleware class names
-	 * 
-	 * @return array
-	 */
-	public function getMiddlewares() : array
-	{
-		return $this->middlewares;
-	}
-
-	/**
 	 * Set arguments
 	 * 
-	 * @param array $args matched argumets
+	 * @param array $arguments matched argumets
 	 */
-	public function setArguments(array $args)
+	public function setArguments(array $arguments)
 	{
-		$this->args = $args;
+		$this->arguments = $arguments;
 	}
 
 	/**
@@ -168,7 +158,7 @@ class Route implements StackAwareInterface, RouteInterface
 	 */
 	public function removeArgument(string $key)
 	{
-		unset($this->args[$key]);
+		unset($this->arguments[$key]);
 	}
 
     /**
@@ -179,7 +169,7 @@ class Route implements StackAwareInterface, RouteInterface
      */
     public function getArgument(string $key)
     {
-        return isset($this->args[$key]) ? $this->args[$key] : false;
+        return isset($this->arguments[$key]) ? $this->arguments[$key] : false;
     }
 
     /**
@@ -190,7 +180,7 @@ class Route implements StackAwareInterface, RouteInterface
      */
     public function getArguments() : array
     {
-        return $this->args;
+        return $this->arguments;
     }
 
 	/**

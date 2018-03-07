@@ -26,7 +26,7 @@ class UrlGeneratorTest extends PHPUnit_Framework_TestCase
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
-                new AnyType('<str:any>'),
+                new AnyType('<any:any>'),
                 new BoolType('<bool:status>'),
                 new IntType('<int:page>'),
                 new SlugType('<slug:slug>'),
