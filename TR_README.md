@@ -5,9 +5,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
-> Obullo Php7 router Django Url Dispatcher kütühanesinden ilham alınarak geliştirilmiştir. Güvenli ve hızlıdır.
-
-Bununla birlikte `Route grupları`, `Route middleware`, `Restful Routing` gibi modern web router özelliklerini de destekler.
+> Obullo Php7 router Django Url Dispatcher kütühanesinden ilham alınarak geliştirilmiştir ve anlaşılabilir olmayı hedefler.
 
 ## Yükleme
 
@@ -15,31 +13,6 @@ Via Composer
 
 ``` bash
 $ composer require obullo/router
-```
-
-## Hello world
-
-```php
-require '../vendor/autoload.php';
-
-$request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
-            ->withUri(new Zend\Diactoros\Uri("http://example.com/hello"));
-
-$response = new Zend\Diactoros\Response;
-
-$router = new Router($request, $response);
-$router->get('welcome.*', 'WelcomeController->index');
-
-$mapper  = new UrlMapper($router);
-$handler = $mapper->dispatch();
-
-if (is_callable($handler)) {
-    $handler = $handler($request, $response, $mapper);
-}
-if ($handler instanceof Zend\Diactoros\Response) {
-    $response = $handler;
-}
-var_dump($handler);  // (string) "WelcomeController->index"
 ```
 
 ## Host configurasyonu
@@ -50,276 +23,219 @@ var_dump($handler);  // (string) "WelcomeController->index"
 
 Bu versiyon aşağıdaki PHP sürümleri tarafından destekleniyor.
 
-* 5.6
 * 7.0
 * 7.1
 * 7.2
-* hhvm
 
-## Testing
+## Test
 
 ``` bash
 $ vendor/bin/phpunit
 ```
 
-## Languages
+## Diller
 
 * [TR_CONFIGURATION.md](TR_CONFIGURATION.md)
 * [TR_README.md](TR_README.md)
 
 
-## Route
-
-### GET metodu
-
-```php
-$router->get('/', 'WelcomeConroller->index');
-$router->get('welcome', 'WelcomeController->index');
-```
-
-Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkenini `"WelcomeController->index"` çıktılamayı sağlar.
-
-### POST metodu
-
-```php
-$router->post('foo/bar', 'PostConroller->index');
-```
-
-### PUT metodu
-
-```php
-$router->put('foo/bar', 'PutConroller->index');
-```
-
-### PATCH metodu
-
-```php
-$router->patch('foo/bar', 'PatchConroller->index');
-```
-
-### DELETE metodu
-
-```php
-$router->delete('foo/bar', 'DeleteConroller->index');
-```
-
-### OPTIONS metodu
-
-```php
-$router->options('foo/bar', 'OptionsConroller->index');
-```
-
-Bu route kuralları `"/"` yada `"welcome"` istekleri geldiğinde `$handler` değişkeninden `"WelcomeController->index"` olarak çıktı elde edilmesini sağlar.
-
-### Map metodu
-
-Birden fazla metot desteği için yada özel bir metot için map kullanılır.
-
-```php
-$router->map(array('GET','POST','CUSTOM'), '/', function ($request, $response, $mapper) use($router) {
-         $response->getBody()->write('Welcome user !');
-       return $response;
-});
-```
-
-## Çözümleme
-
-```php
-$mapper  = new UrlMapper($router);
-$handler = $mapper->dispatch();
-
-if (is_callable($handler)) {
-    $handler = $handler($request, $response, $mapper);
-}
-if ($handler instanceof Zend\Diactoros\Response) {
-    $response = $handler;
-}
-echo $response->getBody();  // print body
-
-$mapper->getHandler(); // returns to handler
-$mapper->getArgs(); // mapped arguments
-$mapper->getMethods();  // current route methods
-$mapper->getPattern();  // current route regex pattern
-$mapper->getPathArray();  // exploded path of current route
-```
-
-## Yeniden yazım
-
-```php
-$router->rewrite('GET', '(?:en|de|es|tr)|/(.*)', '$1');  // example.com/en/  (or) // example.com/en
-```
-
-Eğer tüm route kuralları yukarıdaki gibi değiştirilmek isteniyorsa `rewrite` metodu en tepede kullanılır. Böylece mevcut kurallarda değişiklik yapmak zorunda kalmazsınız.
-
-
-## Kesin türler
-
-```php
-$router->get('welcome/index/(?<id>\d+)/(?<month>\w+)', 'WelcomeController->index');
-```
-
-`$mapper` nesnesi kullanılarak dışarıdan map edilen argümanlar elde edilmiş olur.
-
-```php
-$router->get('welcome/index/(?<id>\d+)/(?<month>\w+)',
-    function($request, $response, $mapper) use($router) {
-        $response->getBody()->write(print_r($mapper->getArgs(), true));
-        return $response;
-    }
-);
-```
-
-`$args` değişkeni aşağıdaki gibi çıktılanır.
-
-```php
-/*
-Çıktı
-array(2) {
-  "id" => 155
-  [0]=>
-  string(3) "155"
-  "month" => "October"
-  [1]=>
-  string(2) "October"
-}
-*/
-```
-
-Başka bir örnek yazım
-
-```php
-$router->map('GET', 'users/(\w+)/(\d+)', 'UserController->index');
-$router->map('GET', 'users/(\w+)/(\d+)', function ($request, $response, $mapper) use($router) {
-    $response->getBody()->write(print_r($mapper->getArgs(), true));
-    return $response;
-});
-```
-
-## Gruplar
-
-Group fonksiyonu ile içe içe route grupları oluşturabilir. Grup adı ile url segmentleri eşleşmediği sürece grup fonksiyonları çalışmaz.
-
-```php
-$router->group(
-    'group/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->get(
-                    '(\w+)/(\d+).*',
-                    function ($request, $response, $mapper) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-                );
-            }
-        );
-    }
-);
-```
-
-## Middleware
-
-> Obullo router opsiyonel olarak `obullo/middleware` composer paketi ile route kurallarına http katmanları ekleyebilmeyi destekler.
-
-Aşağıdaki örnekte bir route kuralına `Dummy` adlı http katmanı ekleniyor.
+## Hızlı Başlangıç
 
 ```php
 require '../vendor/autoload.php';
 
+use Obullo\Router\Route;
+use Obullo\Router\RequestContext;
+use Obullo\Router\RouteCollection;
 use Obullo\Router\Router;
-use Obullo\Router\UrlMapper;
-
-use Obullo\Middleware\Queue;
-use Obullo\Middleware\QueueInterface;
-
-$request = (Zend\Diactoros\ServerRequestFactory::fromGlobals())
-            ->withUri(new Zend\Diactoros\Uri("http://example.com/welcome"));
-$response = new Zend\Diactoros\Response;
-
-$queue = new Queue;
-$queue->register('\App\Middleware\\');
-
-$router = new Router($request, $response, $queue);
-$router->get('welcome', 'WelcomeController->index')->add('Dummy');
-
-$mapper  = new UrlMapper($router);
-$handler = $mapper->dispatch();
-
-if (is_callable($handler)) {
-    $handler = $handler($request, $response, $mapper);
-}
-if ($handler instanceof Zend\Diactoros\Response) {
-    $response = $handler;
-}
-var_dump($handler);  // "WelcomeController->index"
-var_dump($queue->dequeue());    // ["callable"]=> object(App\Middleware\Dummy)#22 (0) {}
-```
-
-### Add metodu
-
-Middleware bir route kuralına yada route grubuna `add` metodu kullanılarak eklenebilir.
-
-```php
-$router->group(
-    'test/',
-    function ($request, $response) use ($router) {
-
-        $router->get(
-            'dummy.*',
-            function ($request, $response, $mapper) use ($router) {
-                $response->getBody()->write("It works !");
-                return $response;
-            }
-        );
-    }
-
-)->add('Dummy');
-```
-
-Add metodu ikinci parametresi opsiyonel olarak parametre gönderilmeyi destekler.
-
-```php
-$router->get('welcome', 'WelcomeController->index')->add('Dummy', array('foo' => 'bar'));
-```
-
-## Add filtresi
-
-> Http katmanları, http uri filtrelenerek belirli route kuralları yada gruplarına atanabilirler. 
-
-### Regex filtresi
-
-Aşağıdaki tanımlada route kuralı `.*?abc/(\d+)` düzenli ifadesini sağlayan segmentler için uygulamaya `Dummy` middleware sınıfını ekler.
-
-```php
-use Obullo\Router\AddFilter\Regex;
-
-$router->group(
-    'example/',
-    function () use ($router) {
-
-        $router->group(
-            'test/',
-            function () use ($router) {
-
-                $router->get(
-                    '(\w+)/(\d+).*',
-                    function ($request, $response) use ($router) {
-                        $response->getBody()->write("It works !");
-                        return $response;
-                    }
-
-                )->filter(new Regex('.*?abc/(\d+)'))->add('Dummy');
-            }
-        );
-
-    }
+use Obullo\Router\Types\{
+    StrType,
+    IntType
+};
+$configArray = array(
+    'types' => [
+        new IntType('<int:id>'),
+        new StrType('<str:name>'),
+    ]
 );
+$config = new Zend\Config\Config($configArray);
 ```
 
-## Örnekler
+Psr7 Request
 
-`/public` klasörü altında daha fazla örnek bulabilirsiniz.
+```php
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$context = new RequestContext;
+$context->fromRequest($request);
+```
+
+Route Kolleksiyonu
+
+```php
+$collection = new RouteCollection($config);
+$collection->setContext($context);
+$collection->add('home', new Route('GET', '/', 'App\Controller\DefaultController::index'));
+$collection->add(
+    'dummy',
+    new Route('GET', '/dummy/index/<int:id>/<str:name>', 'App\Controller\DummyController::index')
+);
+$route = $collection->get('dummy');
+
+echo $route->getHandler(); //  "App\Controller\DummyController::index"
+echo $route->getMethods()[0]; // GET
+echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)"
+```
+
+Çözümleme
+
+```php
+$router = new Router($collection);
+
+if ($route = $router->matchRequest()) {
+
+    $handler = $route->getHandler();
+    $args = array_merge(array('request' => $request), $route->getArguments());
+
+    $response = null;
+    if (is_callable($handler)) {
+        $exp = explode('::', $handler);
+        $class = new $exp[0];
+        $method = $exp[1];
+        $response = call_user_func_array(array($class, $method), $args);
+    }
+    if ($response instanceof Psr\Http\Message\ResponseInterface) {
+        echo $response->getBody();  // DummyController::index
+    }
+}
+```
+
+App\Controller\DummyController sınıfı
+
+```php
+namespace App\Controller;
+
+use Zend\Diactoros\Response\HtmlResponse;
+use Psr\Http\Message\RequestInterface as Request;
+
+class DummyController
+{
+    public function index(Request $request)
+    {
+        return new HtmlResponse('DummyController::index');
+    }
+}
+```
+
+## Tür Konfigürasyonu
+
+Önceden belirlenen tür tanımları route kuralları içerisindeki argümanların daha esnek bir biçimde yönetilmesini sağlar ve güvenliği arttırır.
+
+```php
+$configArray = array(
+    'types' => [
+        new IntType('<int:id>'),
+        new StrType('<str:name>'),
+        new StrType('<str:word>'),
+        new AnyType('<any:any>'),
+        new BoolType('<bool:status>'),
+        new IntType('<int:page>'),
+        new SlugType('<slug:slug>'),
+        new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)'), // slug with underscore
+    ]
+);
+$config = new Zend\Config\Config($configArray);
+```
+
+Aşağıda Int türüne ait bir örnek gösteriliyor.
+
+```
+class IntType extends Type
+{
+    protected $regex = '(?<%s>\d+)';
+
+    /**
+     * Php format
+     * 
+     * @param  number $value 
+     * @return int
+     */
+    public function toPhp($value)
+    {
+        return (int)$value;
+    }
+
+    /**
+     * Url format
+     * 
+     * @param mixed $value
+     * @return string
+     */
+    public function toUrl($value)
+    {
+        return sprintf('%d', $value);
+    }
+}
+```
+
+* `regex` değişkeni içerisindeki `%s` değeri `<int:id>` gibi bir türe ilişkin ismin `(?<id>\d+)` ifadesine dönüştürülmesini sağlar.
+* `toPhp` metodu gelen argüman türünü php içerisinde kullanılmadan önce belirlenen türe dönüştürür.
+* `toUrl` metodu UrlGenerator sınıfını kullanarak güvenli url linkleri oluşturmanızı sağlar.
+* Abstract Type sınıfına genişleyerek kendi türlerinizi de oluşturabilirsiniz.
+
+
+Tanımlı türü bozmanda ön tanımlı bir regex değerini değiştirmek için construct metodu ikinci parametresini kullanabilirsiniz.
+
+```php
+new SlugType('<slug:slug>');
+new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)');  // slug with underscore
+```
+
+Klonlanan ikinci türe ait isim mutlaka değiştirilmelidir. Yukarıdaki örnekte slug türü klonlanarak alt çizgi desteği eklendi. `<slug:slug_>`
+
+
+## Yükleyiciler
+
+### Yaml dosya yükleyicisi
+
+### Php dosya yükleyicisi
+
+
+
+### Route Kolleksiyonu
+
+```php
+
+```
+
+## Pipe ile gruplama
+
+
+### Yaml örneği
+
+
+## Url Çözümleme
+
+### Match
+
+
+### MatchRequest
+
+
+## Koşullu tanımlamalar
+
+### Host
+
+### Scheme
+
+
+## Stack
+
+### Middleware eklemek
+
+### Middleware dizisini almak
+
+
+## Url Generator
+
+
+## Yerelleştirme

@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class BoolType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <bool:true>   // before convertion
-	 * %s = group name
-	 * (?<bool>[0-1]) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>[0-1])';
 
 	/**

@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class TwoDigitMonthType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <mm:month>   // before convertion
-	 * %s = month //  group name
-	 * (?<month>[0-9]{2}) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>[0-9]{2})';
 
 	/**

@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class TwoDigitDayType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <dd:day>   // before convertion
-	 * %s = day //  group name
-	 * (?<day>[0-9]{2}) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>[0-9]{2})';
 
 	/**

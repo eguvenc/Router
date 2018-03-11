@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class AnyType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <any:any>  // before convertion
-	 * %s = any   //  group name
-	 * (?<any>.*) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>.*)';
 
 	/**

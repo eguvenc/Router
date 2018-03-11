@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class StrType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <name:str>   // before convertion
-	 * %s 	 = group name
-	 * (?<%s>\w+) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>\w+)';
 
 	/**

@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class IntType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <id:int>   // before convertion
-	 * %s = id //  group name
-	 * (?<id>\d+) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>\d+)';
 
 	/**

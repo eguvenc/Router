@@ -1,0 +1,142 @@
+{% macro stripExtension(filename) %}{% if filename|split(".")|last == "md" %}{{ filename|split(".")|slice(0,-1)|join(".") }}{% else %}{{ filename }}{% endif %}{% endmacro %}
+{% macro currentLanguage(path, languages, pageLanguage, defaultLanguage) %}{% if pageLanguage|default(path) in languages %}{{ pageLanguage|default(path) }}{% else %}{{ defaultLanguage|default("world") }}{% endif %}{% endmacro %}
+{% set pageLanguage = _self.currentLanguage(currentFile|trim("/")|split("/")[0], languages, pageLanguage, defaultLanguage) %}
+{% macro currentUrl(currentFile, languages) %}{% if currentFile != template.index|default("README.md") %}{% set path = currentFile|trim("/")|split("/") %}{% if path|last == "index.md" %}{{ path|slice(path[0] in languages ? 1 : 0, -1)|join("/") }}{% else %}{{ path|slice(path[0] in languages ? 1 : 0)|join("/") }}{% endif %}{% endif %}{% endmacro %}
+{% macro mdToHtml(path) %}{% if path|split(".")|last == "md" %}{{ path|split(".")|slice(0, -1)|join(".") }}.html{% else %}{{ path }}{% endif %}{% endmacro %}
+<!doctype html>
+<html class="lazyload"{% if pageLanguage and pageLanguage != "world" %} lang="{{ pageLanguage }}"{% endif %}>
+    <head>
+        <title>{{ _self.stripExtension(currentFile|trim("/")|split('/')|last) }} · {{ title|default('Couscous') }}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        {% if metaDescription|default(description) %}<meta name="description" content="{{ metaDescription|default(description) }}">
+{% endif %}
+        <link rel="icon" type="image/png" href="{{ baseUrl }}/icon.png">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Share:400|Jaldi:400,700|Fira+Mono:400,700">
+        <link rel="stylesheet" href="{{ baseUrl }}/assets/base.css">
+        <link rel="stylesheet" href="{{ baseUrl }}/assets/lindoc.css">
+        {% if color %}<style>
+            a,.results strong{color:{{ color }}}
+            button,input[type=submit],input[type=button],input[type=reset],.button,.search input[type=submit]{background-color:{{ color }}}
+            .search input[type=text]:focus,.results,.results strong{border-color:{{ color }} !important}
+            @media screen and (min-width:1450px){.livetoc a.active{ color:{{ color }}}}
+        </style>
+{% endif %}
+        <script>
+            // Parent Elements - e.P("body") - https://gist.github.com/moqmar/0995cf6595201f7a062fb173cb4ab938
+            (function(E){E.matches||(E.matches=E.matchesSelector||E.msMatchesSelector||E.webkitMatchesSelector)})(Element.prototype)
+            Element.prototype.P=function(s){var e=this
+            if(!s||typeof s=="number")for(var i=0;i<(s||1);i++)e=e?e.parentElement:e
+            else if(typeof s=="string")while(e&&!e.matches(s))e=e.parentElement
+            else while(e&&e!=s)e=e.parentElement
+            return e}
+        </script>
+    </head>
+    <body>
+        <header>
+            <div class="nav">
+                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Documentation</a> </div>
+            </div>
+{% if search %}{% if not noIndex %}            <!-- THIS DOCUMENT IS INDEXED -->
+{% endif %}
+            <div class="search" role="search"><form data-baseurl="{{ baseUrl }}" onsubmit="search(this); return false;">
+                <input type="text" class="search-query" oninput="search(this.parentElement)" placeholder="Search...">
+                <input type="submit" value="➜">
+            </form><div class="results"></div></div>
+{% endif %}{% if languages|length > 0 %}
+            <div class="language">
+                <input type="checkbox" id="language-select">
+                <label for="language-select"><img src="{{ baseUrl }}/assets/flags/{{ pageLanguage }}.png"></label>
+                <div class="language-select-popup" data-default-language="{{ defaultLanguage }}">
+{% for lang in languages %}
+                    <a href="{{ baseUrl }}/{% if lang != defaultLanguage %}{{ lang }}/{% endif %}{{ _self.mdToHtml(_self.currentUrl(currentFile, languages)) }}"><img src="{{ baseUrl }}/assets/flags/{{ lang }}.png"></a>
+{% endfor %}
+                </div>
+                <script>
+                    document.getElementById("language-select").checked = false;
+                    window.addEventListener("click", function(event) {
+                        if (!event.target.P(".language")) document.getElementById("language-select").checked = false;
+                    })
+                </script>
+            </div>
+{% endif %}
+            <nav class="breadcrumbs">{% set bcpath = "#{baseUrl}/" %}
+
+                {% for x in _self.currentUrl(currentFile, languages)|split("/") %}{% if not (x == "") %}{% set bcpath = "#{bcpath}#{x}/" %} » {% if loop.last %}<strong>{% else %}<a href="{{ bcpath }}">{% endif %}{{ _self.stripExtension(x) }}{% if loop.last %}</strong>{% else %}</a>{% endif %}{% endif %}{% endfor %}
+
+            </nav>
+        </header>
+
+        <main>
+            <aside class="toc"><ul></ul></aside>
+            <article>
+{% if search %}
+                <template search-description>{{ description }}</template>
+{% endif %}
+{% if prev or next %}
+
+                <nav class="pagination">
+                    <div>{% if prev %}« <a href="{{ baseUrl }}{{ prev }}">{{ prevTitle|default(_self.stripExtension(prev|trim("/")|split("/")|last)) }}</a>{% endif %}</div>
+                    <div>{% if next %}<a href="{{ baseUrl }}{{ next }}">{{ nextTitle|default(_self.stripExtension(next|trim("/")|split("/")|last)) }}</a> »{% endif %}</div>
+                </nav>
+{% endif %}
+
+<!-- CONTENT START -->
+{{ content|raw }}
+<!-- CONTENT END -->
+{% if prev or next %}
+                <nav class="pagination">
+                    <div>{% if prev %}« <a href="{{ baseUrl }}{{ prev }}">{{ prevTitle|default(_self.stripExtension(prev|trim("/")|split("/")|last)) }}</a>{% endif %}</div>
+                    <div>{% if next %}<a href="{{ baseUrl }}{{ next }}">{{ nextTitle|default(_self.stripExtension(next|trim("/")|split("/")|last)) }}</a> »{% endif %}</div>
+                </nav>{% endif %}
+
+            </article>{% if sidebar %}
+
+            <aside class="sidebar">
+                <hr>
+{% set pageSidebar = sidebar %}
+{% if not (sidebar|keys|first matches '/^\\d+$/') %}
+{% set pageSidebar = sidebar.default|default(sidebar) %}
+{% for k, v in sidebar %}{% if k == pageLanguage %}{% set pageSidebar = v %}{% endif %}{% endfor %}
+{% endif %}
+{% for item in pageSidebar %}
+                {% if item.line %}<hr>
+{% elseif item.title %}<h2>{{ item.title }}</h2>
+{% elseif item.subtitle %}<h3>{{ item.subtitle }}</h3>
+{% elseif item.html %}{{ item.html|raw }}
+{% elseif item.page %}<div class="bulletlink"><a href="{{ baseUrl }}{{ item.page }}">{{ item.text }}</a></div>
+{% elseif item.link %}<div class="bulletlink"><a href="{{ item.link }}">{{ item.text }}</a></div>
+{% else %}<p>{{ item.text }}</p>
+{% endif %}
+{% endfor %}
+            </aside>{% endif %}{% if footer %}
+
+            <footer>
+                <hr>
+
+<!-- FOOTER BEGIN -->
+{% set pageFooter = footer %}
+{% if footer|keys %}
+{% set pageFooter = footer.default|default(footer) %}
+{% for k, v in footer %}{% if k == pageLanguage %}{% set pageFooter = v %}{% endif %}{% endfor %}
+{% endif %}
+{{ pageFooter|raw }}
+<!-- FOOTER END -->
+
+            </footer>{% endif %}
+
+        </main>
+
+        <script src="{{ baseUrl }}/assets/toc.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script>Prism.plugins.autoloader.languages_path = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/";</script>
+        <link rel="stylesheet" href="{{ baseUrl }}/assets/prism.css">
+
+{% if search %}
+        <script src="https://cdn.jsdelivr.net/npm/js-search@1.4.2/dist/umd/js-search.min.js"></script>
+        <script src="{{ baseUrl }}/assets/search.js"></script>
+{% endif %}
+    </body>
+</html>

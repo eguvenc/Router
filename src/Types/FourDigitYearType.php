@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class FourDigitYearType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <yyyy:year>   // before convertion
-	 * %s = year //  group name
-	 * (?<year>[0-9]{4}) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>[0-9]{4})';
 
 	/**

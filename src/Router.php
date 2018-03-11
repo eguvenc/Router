@@ -17,6 +17,7 @@ class Router
 {
     protected $path;
     protected $host;
+    protected $pipe;
     protected $route;
     protected $method;
     protected $scheme;
@@ -60,6 +61,7 @@ class Router
                 foreach ($pipe->getRoutes() as $name => $route) {
                     $this->collection->add($name, $route);
                 }
+                $this->pipe = $pipe;
                 $this->buildStack($pipe);
                 $this->hostMatches = $matcher->getHostMatches();
             }
@@ -152,6 +154,16 @@ class Router
     public function getMatchedRoute() : RouteInterface
     {
         return $this->route;
+    }
+
+    /**
+     * Returns to matched route
+     * 
+     * @return string
+     */
+    public function getMatchedPipe()
+    {
+        return $this->pipe;
     }
 
     /**

@@ -12,15 +12,6 @@ use Obullo\Router\Type;
  */
 class TranslationType extends Type
 {
-	/**
-	 * Regex
-	 *
-	 * <locale:locale>   // before convertion
-	 * %s = locale //  group name
-	 * (?<locale>[a-z]{2}) // after convertion
-	 * 
-	 * @var string
-	 */
 	protected $regex = '(?<%s>[a-z]{2})';
 
 	/**

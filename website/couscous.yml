@@ -1,0 +1,27 @@
+template:
+    directory: .
+
+github:
+    user: obullo
+    repo: router
+
+title: Obullo Php7 Router.
+logo:
+
+languages: ["en", "tr"]
+defaultLanguage: en
+
+sidebar:
+  default:
+    - title: Obullo Components
+    - subtitle: Links
+    - text: Homepage
+      link: http://obullo.com
+    - text: Github Repository
+      link: http://github.com/obullo/Router
+    - line: true
+    - html: 
+
+footer:
+  default: |
+    © 2018
