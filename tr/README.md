@@ -78,7 +78,7 @@ $collection->add(
 );
 ```
 
-Route Sınıfı
+Route Çağırma
 
 ```php
 $route = $collection->get('dummy');
@@ -93,7 +93,9 @@ Url Çözümleme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->matchRequest()) {
+
     $handler = $route->getHandler();
     $args = array_merge(array('request' => $request), $route->getArguments());
 
@@ -339,6 +341,7 @@ Url Çözümleme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->matchRequest()) {
 
 }
@@ -451,7 +454,9 @@ Eşleşme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->matchRequest()) {
+
     $handler = $route->getHandler();
     $methods = $route->getMethods();
 
@@ -525,7 +530,9 @@ Eşleşme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->match('/dummy/test/55','example.com','http')) {
+
     $args = $route->getArguments();
 
     var_dump($args['name']); // string "test"
@@ -574,6 +581,7 @@ Host değeri eğer bir düzenli ifade ise `$router->getMatchedHosts()` metodu il
 
 ```php
 $router = new Router($collection);
+
 if ($router->matchRequest()) {
     echo $router->getMatchedHosts()[0]; // test.example.com
     echo $router->getMatchedHosts()['name']; // test
@@ -629,7 +637,7 @@ $loader->load('/var/www/MyProject/'.$subdomain.'_routes.yaml');
 $collection = $loader->build($collection);
 ```
 
-## Stack
+## Katmanlar
 
 ### Middleware eklemek
 
@@ -645,10 +653,10 @@ $collection->add('dummy',
     )
 );
 ```
-pipe sınıfı ikinci parametresi ise bir pipe nesnesine middleware tayin eder.
+pipe sınıfı ikinci parametresi ise bir pipe nesnesine http katmanı tayin eder.
 
 ```php
-$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com');
+$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
 ```
 
 Yaml içinde,
@@ -663,7 +671,7 @@ users/:
         middleware: App\Middleware\Test
 ```
 
-### Middleware dizisi
+### Middleware dizisini almak
 
 Router nesnesi `getStack` metodu route kolleksiyonuna atanan tüm middleware sınıflarına ulaşmanızı sağlar.
 
@@ -725,12 +733,14 @@ Tam örnek
 
 ```php
 if ($route = $router->matchRequest()) {
+
     $response = null;
     $locale  = $route->getArgument('locale');
     $request = $request->withAttribute('locale', $locale);
     $route->removeArgument('locale');
 
     $args = array_merge(array('request' => $request), $route->getArguments());
+    
     $handler = $route->getHandler();
 
     // Parse handlers
@@ -921,6 +931,6 @@ Percentage of the requests served within a certain time (ms)
 
 ## Sonuç
 
-Görüldüğü gibi Obullo router paketinin performansı hız üzerine odaklanmış diğer route paketleri ile hemen hemen aynıdır. Obullo router paketi uygulamanın anlaşılabilirliğini kolaylaştırmak ve kaynakları en az kullanarak yüksek performans elde edebilmek amacıyla tasarlanmıştır. Obullo opsiyonel route sorununu route kurallarını alt alta yazarak uygulama içerisinde çözer.
+Görüldüğü gibi Obullo router paketinin performansı hız üzerine odaklanmış diğer route paketleri ile hemen hemen aynıdır. Obullo router paketi uygulamanın anlaşılabilirliğini kolaylaştırmak ve kaynakları en az kullanarak yüksek performans elde edebilmek amacıyla tasarlanmıştır. Obullo opsiyonel route sorununu route ları alt alta yazarak uygulama içerisinde çözer.
 
 Bir uygulamanın performansı önce insan zihninde başlar. Daha fazla performans elde etmek için uygulamanızı tasarlarken Pipe nesnesi ile route kümelerini gruplara ayırın. Her bir route kümesi için maksimum route sayısının 50-100 arasında olmasına özen gösterin.

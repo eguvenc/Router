@@ -153,7 +153,7 @@ class RouteCollection implements IteratorAggregate, Countable
      * @param  string $unformatted string
      * @return string
      */
-    public function formatPattern(?string $unformatted = '')
+    public function formatPattern($unformatted)
     {
     	return str_replace(
             array_keys($this->rules),

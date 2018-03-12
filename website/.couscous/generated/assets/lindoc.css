@@ -89,7 +89,7 @@ p a img {
 
 /* Table Of Contents */
 main { position: relative; }
-.toc { font-size: 20px; color: #595959; }
+.toc { font-size: 16px; color: #595959; }
 .toc ul a {  color: #444; text-decoration: none; }
 .toc ul a:hover { color: #444; text-decoration: underline; }
 .toc ul { list-style: none; }
@@ -97,8 +97,24 @@ main { position: relative; }
 .toc li.offset { margin-left: -1em; }
 .toc li:not(.offset):before { content: "-"; position: absolute; left: -0.6em; }
 @media screen and (min-width: 1450px) {
-    .toc { position: absolute; top: 53px; bottom: 0; overflow: hidden; overflow-y: auto; right: 100%; margin: -25px 55px 0 15px; padding: 25px 0 50px; width: 180px; line-height: 20px; }
-    .toc::-webkit-scrollbar { display: none; }
+    .toc { position: absolute; top: 53px; bottom: 0; overflow: hidden; overflow-y: auto; right: 100%; margin: -25px 55px 0 15px; padding: 25px 0 50px; width: 180px; line-height: 18px; }
+    /*.toc::-webkit-scrollbar { display: none; }*/
+    /* width */
+    .toc::-webkit-scrollbar {
+        width: 6px;
+    }
+    /* Track */
+    .toc::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+    }
+    /* Handle */
+    .toc::-webkit-scrollbar-thumb {
+        background: #e2e2e2; 
+    }
+    /* Handle on hover */
+    .toc::-webkit-scrollbar-thumb:hover {
+        background: #E53528; 
+    }
     .toc ul:not(.offset) { margin: 7px 0 0; }
     .toc li { margin-bottom: 7px; }
     .livetoc { position: fixed; right: calc(50vw + 443px); }

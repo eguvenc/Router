@@ -99,7 +99,7 @@ img:not(.inline), svg:not(.inline):not(.svg-inline--fa), video:not(.inline), aud
 
 /* Paragraphs */
 p { margin: 10px 0 25px; }
-blockquote { clear:both; border-left: 5px solid #e7e9ec; margin-left: 15px; padding: 0px 15px; color: #595959; }
+blockquote { clear:both; border-left: 5px solid #e7e9ec; margin-left: 0px; padding: 0px 15px; color: #595959; }
 hr { border: none; outline: none; height: 3px; background: #e7e9ec; }
 .align-l { text-align: left; }
 .align-c { text-align: center; }

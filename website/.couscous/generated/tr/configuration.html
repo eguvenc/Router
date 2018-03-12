@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="lazyload" lang="en">
+<html class="lazyload" lang="tr">
     <head>
         <title>CONFIGURATION · Obullo Php7 Router.</title>
         <meta charset="utf-8">
@@ -21,11 +21,11 @@
     <body>
         <header>
             <div class="nav">
-                                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Documentation (en)</a> </div>
-                                            </div>
+                                                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Dökümentasyon (tr)</a> </div>
+                            </div>
             <div class="language">
                 <input type="checkbox" id="language-select">
-                <label for="language-select"><img src="/assets/flags/en.png"></label>
+                <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
                     <a href="/CONFIGURATION.html"><img src="/assets/flags/en.png"></a>
                     <a href="/tr/CONFIGURATION.html"><img src="/assets/flags/tr.png"></a>
@@ -44,14 +44,16 @@
             <article>
 
 <!-- CONTENT START -->
-<h2 id="configuration">Configuration</h2>
-<p>This file contains information of how to set up the router package on your localhost.</p>
+<h2 id="konfigrasyon">Konfigürasyon</h2>
+<blockquote>
+<p>Bu dosya router paketini yerel sunucunuzda nasıl kuracağınıza ilişkin bilgileri içerir.</p>
+</blockquote>
 <h3 id="apache-web-server">Apache web server</h3>
-<p>In your Apache configuration file, <code>DocumentRoot</code> should be set to directory <code>your-project/demo/public/</code>.</p>
+<p>Apache konfigürasyon dosyanızda <code>DocumentRoot</code> konfigürasyonu <code>projeniz/demo/public/</code> klasörüne ayarlanmış olmalıdır.</p>
 <pre><code>&lt;VirtualHost *:80&gt;
 
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/Router/public/
+        DocumentRoot /var/www/Router/demo/public/
 
         ServerName router
         DirectoryIndex index.php
@@ -60,9 +62,9 @@
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 
 &lt;/VirtualHost&gt;</code></pre>
-<p>DirectoryIndex value are suggested to be set to <code>index.php</code>. ServerName is set to <code>router</code> in this example.</p>
+<p>DirectoryIndex değerini <code>index.php</code> değerine ayarlamanız önerilir. ServerName bu örnekte <code>router</code> olarak ayarlanmıştır.</p>
 <h3 id="htaccess">.htaccess</h3>
-<p>Configuration requires a <code>.htaccess</code> file like below. This file exists in <code>/public</code> folder.</p>
+<p>Konfigurasyon aşağıdaki gibi <code>.htaccess</code> dosyasını gerektirir. Bu dosya <code>/public</code> klasöründe mevcuttur.</p>
 <pre><code># Disable directory indexing
 
 Options -Indexes
@@ -82,10 +84,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 RewriteRule ^(.*)$ index.php/$1 [L]</code></pre>
-<h3 id="host-file">Host file</h3>
-<p>In this example, the project is set as router in <code>/etc/hosts</code> file.</p>
+<h3 id="host-dosyas">Host dosyası</h3>
+<p>Bu örnekte <code>/etc/hosts</code> dosyasına proje router olarak tanımlanmıştır.</p>
 <pre><code>127.0.1.1       router</code></pre>
-<p>After defining this, you can access the sample files through your browser with the project name as in the below example:</p>
+<p>Bu tanımlamadan sonra tarayıcınızdan aşağıdaki gibi proje ismi ile örnek dosyalara ulaşabilirsiniz.</p>
 <pre><code>http://router/</code></pre>
 <!-- CONTENT END -->
 

@@ -35,7 +35,12 @@
     <body>
         <header>
             <div class="nav">
-                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Documentation</a> </div>
+                {% if pageLanguage == "en" %}
+                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Documentation (en)</a> </div>
+                {% endif %}
+                {% if pageLanguage == "tr" %}
+                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Dökümentasyon (tr)</a> </div>
+                {% endif %}
             </div>
 {% if search %}{% if not noIndex %}            <!-- THIS DOCUMENT IS INDEXED -->
 {% endif %}
@@ -60,11 +65,6 @@
                 </script>
             </div>
 {% endif %}
-            <nav class="breadcrumbs">{% set bcpath = "#{baseUrl}/" %}
-
-                {% for x in _self.currentUrl(currentFile, languages)|split("/") %}{% if not (x == "") %}{% set bcpath = "#{bcpath}#{x}/" %} » {% if loop.last %}<strong>{% else %}<a href="{{ bcpath }}">{% endif %}{{ _self.stripExtension(x) }}{% if loop.last %}</strong>{% else %}</a>{% endif %}{% endif %}{% endfor %}
-
-            </nav>
         </header>
 
         <main>
@@ -102,7 +102,7 @@
 {% for item in pageSidebar %}
                 {% if item.line %}<hr>
 {% elseif item.title %}<h2>{{ item.title }}</h2>
-{% elseif item.subtitle %}<h3>{{ item.subtitle }}</h3>
+<!-- {% elseif item.subtitle %}<h3>{{ item.subtitle }}</h3> --> 
 {% elseif item.html %}{{ item.html|raw }}
 {% elseif item.page %}<div class="bulletlink"><a href="{{ baseUrl }}{{ item.page }}">{{ item.text }}</a></div>
 {% elseif item.link %}<div class="bulletlink"><a href="{{ item.link }}">{{ item.text }}</a></div>
