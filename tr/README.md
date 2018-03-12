@@ -15,7 +15,7 @@ $ composer require obullo/router
 
 ## Host konfigürasyonu
 
-[Configuration.md](/tr/Configuration.md)
+[Configuration.md](/tr/configuration.md)
 
 ## Gereksinimler
 

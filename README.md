@@ -15,7 +15,7 @@ $ composer require obullo/router
 
 ## Host konfigürasyonu
 
-[Configuration.md](tr/Configuration.md)
+[Configuration.md](/tr/configuration.md)
 
 ## Gereksinimler
 
@@ -130,36 +130,36 @@ class DummyController
 
 ## Türler
 
-[Types.md](tr/types.md)
+[Types.md](/tr/types.md)
 
 ## Yükleyiciler
 
-[Loaders.md](tr/loaders.md)
+[Loaders.md](/tr/loaders.md)
 
 ## Pipe ile gruplama
 
-[Pipes.md](tr/pipes.md)
+[Pipes.md](/tr/pipes.md)
 
 ## Url çözümleme
 
-[Router.md](tr/router.md)
+[Router.md](/tr/router.md)
 
 ## Koşullu tanımlamalar
 
-[RouteConditions.md](tr/route-conditions.md)
+[RouteConditions.md](/tr/route-conditions.md)
 
 ## Katmanlar
 
-[Stack.md](tr/stack.md)
+[Stack.md](/tr/stack.md)
 
 ## Yerelleştirme
 
-[Translation.md](tr/translation.md)
+[Translation.md](/tr/translation.md)
 
 ## Url üretici
 
-[UrlGenerator.md](tr/url-generator.md)
+[UrlGenerator.md](/tr/url-generator.md)
 
 ## Performans
 
-[Performance.md](tr/performance.md)
+[Performance.md](/tr/performance.md)
