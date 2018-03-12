@@ -166,7 +166,7 @@ $config = new Zend\Config\Config($configArray);
         <tr>
             <td>AnyType</td>
             <td>(?&lt;any&gt;.*)</td>
-            <td>http://example.com/&lt;any:any&gt;;/</td>
+            <td>http://example.com/&lt;any:any&gt;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>

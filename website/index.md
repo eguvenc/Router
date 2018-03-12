@@ -166,63 +166,63 @@ $config = new Zend\Config\Config($configArray);
         <tr>
             <td>AnyType</td>
             <td>(?&lt;any&gt;.*)</td>
-            <td>http://example.com/&lt;any:any&gt;</td>
+            <td>http://example.com/&lt;any:any&gt;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>
         <tr>
             <td>BoolType</td>
             <td>(?&lt;status&gt;[0-1])</td>
-            <td>http://example.com/&lt;bool:status&gt;</td>
+            <td>http://example.com/&lt;bool:status&gt;/</td>
             <td>boolean</td>
             <td>http://example.com/%01d</td>
         </tr>
         <tr>
             <td>FourDigitYearType</td>
             <td>(?&lt;year&gt;[0-9]{4})</td>
-            <td>http://example.com/&lt;yyyy:year&gt;</td>
+            <td>http://example.com/&lt;yyyy:year&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%04d</td>
         </tr>
         <tr>
             <td>IntType</td>
             <td>(?&lt;id&gt;\d+)</td>
-            <td>http://example.com/&lt;int:id&gt;</td>
+            <td>http://example.com/&lt;int:id&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%d</td>
         </tr>
         <tr>
             <td>SlugType</td>
             <td>(?&lt;slug&gt;[\w-]+)</td>
-            <td>http://example.com/&lt;slug:slug&gt;</td>
+            <td>http://example.com/&lt;slug:slug&gt;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>
         <tr>
             <td>StrType</td>
             <td>(?&lt;name&gt;\w+)</td>
-            <td>http://example.com/&lt;str:name&gt;</td>
+            <td>http://example.com/&lt;str:name&gt;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>
         <tr>
             <td>TranslationType</td>
             <td>(?&lt;locale&gt;[a-z]{2})</td>
-            <td>http://example.com/&lt;locale:locale&gt;</td>
+            <td>http://example.com/&lt;locale:locale&gt;/</td>
             <td>string</td>
             <td>http://example.com/%02s</td>
         </tr>
         <tr>
             <td>TwoDigitDayType</td>
             <td>(?&lt;day&gt;[0-9]{2})</td>
-            <td>http://example.com/&lt;dd:day&gt;</td>
+            <td>http://example.com/&lt;dd:day&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%02d</td>
         </tr>
         <tr>
             <td>TwoDigitMonthType</td>
             <td>(?&lt;month&gt;[0-9]{2})</td>
-            <td>http://example.com/&lt;mm:month&gt;</td>
+            <td>http://example.com/&lt;mm:month&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%02d</td>
         </tr>
