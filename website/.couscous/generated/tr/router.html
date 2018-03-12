@@ -1,0 +1,166 @@
+<!doctype html>
+<html class="lazyload" lang="tr">
+    <head>
+        <title>router · Obullo Php7 Router.</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+                <link rel="icon" type="image/png" href="/icon.png">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Share:400|Jaldi:400,700|Fira+Mono:400,700">
+        <link rel="stylesheet" href="/assets/base.css">
+        <link rel="stylesheet" href="/assets/lindoc.css">
+                <script>
+            // Parent Elements - e.P("body") - https://gist.github.com/moqmar/0995cf6595201f7a062fb173cb4ab938
+            (function(E){E.matches||(E.matches=E.matchesSelector||E.msMatchesSelector||E.webkitMatchesSelector)})(Element.prototype)
+            Element.prototype.P=function(s){var e=this
+            if(!s||typeof s=="number")for(var i=0;i<(s||1);i++)e=e?e.parentElement:e
+            else if(typeof s=="string")while(e&&!e.matches(s))e=e.parentElement
+            else while(e&&e!=s)e=e.parentElement
+            return e}
+        </script>
+    </head>
+    <body>
+        <header>
+            <div class="nav">
+                                                <div style="text-align: left;"><a href="/tr" style="font-weight:bold;font-size:54px;">Belgeler</a> </div>
+                            </div>
+            <div class="language">
+                <input type="checkbox" id="language-select">
+                <label for="language-select"><img src="/assets/flags/tr.png"></label>
+                <div class="language-select-popup" data-default-language="en">
+                    <a href="/router.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/tr/router.html"><img src="/assets/flags/tr.png"></a>
+                </div>
+                <script>
+                    document.getElementById("language-select").checked = false;
+                    window.addEventListener("click", function(event) {
+                        if (!event.target.P(".language")) document.getElementById("language-select").checked = false;
+                    })
+                </script>
+            </div>
+        </header>
+
+        <main>
+            <aside class="toc"><ul></ul></aside>
+            <article>
+
+<!-- CONTENT START -->
+<h2 id="router">Router</h2>
+<h3 id="matchrequest">MatchRequest</h3>
+<p>MatchRequest metodu <code>Psr7 Request</code> nesnesi üzerinden gelen bir http isteğini çözümler. Aşağıdaki gibi bir url yapısına sahip olduğumuzu düşünelim.</p>
+<pre><code>http://example.com/&lt;int:id&gt;
+http://example.com/&lt;int:id&gt;/&lt;str:name&gt;/</code></pre>
+<p>Opsiyonel parametre için tanımlar</p>
+<pre><code class="language-php">$collection-&gt;add(
+    'dummy/id',
+    new Route('GET', '/&lt;int:id&gt;', 'App\Controller\DummyController::index')
+);
+$collection-&gt;add(
+    'dummy/id/name',
+    new Route('GET', '/&lt;int:id&gt;/&lt;str:name&gt;', 'App\Controller\DummyController::index')
+);</code></pre>
+<p>Eşleşme</p>
+<pre><code class="language-php">$router = new Router($collection);
+
+if ($route = $router-&gt;matchRequest()) {
+
+    $handler = $route-&gt;getHandler();
+    $methods = $route-&gt;getMethods();
+    if (! in_array($request-&gt;getMethod(), $methods)) {
+        throw new Exception(
+            sprintf('Method %s is not allowed.', $request-&gt;getMethod())
+        );
+    }
+    $args = array_merge(array('request' =&gt; $request), $route-&gt;getArguments());
+    // Parse handlers
+    $response = null;
+    if (is_callable($handler)) {
+        $exp = explode('::', $handler);
+        $class = new $exp[0];
+        $method = $exp[1];
+        $response = call_user_func_array(array($class, $method), $args);
+    }
+    // Emit response
+    if ($response instanceof Psr\Http\Message\ResponseInterface) {
+        echo $response-&gt;getBody();
+    }
+}</code></pre>
+<p>App\Controller\DummyController sınıfı</p>
+<pre><code class="language-php">namespace App\Controller;
+
+use Zend\Diactoros\Response\HtmlResponse;
+use Psr\Http\Message\RequestInterface as Request;
+
+class DummyController
+{
+    public function index(Request $request, int $id, $name = '')
+    {
+        return new HtmlResponse(
+            'Variables: #id:'.sprintf('%d', $id).' #name:'.sprintf('%s', $name)
+        );
+    }
+}</code></pre>
+<blockquote>
+<p>ReflectionClass sınıfı kullanarak kontrolör sınıfı çözümlenirken dependency injection yöntemi ile bu sınıfa ait nesneleri otomatik çağırabilirsiniz.</p>
+</blockquote>
+<h3 id="match">Match</h3>
+<p>Match metodu <code>Psr7 Request</code> nesnesi olmadan eşleşme gerçekleştirmeye olanak sağlar. Aşağıdaki gibi bir url yapısına sahip olduğumuzu düşünelim.</p>
+<pre><code>http://example.com/&lt;str:name&gt;/&lt;int:id&gt;</code></pre>
+<pre><code class="language-php">$collection = new RouteCollection($config);
+$collection-&gt;setContext($context);
+$collection-&gt;add(
+    'dummy',
+    new Route(
+        'GET',
+        '/dummy/&lt;str:name&gt;/&lt;int:id&gt;',
+        'App\Controller\DefaultController::dummy'
+    )
+);</code></pre>
+<p>Eşleşme</p>
+<pre><code class="language-php">$router = new Router($collection);
+
+if ($route = $router-&gt;match('/dummy/test/55','example.com','http')) {
+    $args = $route-&gt;getArguments();
+
+    var_dump($args['name']); // string "test"
+    var_dump($args['id']); // integer 55
+
+    echo $route-&gt;getMethods()[0]; // GET
+    echo $route-&gt;getHandler(); // App\Controller\DefaultController::dummy
+}</code></pre>
+<!-- CONTENT END -->
+
+            </article>
+            <aside class="sidebar">
+                <hr>
+                <h2>Obullo Components</h2>
+<!--                 <h3>Links</h3> --> 
+                <div class="bulletlink"><a href="http://obullo.com">Homepage</a></div>
+                <div class="bulletlink"><a href="http://github.com/obullo/Router">Github Repository</a></div>
+                <hr>
+                <p></p>
+            </aside>
+            <footer>
+                <hr>
+
+<!-- FOOTER BEGIN -->
+
+
+<!-- FOOTER END -->
+            Website generated with <a href="http://couscous.io">Couscous</a>.
+            </footer>
+        </main>
+
+        <script src="/assets/toc.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/plugins/autoloader/prism-autoloader.min.js"></script>
+        <script>Prism.plugins.autoloader.languages_path = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/";</script>
+        <link rel="stylesheet" href="/assets/prism.css">
+        <!-- Livereload -->
+        <script>
+            document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+                    ':35729/livereload.js?snipver=1"></' + 'script>')
+        </script>
+        <!-- End Livereload -->
+    </body>
+</html>
