@@ -91,4 +91,4 @@ class DummyController
         return new HtmlResponse('DummyController::test #locale:'.sprintf('%02s', $locale));
     }
 }
-```s
+```
