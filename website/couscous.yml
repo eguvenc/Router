@@ -1,12 +1,8 @@
 template:
     directory: .
-
-github:
-    user: obullo
-    repo: router
+    url: https://github.com/Obullo/CouscousTemplate.git
 
 title: Obullo Php7 Router.
-logo:
 
 languages: ["en", "tr"]
 defaultLanguage: en

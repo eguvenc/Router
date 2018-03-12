@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="lazyload" lang="tr">
     <head>
-        <title>CONFIGURATION · Obullo Php7 Router.</title>
+        <title>configuration · Obullo Php7 Router.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
                 <link rel="icon" type="image/png" href="/icon.png">
@@ -21,14 +21,14 @@
     <body>
         <header>
             <div class="nav">
-                                                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Dökümentasyon</a> </div>
+                                                <div style="text-align: left;"><a href="/tr" style="font-weight:bold;font-size:54px;">Belgeler</a> </div>
                             </div>
             <div class="language">
                 <input type="checkbox" id="language-select">
                 <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
-                    <a href="/CONFIGURATION.html"><img src="/assets/flags/en.png"></a>
-                    <a href="/tr/CONFIGURATION.html"><img src="/assets/flags/tr.png"></a>
+                    <a href="/configuration.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/tr/configuration.html"><img src="/assets/flags/tr.png"></a>
                 </div>
                 <script>
                     document.getElementById("language-select").checked = false;
@@ -49,11 +49,11 @@
 <p>Bu dosya router paketini yerel sunucunuzda nasıl kuracağınıza ilişkin bilgileri içerir.</p>
 </blockquote>
 <h3 id="apache-web-server">Apache web server</h3>
-<p>Apache konfigürasyon dosyanızda <code>DocumentRoot</code> konfigürasyonu <code>projeniz/demo/public/</code> klasörüne ayarlanmış olmalıdır.</p>
+<p>Apache konfigürasyon dosyanızda <code>DocumentRoot</code> konfigürasyonu <code>projeniz/public/</code> klasörüne ayarlanmış olmalıdır.</p>
 <pre><code>&lt;VirtualHost *:80&gt;
 
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/Router/demo/public/
+        DocumentRoot /var/www/Router/public/
 
         ServerName router
         DirectoryIndex index.php
