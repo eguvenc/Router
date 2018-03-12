@@ -93,10 +93,11 @@ Url Çözümleme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->matchRequest()) {
+
     $handler = $route->getHandler();
     $args = array_merge(array('request' => $request), $route->getArguments());
-
     $response = null;
     if (is_callable($handler)) {
         $exp = explode('::', $handler);
@@ -105,7 +106,7 @@ if ($route = $router->matchRequest()) {
         $response = call_user_func_array(array($class, $method), $args);
     }
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
-        echo $response->getBody();  // Çıktı DummyController::index
+        echo $response->getBody();  // DummyController::index
     }
 }
 ```
@@ -376,7 +377,6 @@ $collection = $loader->build($collection);
 
 Bu kısımda sadece yükleyici değiştirmeniz yeterli olacaktır.
 
-
 ## Pipe ile gruplama
 
 Bir api tasarlıyorsanız yada uygulamanız genişleyebilir bir uygulama ise pipe ile uygulamayı parçalara ayırmak uygulamanızın performansını arttırır. 
@@ -451,17 +451,17 @@ Eşleşme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->matchRequest()) {
+
     $handler = $route->getHandler();
     $methods = $route->getMethods();
-
     if (! in_array($request->getMethod(), $methods)) {
         throw new Exception(
             sprintf('Method %s is not allowed.', $request->getMethod())
         );
     }
     $args = array_merge(array('request' => $request), $route->getArguments());
-
     // Parse handlers
     $response = null;
     if (is_callable($handler)) {
@@ -470,7 +470,6 @@ if ($route = $router->matchRequest()) {
         $method = $exp[1];
         $response = call_user_func_array(array($class, $method), $args);
     }
-
     // Emit response
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
         echo $response->getBody();
@@ -525,6 +524,7 @@ Eşleşme
 
 ```php
 $router = new Router($collection);
+
 if ($route = $router->match('/dummy/test/55','example.com','http')) {
     $args = $route->getArguments();
 
@@ -574,6 +574,7 @@ Host değeri eğer bir düzenli ifade ise `$router->getMatchedHosts()` metodu il
 
 ```php
 $router = new Router($collection);
+
 if ($router->matchRequest()) {
     echo $router->getMatchedHosts()[0]; // test.example.com
     echo $router->getMatchedHosts()['name']; // test
@@ -629,7 +630,7 @@ $loader->load('/var/www/MyProject/'.$subdomain.'_routes.yaml');
 $collection = $loader->build($collection);
 ```
 
-## Stack
+## Katmanlar
 
 ### Middleware eklemek
 
@@ -645,10 +646,10 @@ $collection->add('dummy',
     )
 );
 ```
-pipe sınıfı ikinci parametresi ise bir pipe nesnesine middleware tayin eder.
+pipe sınıfı ikinci parametresi ise bir pipe nesnesine http katmanı tayin eder.
 
 ```php
-$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com');
+$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
 ```
 
 Yaml içinde,
@@ -663,7 +664,7 @@ users/:
         middleware: App\Middleware\Test
 ```
 
-### Middleware dizisi
+### Middleware dizisini almak
 
 Router nesnesi `getStack` metodu route kolleksiyonuna atanan tüm middleware sınıflarına ulaşmanızı sağlar.
 
@@ -725,11 +726,12 @@ Tam örnek
 
 ```php
 if ($route = $router->matchRequest()) {
+
     $response = null;
     $locale  = $route->getArgument('locale');
     $request = $request->withAttribute('locale', $locale);
     $route->removeArgument('locale');
-
+    
     $args = array_merge(array('request' => $request), $route->getArguments());
     $handler = $route->getHandler();
 
@@ -740,7 +742,6 @@ if ($route = $router->matchRequest()) {
         $method = $exp[1];
         $response = call_user_func_array(array($class, $method), $args);
     }
-
     // Emit response
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
         echo $response->getBody();

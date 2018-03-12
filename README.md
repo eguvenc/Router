@@ -78,7 +78,7 @@ $collection->add(
 );
 ```
 
-Route Çağırma
+Route Sınıfı
 
 ```php
 $route = $collection->get('dummy');
@@ -98,7 +98,6 @@ if ($route = $router->matchRequest()) {
 
     $handler = $route->getHandler();
     $args = array_merge(array('request' => $request), $route->getArguments());
-
     $response = null;
     if (is_callable($handler)) {
         $exp = explode('::', $handler);
@@ -107,7 +106,7 @@ if ($route = $router->matchRequest()) {
         $response = call_user_func_array(array($class, $method), $args);
     }
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
-        echo $response->getBody();  // Çıktı DummyController::index
+        echo $response->getBody();  // DummyController::index
     }
 }
 ```
@@ -167,63 +166,63 @@ $config = new Zend\Config\Config($configArray);
         <tr>
             <td>AnyType</td>
             <td>(?&lt;any&gt;.*)</td>
-            <td>http://example.com/&lt;any:any&gt;</td>
+            <td>http://example.com/&lt;any:any&gt;;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>
         <tr>
             <td>BoolType</td>
             <td>(?&lt;status&gt;[0-1])</td>
-            <td>http://example.com/&lt;bool:status&gt;</td>
+            <td>http://example.com/&lt;bool:status&gt;/</td>
             <td>boolean</td>
             <td>http://example.com/%01d</td>
         </tr>
         <tr>
             <td>FourDigitYearType</td>
             <td>(?&lt;year&gt;[0-9]{4})</td>
-            <td>http://example.com/&lt;yyyy:year&gt;</td>
+            <td>http://example.com/&lt;yyyy:year&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%04d</td>
         </tr>
         <tr>
             <td>IntType</td>
             <td>(?&lt;id&gt;\d+)</td>
-            <td>http://example.com/&lt;int:id&gt;</td>
+            <td>http://example.com/&lt;int:id&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%d</td>
         </tr>
         <tr>
             <td>SlugType</td>
             <td>(?&lt;slug&gt;[\w-]+)</td>
-            <td>http://example.com/&lt;slug:slug&gt;</td>
+            <td>http://example.com/&lt;slug:slug&gt;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>
         <tr>
             <td>StrType</td>
             <td>(?&lt;name&gt;\w+)</td>
-            <td>http://example.com/&lt;str:name&gt;</td>
+            <td>http://example.com/&lt;str:name&gt;/</td>
             <td>string</td>
             <td>http://example.com/%s</td>
         </tr>
         <tr>
             <td>TranslationType</td>
             <td>(?&lt;locale&gt;[a-z]{2})</td>
-            <td>http://example.com/&lt;locale:locale&gt;</td>
+            <td>http://example.com/&lt;locale:locale&gt;/</td>
             <td>string</td>
             <td>http://example.com/%02s</td>
         </tr>
         <tr>
             <td>TwoDigitDayType</td>
             <td>(?&lt;day&gt;[0-9]{2})</td>
-            <td>http://example.com/&lt;dd:day&gt;</td>
+            <td>http://example.com/&lt;dd:day&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%02d</td>
         </tr>
         <tr>
             <td>TwoDigitMonthType</td>
             <td>(?&lt;month&gt;[0-9]{2})</td>
-            <td>http://example.com/&lt;mm:month&gt;</td>
+            <td>http://example.com/&lt;mm:month&gt;/</td>
             <td>integer</td>
             <td>http://example.com/%02d</td>
         </tr>
@@ -341,7 +340,6 @@ Url Çözümleme
 
 ```php
 $router = new Router($collection);
-
 if ($route = $router->matchRequest()) {
 
 }
@@ -378,7 +376,6 @@ $collection = $loader->build($collection);
 ```
 
 Bu kısımda sadece yükleyici değiştirmeniz yeterli olacaktır.
-
 
 ## Pipe ile gruplama
 
@@ -459,14 +456,12 @@ if ($route = $router->matchRequest()) {
 
     $handler = $route->getHandler();
     $methods = $route->getMethods();
-
     if (! in_array($request->getMethod(), $methods)) {
         throw new Exception(
             sprintf('Method %s is not allowed.', $request->getMethod())
         );
     }
     $args = array_merge(array('request' => $request), $route->getArguments());
-
     // Parse handlers
     $response = null;
     if (is_callable($handler)) {
@@ -475,7 +470,6 @@ if ($route = $router->matchRequest()) {
         $method = $exp[1];
         $response = call_user_func_array(array($class, $method), $args);
     }
-
     // Emit response
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
         echo $response->getBody();
@@ -532,7 +526,6 @@ Eşleşme
 $router = new Router($collection);
 
 if ($route = $router->match('/dummy/test/55','example.com','http')) {
-
     $args = $route->getArguments();
 
     var_dump($args['name']); // string "test"
@@ -738,9 +731,8 @@ if ($route = $router->matchRequest()) {
     $locale  = $route->getArgument('locale');
     $request = $request->withAttribute('locale', $locale);
     $route->removeArgument('locale');
-
-    $args = array_merge(array('request' => $request), $route->getArguments());
     
+    $args = array_merge(array('request' => $request), $route->getArguments());
     $handler = $route->getHandler();
 
     // Parse handlers
@@ -750,7 +742,6 @@ if ($route = $router->matchRequest()) {
         $method = $exp[1];
         $response = call_user_func_array(array($class, $method), $args);
     }
-
     // Emit response
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
         echo $response->getBody();
@@ -931,6 +922,6 @@ Percentage of the requests served within a certain time (ms)
 
 ## Sonuç
 
-Görüldüğü gibi Obullo router paketinin performansı hız üzerine odaklanmış diğer route paketleri ile hemen hemen aynıdır. Obullo router paketi uygulamanın anlaşılabilirliğini kolaylaştırmak ve kaynakları en az kullanarak yüksek performans elde edebilmek amacıyla tasarlanmıştır. Obullo opsiyonel route sorununu route ları alt alta yazarak uygulama içerisinde çözer.
+Görüldüğü gibi Obullo router paketinin performansı hız üzerine odaklanmış diğer route paketleri ile hemen hemen aynıdır. Obullo router paketi uygulamanın anlaşılabilirliğini kolaylaştırmak ve kaynakları en az kullanarak yüksek performans elde edebilmek amacıyla tasarlanmıştır. Obullo opsiyonel route sorununu route kurallarını alt alta yazarak uygulama içerisinde çözer.
 
 Bir uygulamanın performansı önce insan zihninde başlar. Daha fazla performans elde etmek için uygulamanızı tasarlarken Pipe nesnesi ile route kümelerini gruplara ayırın. Her bir route kümesi için maksimum route sayısının 50-100 arasında olmasına özen gösterin.

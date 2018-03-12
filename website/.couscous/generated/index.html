@@ -21,7 +21,7 @@
     <body>
         <header>
             <div class="nav">
-                                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Documentation (en)</a> </div>
+                                <div style="text-align: left;"><a href="#" style="font-weight:bold;font-size:54px;">Documentation</a> </div>
                                             </div>
             <div class="language">
                 <input type="checkbox" id="language-select">
@@ -108,10 +108,11 @@ echo $route-&gt;getPattern(); //  "/dummy/index/(?\d+)/(?\w+)"
 echo $route-&gt;getStack()[0]; // App\Middleware\Dummy::class</code></pre>
 <p>Url Çözümleme</p>
 <pre><code class="language-php">$router = new Router($collection);
+
 if ($route = $router-&gt;matchRequest()) {
+
     $handler = $route-&gt;getHandler();
     $args = array_merge(array('request' =&gt; $request), $route-&gt;getArguments());
-
     $response = null;
     if (is_callable($handler)) {
         $exp = explode('::', $handler);
@@ -120,7 +121,7 @@ if ($route = $router-&gt;matchRequest()) {
         $response = call_user_func_array(array($class, $method), $args);
     }
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
-        echo $response-&gt;getBody();  // Çıktı DummyController::index
+        echo $response-&gt;getBody();  // DummyController::index
     }
 }</code></pre>
 <p>App\Controller\DummyController örneği</p>
@@ -359,17 +360,17 @@ $collection-&gt;add(
 );</code></pre>
 <p>Eşleşme</p>
 <pre><code class="language-php">$router = new Router($collection);
+
 if ($route = $router-&gt;matchRequest()) {
+
     $handler = $route-&gt;getHandler();
     $methods = $route-&gt;getMethods();
-
     if (! in_array($request-&gt;getMethod(), $methods)) {
         throw new Exception(
             sprintf('Method %s is not allowed.', $request-&gt;getMethod())
         );
     }
     $args = array_merge(array('request' =&gt; $request), $route-&gt;getArguments());
-
     // Parse handlers
     $response = null;
     if (is_callable($handler)) {
@@ -378,7 +379,6 @@ if ($route = $router-&gt;matchRequest()) {
         $method = $exp[1];
         $response = call_user_func_array(array($class, $method), $args);
     }
-
     // Emit response
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
         echo $response-&gt;getBody();
@@ -417,6 +417,7 @@ $collection-&gt;add(
 );</code></pre>
 <p>Eşleşme</p>
 <pre><code class="language-php">$router = new Router($collection);
+
 if ($route = $router-&gt;match('/dummy/test/55','example.com','http')) {
     $args = $route-&gt;getArguments();
 
@@ -451,6 +452,7 @@ if ($route = $router-&gt;match('/dummy/test/55','example.com','http')) {
 );</code></pre>
 <p>Host değeri eğer bir düzenli ifade ise <code>$router-&gt;getMatchedHosts()</code> metodu ile host eşleşmeleri alınabilir.</p>
 <pre><code class="language-php">$router = new Router($collection);
+
 if ($router-&gt;matchRequest()) {
     echo $router-&gt;getMatchedHosts()[0]; // test.example.com
     echo $router-&gt;getMatchedHosts()['name']; // test
@@ -486,7 +488,7 @@ if ($router-&gt;matchRequest()) {
 
 $loader-&gt;load('/var/www/MyProject/'.$subdomain.'_routes.yaml');
 $collection = $loader-&gt;build($collection);</code></pre>
-<h2 id="stack">Stack</h2>
+<h2 id="katmanlar">Katmanlar</h2>
 <h3 id="middleware-eklemek">Middleware eklemek</h3>
 <p>Router sınıfı dördüncü parametresi bir router kuralına,</p>
 <pre><code class="language-php">$collection-&gt;add('dummy',
@@ -497,8 +499,8 @@ $collection = $loader-&gt;build($collection);</code></pre>
         [App\Middleware\Dummy],
     )
 );</code></pre>
-<p>pipe sınıfı ikinci parametresi ise bir pipe nesnesine middleware tayin eder.</p>
-<pre><code class="language-php">$pipe = new Pipe('test/','App\Middleware\Dummy','&lt;str:name&gt;.example.com');</code></pre>
+<p>pipe sınıfı ikinci parametresi ise bir pipe nesnesine http katmanı tayin eder.</p>
+<pre><code class="language-php">$pipe = new Pipe('test/','App\Middleware\Dummy','&lt;str:name&gt;.example.com',['http','https']);</code></pre>
 <p>Yaml içinde,</p>
 <pre><code>users/:
     middleware: 
@@ -507,7 +509,7 @@ $collection = $loader-&gt;build($collection);</code></pre>
         path: /&lt;int:id&gt;/&lt;str:name&gt;
         handler: App\Controller\DefaultController::test
         middleware: App\Middleware\Test</code></pre>
-<h3 id="middleware-dizisi">Middleware dizisi</h3>
+<h3 id="middleware-dizisini-almak">Middleware dizisini almak</h3>
 <p>Router nesnesi <code>getStack</code> metodu route kolleksiyonuna atanan tüm middleware sınıflarına ulaşmanızı sağlar.</p>
 <pre><code class="language-php">if ($router-&gt;matchRequest()) {
     print_r($router-&gt;getStack()); // Array ( [0] =&gt; App\Middleware\Dummy)
@@ -542,6 +544,7 @@ $config = new Zend\Config\Config($configArray);</code></pre>
 }</code></pre>
 <p>Tam örnek </p>
 <pre><code class="language-php">if ($route = $router-&gt;matchRequest()) {
+
     $response = null;
     $locale  = $route-&gt;getArgument('locale');
     $request = $request-&gt;withAttribute('locale', $locale);
@@ -557,7 +560,6 @@ $config = new Zend\Config\Config($configArray);</code></pre>
         $method = $exp[1];
         $response = call_user_func_array(array($class, $method), $args);
     }
-
     // Emit response
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
         echo $response-&gt;getBody();
@@ -685,7 +687,7 @@ Percentage of the requests served within a certain time (ms)
   99%    287
  100%    365 (longest request)</code></pre>
 <h2 id="sonu">Sonuç</h2>
-<p>Görüldüğü gibi Obullo router paketinin performansı hız üzerine odaklanmış diğer route paketleri ile hemen hemen aynıdır. Obullo router paketi uygulamanın anlaşılabilirliğini kolaylaştırmak ve kaynakları en az kullanarak yüksek performans elde edebilmek amacıyla tasarlanmıştır. Obullo opsiyonel route sorununu route kurallarını alt alta yazarak uygulama içerisinde çözer.</p>
+<p>Görüldüğü gibi Obullo router paketinin performansı hız üzerine odaklanmış diğer route paketleri ile hemen hemen aynıdır. Obullo router paketi uygulamanın anlaşılabilirliğini kolaylaştırmak ve kaynakları en az kullanarak yüksek performans elde edebilmek amacıyla tasarlanmıştır. Obullo opsiyonel route sorununu route ları alt alta yazarak uygulama içerisinde çözer.</p>
 <p>Bir uygulamanın performansı önce insan zihninde başlar. Daha fazla performans elde etmek için uygulamanızı tasarlarken Pipe nesnesi ile route kümelerini gruplara ayırın. Her bir route kümesi için maksimum route sayısının 50-100 arasında olmasına özen gösterin.</p>
 <!-- CONTENT END -->
 
@@ -706,7 +708,7 @@ Percentage of the requests served within a certain time (ms)
 
 
 <!-- FOOTER END -->
-
+            Website generated with <a href="http://couscous.io">Couscous</a>.
             </footer>
         </main>
 
