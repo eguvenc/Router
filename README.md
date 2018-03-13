@@ -158,7 +158,7 @@ class DummyController
 
 ## Url üretici
 
-[UrlGenerator.md](/tr/url-generator.md)
+[Generator.md](/tr/generator.md)
 
 ## Performans
 
