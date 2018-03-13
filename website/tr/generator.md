@@ -26,8 +26,8 @@ $collection->add(
 Url generator sınıfına parametre gönderelim.
 
 ```php
-$generator = new UrlGenerator($collection);
-echo $generator->generate('dummy/name', ['locale' => 'en', 'name' => 'test']);
+echo (new Obullo\Router\Generator($collection))
+	->generate('dummy/name', ['locale' => 'en', 'name' => 'test']);
 ```
 
 Yukarıdaki örneğin çıktısı
@@ -46,8 +46,8 @@ $collection->add(
 ```
 
 ```php
-$generator = new UrlGenerator($collection);
-echo $generator->generate('dummy/name/id', 'name' => 'test', 'id' => 5]);
+echo (new Obullo\Router\Generator($collection))
+	->generate('dummy/name/id', 'name' => 'test', 'id' => 5]);
 ```
 
 Yukarıdaki örneğin çıktısı

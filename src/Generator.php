@@ -1,6 +1,6 @@
 <?php
 
-namespace Obullo\Router\Url;
+namespace Obullo\Router;
 
 use Obullo\Router\{
     RouteCollection,
@@ -16,7 +16,7 @@ use InvalidArgumentException;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class UrlGenerator implements UrlGeneratorInterface
+class Generator implements GeneratorInterface
 {
     protected $collection;
 

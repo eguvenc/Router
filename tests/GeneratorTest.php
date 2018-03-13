@@ -4,7 +4,7 @@ use Obullo\Router\{
     Route,
     RequestContext,
     RouteCollection,
-    Url\UrlGenerator
+    Generator
 };
 use Obullo\Router\Types\{
     StrType,
@@ -17,7 +17,7 @@ use Obullo\Router\Types\{
     TwoDigitDayType,
     TranslationType
 };
-class UrlGeneratorTest extends PHPUnit_Framework_TestCase
+class GeneratorTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
@@ -41,19 +41,18 @@ class UrlGeneratorTest extends PHPUnit_Framework_TestCase
 
         $this->collection = new RouteCollection($this->config, $this->context);
         $this->collection->add('dummy', new Route('GET', '/<locale:locale>/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController::dummy'));
-        $this->collection->add('dummy2', new Route('GET', '/dummy2/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
+        $this->collection->add('slug', new Route('GET', '/slug/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
         $this->collection->add('test', new Route('GET', '/test/me', 'App\Controller\DefaultController::dummy'));
     }
 
     public function testGenerate()            
     {
-        $url = new UrlGenerator($this->collection);
-        $str = $url->generate('dummy', ['locale' => 'en', 'name' => 'test', 'id' => 5]);
-        $str2 = $url->generate('dummy2', ['slug_' => 'abcd-123_']);
-        $test = $url->generate('test');
+        $dummy = (new Generator($this->collection))->generate('dummy', ['locale' => 'en', 'name' => 'test', 'id' => 5]);
+        $slug  = (new Generator($this->collection))->generate('slug', ['slug_' => 'abcd-123_']);
+        $test  = (new Generator($this->collection))->generate('test');
 
-        $this->assertEquals($str, '/en/dummy/test/5');
-        $this->assertEquals($str2, '/dummy2/abcd-123_');
+        $this->assertEquals($dummy, '/en/dummy/test/5');
+        $this->assertEquals($slug, '/slug/abcd-123_');
         $this->assertEquals($test, '/test/me');
     }
 }

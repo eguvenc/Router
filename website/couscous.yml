@@ -2,7 +2,7 @@ template:
     directory: .
     url: https://github.com/Obullo/CouscousTemplate.git
 
-title: Obullo Php7 Router.
+title: Obullo / Router.
 
 languages: ["en", "tr"]
 defaultLanguage: en

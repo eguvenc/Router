@@ -130,7 +130,7 @@ class DummyController
 
 ## Türler
 
-[Types.md](/tr/types.md)
+[Türler](/tr/types.md)
 
 ## Yükleyiciler
 
@@ -158,7 +158,7 @@ class DummyController
 
 ## Url üretici
 
-[UrlGenerator.md](/tr/url-generator.md)
+[Generator.md](/tr/generator.md)
 
 ## Performans
 

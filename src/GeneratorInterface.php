@@ -1,14 +1,14 @@
 <?php
 
-namespace Obullo\Router\Url;
+namespace Obullo\Router;
 
 /**
- * Url Generator interface
+ * Generator interface
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-interface UrlGeneratorInterface
+interface GeneratorInterface
 {
 	/**
 	 * Generate url

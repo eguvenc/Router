@@ -228,15 +228,15 @@ footer p { margin: 0 0 5px; }
 @media screen and (min-width: 1450px) {
     body>header {
         max-width: 1400px;
-        padding-right: 252px;
-        padding-left: 252px;
+        padding-right: 0px;
+        padding-left: 0px;
     }
 }
 @media screen and (min-width: 1800px) {
     body>header {
         max-width: 1540px;
-        padding-right: 322px;
-        padding-left: 322px;
+        padding-right: 0px;
+        padding-left: 0px;
     }
 }
 @media screen and (max-width: 930px) {
