@@ -27,7 +27,7 @@
                 <input type="checkbox" id="language-select">
                 <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
-                    <a href="/types.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/en/types.html"><img src="/assets/flags/en.png"></a>
                     <a href="/tr/types.html"><img src="/assets/flags/tr.png"></a>
                 </div>
                 <script>
@@ -144,15 +144,15 @@ $config = new Zend\Config\Config($configArray);</code></pre>
     }
 }</code></pre>
 <ul>
-<li><code>regex</code> değişkeni içerisindeki <code>%s</code> değeri <code>&lt;int:id&gt;</code> gibi bir türe ilişkin ismin <code>(?&lt;id&gt;\d+)</code> ifadesine dönüştürülmesini sağlar.</li>
+<li><code>regex</code> değişkeni içerisindeki <code>%s</code> değeri <code>&lt;int:id&gt;</code> gibi bir türün <code>(?&lt;id&gt;\d+)</code> ifadesine dönüştürülmesini sağlar.</li>
 <li><code>toPhp</code> metodu gelen argüman türünü php içerisinde kullanılmadan önce belirlenen türe dönüştürür.</li>
-<li><code>toUrl</code> metodu <code>%s</code> biçimindeki değerleri <code>sprintf</code> ile biçimlendirir ve <code>UrlGenerator</code> sınıfı çağırıldığında url linkleri oluşturmanızı sağlar.</li>
+<li><code>toUrl</code> metodu <code>%s</code> biçimindeki değerleri <code>sprintf</code> ile biçimlendirir ve <code>Generator</code> sınıfı çağırıldığında url linkleri oluşturmanızı sağlar.</li>
 <li><code>Type</code> sınıfına genişleyerek kendi türlerinizi de oluşturabilirsiniz.</li>
 </ul>
 <p>Tanımlı tür fonksiyonlarından yeni bir düzenli ifade elde etmek için construct metodu ikinci parametresi kullanılabilir.</p>
 <pre><code class="language-php">new SlugType('&lt;slug:slug&gt;');
 new SlugType('&lt;slug:slug_&gt;', '(?&lt;%s&gt;[\w-_]+)');  // slug with underscore</code></pre>
-<p>Klonlanan ikinci türe ait ismi değiştirmeniz gerekir. Yukarıdaki örnekte slug türü <code>&lt;slug:slug_&gt;</code> ismi ile klonlanarak alt çizgi desteği eklendi. </p>
+<p>Klonlanan türe ait ismi değiştirmeniz gerekir. Yukarıdaki örnekte slug türü alt çizgi desteği eklemek için <code>&lt;slug:slug_&gt;</code> olarak klonlandı. </p>
 <!-- CONTENT END -->
 
             </article>
@@ -172,7 +172,7 @@ new SlugType('&lt;slug:slug_&gt;', '(?&lt;%s&gt;[\w-_]+)');  // slug with unders
 
 
 <!-- FOOTER END -->
-            Website generated with <a href="http://couscous.io">Couscous</a>.
+            Generated with <a href="http://couscous.io">Couscous</a>.
             </footer>
         </main>
 

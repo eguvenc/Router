@@ -15,7 +15,7 @@ $ composer require obullo/router
 
 ## Host konfigürasyonu
 
-[Configuration.md](/tr/Configuration.md)
+[Configuration.md](/tr/configuration.md)
 
 ## Gereksinimler
 
@@ -158,7 +158,7 @@ class DummyController
 
 ## Url üretici
 
-[UrlGenerator.md](/tr/url-generator.md)
+[Generator.md](/tr/generator.md)
 
 ## Performans
 

@@ -35,7 +35,7 @@ echo $route->getPattern(); //  "/users/example/(?\d+)/(?\w+)"
 
 ### Yaml içinde pipe
 
-Eğer en yüksek seviyedeki bir kuralın son karakteri forward slash `"/"` ile bitiyorsa bu kural pipe olarak işlem görür.  Örnek `"users/"`.
+Eğer en yüksek seviyedeki bir kuralın son karakteri `"/"` ile bitiyorsa bu kural pipe olarak işlem görür.
 
 ```
 users/:

@@ -5,33 +5,34 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
-> Obullo router <a href="https://docs.djangoproject.com/en/2.0/topics/http/urls/">Django Url Dispatcher</a> kütüphanesinden ilham alınarak geliştirilmiş bağımsız bir route paketidir.
+> Obullo router is a standalone route package inspired by the <a href="https://docs.djangoproject.com/en/2.0/topics/http/urls/">Django Url Dispatcher</a> package.
 
-## Yükleme
+
+## Install
 
 ``` bash
 $ composer require obullo/router
 ```
 
-## Host konfigürasyonu
+## Host configuration
 
-[Configuration.md](/tr/Configuration.md)
+[Configuration.md](/en/configuration.md)
 
-## Gereksinimler
+## Requirements
 
-Bu versiyon aşağıdaki PHP sürümleri tarafından destekleniyor.
+The following versions of PHP are supported by this version.
 
 * 7.0
 * 7.1
 * 7.2
 
-## Test
+## Testing
 
 ``` bash
 $ vendor/bin/phpunit
 ```
 
-## Hızlı başlangıç
+## Quick start
 
 ```php
 require '../vendor/autoload.php';
@@ -53,7 +54,7 @@ $configArray = array(
 $config = new Zend\Config\Config($configArray);
 ```
 
-Psr7 İsteği
+Psr7 Request
 
 ```php
 $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
@@ -61,7 +62,7 @@ $context = new RequestContext;
 $context->fromRequest($request);
 ```
 
-Route Kolleksiyonu
+Route Collection
 
 ```php
 $collection = new RouteCollection($config);
@@ -78,7 +79,7 @@ $collection->add(
 );
 ```
 
-Route Sınıfı
+Route Class
 
 ```php
 $route = $collection->get('dummy');
@@ -89,7 +90,7 @@ echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)"
 echo $route->getStack()[0]; // App\Middleware\Dummy::class
 ```
 
-Url Çözümleme
+Dispatching
 
 ```php
 $router = new Router($collection);
@@ -111,7 +112,7 @@ if ($route = $router->matchRequest()) {
 }
 ```
 
-App\Controller\DummyController örneği
+App\Controller\DummyController
 
 ```php
 namespace App\Controller;
@@ -128,38 +129,38 @@ class DummyController
 }
 ```
 
-## Türler
+## Types
 
-[Türler](/tr/types.md)
+[Types.md](/en/types.md)
 
-## Yükleyiciler
+## Loaders
 
-[Loaders.md](/tr/loaders.md)
+[Loaders.md](/en/loaders.md)
 
-## Pipe ile gruplama
+## Pipes
 
-[Pipes.md](/tr/pipes.md)
+[Pipes.md](/en/pipes.md)
 
-## Url çözümleme
+## Router
 
-[Router.md](/tr/router.md)
+[Router.md](/en/router.md)
 
-## Koşullu tanımlamalar
+## Route Conditions
 
-[RouteConditions.md](/tr/route-conditions.md)
+[RouteConditions.md](/en/route-conditions.md)
 
-## Katmanlar
+## Stack
 
-[Stack.md](/tr/stack.md)
+[Stack.md](/en/stack.md)
 
-## Yerelleştirme
+## Translation
 
-[Translation.md](/tr/translation.md)
+[Translation.md](/en/translation.md)
 
-## Url üretici
+## Generator
 
-[Generator.md](/tr/generator.md)
+[Generator.md](/en/generator.md)
 
-## Performans
+## Performance
 
-[Performance.md](/tr/performance.md)
+[Performance.md](/en/performance.md)

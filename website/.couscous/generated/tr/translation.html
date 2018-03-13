@@ -27,7 +27,7 @@
                 <input type="checkbox" id="language-select">
                 <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
-                    <a href="/translation.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/en/translation.html"><img src="/assets/flags/en.png"></a>
                     <a href="/tr/translation.html"><img src="/assets/flags/tr.png"></a>
                 </div>
                 <script>
@@ -54,7 +54,7 @@
     ]
 );
 $config = new Zend\Config\Config($configArray);</code></pre>
-<p>Dilleri belirli değerlere sınırlamak için ikinci parametreyi kullanabilirsiniz.</p>
+<p>Opsiyonel olarak, dilleri belirli değerlere sınırlamak için ikinci parametreyi kullanabilirsiniz.</p>
 <pre><code class="language-php">new TranslationType('&lt;locale:locale&gt;', '(?&lt;%s&gt;(en|de|es))');</code></pre>
 <p>Aşağıdaki gibi bir url yapımız olduğunu varsayalım.</p>
 <pre><code>http://example.com/en/dummy/test</code></pre>
@@ -96,8 +96,7 @@ $config = new Zend\Config\Config($configArray);</code></pre>
     }
 }</code></pre>
 <p>App\Controller\DummyController sınıfı</p>
-<pre><code class="language-php">
-namespace App\Controller;
+<pre><code class="language-php">namespace App\Controller;
 
 use Zend\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\RequestInterface as Request;
@@ -110,8 +109,7 @@ class DummyController
 
         return new HtmlResponse('DummyController::test #locale:'.sprintf('%02s', $locale));
     }
-}
-```s</code></pre>
+}</code></pre>
 <!-- CONTENT END -->
 
             </article>
@@ -131,7 +129,7 @@ class DummyController
 
 
 <!-- FOOTER END -->
-            Website generated with <a href="http://couscous.io">Couscous</a>.
+            Generated with <a href="http://couscous.io">Couscous</a>.
             </footer>
         </main>
 

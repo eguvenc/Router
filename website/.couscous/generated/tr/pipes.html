@@ -27,7 +27,7 @@
                 <input type="checkbox" id="language-select">
                 <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
-                    <a href="/pipes.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/en/pipes.html"><img src="/assets/flags/en.png"></a>
                     <a href="/tr/pipes.html"><img src="/assets/flags/tr.png"></a>
                 </div>
                 <script>
@@ -65,7 +65,7 @@ echo $route-&gt;getHandler(); //  "App\Controller\DefaultController::test"
 echo $route-&gt;getMethods()[0]; // GET
 echo $route-&gt;getPattern(); //  "/users/example/(?\d+)/(?\w+)"</code></pre>
 <h3 id="yaml-iinde-pipe">Yaml içinde pipe</h3>
-<p>Eğer en yüksek seviyedeki bir kuralın son karakteri forward slash <code>"/"</code> ile bitiyorsa bu kural pipe olarak işlem görür.  Örnek <code>"users/"</code>.</p>
+<p>Eğer en yüksek seviyedeki bir kuralın son karakteri <code>"/"</code> ile bitiyorsa bu kural pipe olarak işlem görür.</p>
 <pre><code>users/:
     middleware: 
         - App\Middleware\Dummy
@@ -91,7 +91,7 @@ echo $route-&gt;getPattern(); //  "/users/example/(?\d+)/(?\w+)"</code></pre>
 
 
 <!-- FOOTER END -->
-            Website generated with <a href="http://couscous.io">Couscous</a>.
+            Generated with <a href="http://couscous.io">Couscous</a>.
             </footer>
         </main>
 

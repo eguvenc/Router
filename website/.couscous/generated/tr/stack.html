@@ -27,7 +27,7 @@
                 <input type="checkbox" id="language-select">
                 <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
-                    <a href="/stack.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/en/stack.html"><img src="/assets/flags/en.png"></a>
                     <a href="/tr/stack.html"><img src="/assets/flags/tr.png"></a>
                 </div>
                 <script>
@@ -46,7 +46,7 @@
 <!-- CONTENT START -->
 <h2 id="katmanlar">Katmanlar</h2>
 <h3 id="middleware-eklemek">Middleware eklemek</h3>
-<p>Router sınıfı dördüncü parametresi bir router kuralına,</p>
+<p>Router sınıfının dördüncü parametresi bir router kuralına http katmanı tayin eder.</p>
 <pre><code class="language-php">$collection-&gt;add('dummy',
     new Route(
         ['GET','POST'],
@@ -55,7 +55,7 @@
         [App\Middleware\Dummy],
     )
 );</code></pre>
-<p>pipe sınıfı ikinci parametresi ise bir pipe nesnesine http katmanı tayin eder.</p>
+<p>Pipe sınıfında ise ikinci parametreden http katmanı gönderilir.</p>
 <pre><code class="language-php">$pipe = new Pipe('test/','App\Middleware\Dummy','&lt;str:name&gt;.example.com',['http','https']);</code></pre>
 <p>Yaml içinde,</p>
 <pre><code>users/:
@@ -89,7 +89,7 @@
 
 
 <!-- FOOTER END -->
-            Website generated with <a href="http://couscous.io">Couscous</a>.
+            Generated with <a href="http://couscous.io">Couscous</a>.
             </footer>
         </main>
 

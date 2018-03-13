@@ -27,7 +27,7 @@
                 <input type="checkbox" id="language-select">
                 <label for="language-select"><img src="/assets/flags/tr.png"></label>
                 <div class="language-select-popup" data-default-language="en">
-                    <a href="/configuration.html"><img src="/assets/flags/en.png"></a>
+                    <a href="/en/configuration.html"><img src="/assets/flags/en.png"></a>
                     <a href="/tr/configuration.html"><img src="/assets/flags/tr.png"></a>
                 </div>
                 <script>
@@ -49,11 +49,11 @@
 <p>Bu dosya router paketini yerel sunucunuzda nasıl kuracağınıza ilişkin bilgileri içerir.</p>
 </blockquote>
 <h3 id="apache-web-server">Apache web server</h3>
-<p>Apache konfigürasyon dosyanızda <code>DocumentRoot</code> konfigürasyonu <code>projeniz/public/</code> klasörüne ayarlanmış olmalıdır.</p>
+<p>Apache konfigürasyon dosyanızda <code>DocumentRoot</code> konfigürasyonu <code>projeniz/demo/public/</code> klasörüne ayarlanmış olmalıdır.</p>
 <pre><code>&lt;VirtualHost *:80&gt;
 
         ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/Router/public/
+        DocumentRoot /var/www/Router/demo/public/
 
         ServerName router
         DirectoryIndex index.php
@@ -108,7 +108,7 @@ RewriteRule ^(.*)$ index.php/$1 [L]</code></pre>
 
 
 <!-- FOOTER END -->
-            Website generated with <a href="http://couscous.io">Couscous</a>.
+            Generated with <a href="http://couscous.io">Couscous</a>.
             </footer>
         </main>
 
