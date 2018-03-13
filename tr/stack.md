@@ -3,7 +3,7 @@
 
 ### Middleware eklemek
 
-Router sınıfı dördüncü parametresi bir router kuralına,
+Router sınıfının dördüncü parametresi bir router kuralına http katmanı tayin eder.
 
 ```php
 $collection->add('dummy',
@@ -15,7 +15,8 @@ $collection->add('dummy',
     )
 );
 ```
-pipe sınıfı ikinci parametresi ise bir pipe nesnesine http katmanı tayin eder.
+
+Pipe sınıfında ise ikinci parametreden http katmanı gönderilir.
 
 ```php
 $pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);

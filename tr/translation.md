@@ -14,7 +14,7 @@ $configArray = array(
 $config = new Zend\Config\Config($configArray);
 ```
 
-Dilleri belirli değerlere sınırlamak için ikinci parametreyi kullanabilirsiniz.
+Opsiyonel olarak, dilleri belirli değerlere sınırlamak için ikinci parametreyi kullanabilirsiniz.
 
 ```php
 new TranslationType('<locale:locale>', '(?<%s>(en|de|es))');

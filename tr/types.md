@@ -131,9 +131,9 @@ class IntType extends Type
 }
 ```
 
-* `regex` değişkeni içerisindeki `%s` değeri `<int:id>` gibi bir türe ilişkin ismin `(?<id>\d+)` ifadesine dönüştürülmesini sağlar.
+* `regex` değişkeni içerisindeki `%s` değeri `<int:id>` gibi bir türün `(?<id>\d+)` ifadesine dönüştürülmesini sağlar.
 * `toPhp` metodu gelen argüman türünü php içerisinde kullanılmadan önce belirlenen türe dönüştürür.
-* `toUrl` metodu `%s` biçimindeki değerleri `sprintf` ile biçimlendirir ve `UrlGenerator` sınıfı çağırıldığında url linkleri oluşturmanızı sağlar.
+* `toUrl` metodu `%s` biçimindeki değerleri `sprintf` ile biçimlendirir ve `Generator` sınıfı çağırıldığında url linkleri oluşturmanızı sağlar.
 * `Type` sınıfına genişleyerek kendi türlerinizi de oluşturabilirsiniz.
 
 
@@ -144,4 +144,4 @@ new SlugType('<slug:slug>');
 new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)');  // slug with underscore
 ```
 
-Klonlanan ikinci türe ait ismi değiştirmeniz gerekir. Yukarıdaki örnekte slug türü `<slug:slug_>` ismi ile klonlanarak alt çizgi desteği eklendi. 
+Klonlanan türe ait ismi değiştirmeniz gerekir. Yukarıdaki örnekte slug türü alt çizgi desteği eklemek için `<slug:slug_>` olarak klonlandı. 
