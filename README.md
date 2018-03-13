@@ -14,10 +14,6 @@
 $ composer require obullo/router
 ```
 
-## Host configuration
-
-[Configuration.md](/tr/configuration.md)
-
 ## Requirements
 
 The following versions of PHP are supported by this version.
