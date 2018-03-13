@@ -129,38 +129,6 @@ class DummyController
 }
 ```
 
-## Types
+## Documentation
 
-[Types.md](/en/types.md)
-
-## Loaders
-
-[Loaders.md](/en/loaders.md)
-
-## Pipes
-
-[Pipes.md](/en/pipes.md)
-
-## Router
-
-[Router.md](/en/router.md)
-
-## Route Conditions
-
-[RouteConditions.md](/en/route-conditions.md)
-
-## Stack
-
-[Stack.md](/en/stack.md)
-
-## Translation
-
-[Translation.md](/en/translation.md)
-
-## Generator
-
-[Generator.md](/en/generator.md)
-
-## Performance
-
-[Performance.md](/en/performance.md)
+Documents are available at <a href="http://router.obullo.com/">http://router.obullo.com/</a>
