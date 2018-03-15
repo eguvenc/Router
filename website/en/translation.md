@@ -4,14 +4,13 @@
 Your route rules require that the `TranslationType` class be configured to include multiple language support.
 
 ```php
-$configArray = array(
+$config = array(
     'types' => [
         new IntType('<int:id>'),
         new StrType('<str:name>'),
         new TranslationType('<locale:locale>'),
     ]
 );
-$config = new Zend\Config\Config($configArray);
 ```
 
 Optionally, you can use the second parameter to limit the languages to specific values.

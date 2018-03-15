@@ -19,7 +19,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
     public function setup()
     {
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $configArray = array(
+        $config = array(
             'types' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
@@ -31,7 +31,6 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
                 new TranslationType('<locale:locale>'),
             ]
         );
-        $config = new Zend\Config\Config($configArray);
         $context = new RequestContext;
         $context->setPath('/dummy/test');
         $context->setMethod('GET');

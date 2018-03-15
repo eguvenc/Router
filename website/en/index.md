@@ -45,13 +45,12 @@ use Obullo\Router\Types\{
     StrType,
     IntType
 };
-$configArray = array(
+$config = array(
     'types' => [
         new IntType('<int:id>'),
         new StrType('<str:name>'),
     ]
 );
-$config = new Zend\Config\Config($configArray);
 ```
 
 Psr7 Request

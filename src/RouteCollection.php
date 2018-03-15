@@ -8,7 +8,6 @@ use Obullo\Router\{
     Exception\UndefinedTypeException,
     Traits\RequestContextAwareTrait
 };
-use ArrayAccess;
 use ArrayIterator;
 use IteratorAggregate;
 use Countable;
@@ -33,7 +32,7 @@ class RouteCollection implements IteratorAggregate, Countable
      * 
      * @param ArrayAccess $config config
      */
-	public function __construct(ArrayAccess $config)
+	public function __construct($config)
 	{
         foreach ($config['types'] as $object) {
             $type = $object->getType();

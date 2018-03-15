@@ -20,7 +20,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function setup()
     {
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $configArray = array(
+        $config = array(
             'types' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
@@ -32,7 +32,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
                 new TranslationType('<locale:locale>'),
             ]
         );
-        $this->config = new Zend\Config\Config($configArray);
+        $this->config = $config;
         $this->context = new RequestContext;
         $this->context->setPath('/test/dummy/test/55');
         $this->context->setMethod('GET');

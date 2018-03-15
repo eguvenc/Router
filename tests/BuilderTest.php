@@ -24,7 +24,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $file = dirname(__DIR__).'/tests/Resources/routes.yaml';
         $this->routes = Yaml::parseFile($file);
 
-        $configArray = array(
+        $config = array(
             'types' => [
                 new IntType('<int:id>'),  // \d+
                 new StrType('<str:name>'),     // \w+
@@ -36,7 +36,6 @@ class BuilderTest extends PHPUnit_Framework_TestCase
                 new TranslationType('<locale:locale>'),
             ]
         );
-        $config = new Zend\Config\Config($configArray);
         $context = new RequestContext;
         $context->fromRequest($request);
 

@@ -4,7 +4,7 @@
 > Route types manage the arguments in a route more flexibly by increasing the security.
 
 ```php
-$configArray = array(
+$config = array(
     'types' => [
         new IntType('<int:id>'),
         new StrType('<str:name>'),
@@ -16,7 +16,6 @@ $configArray = array(
         new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)'), // slug with underscore
     ]
 );
-$config = new Zend\Config\Config($configArray);
 ```
 
 > Instead of the `Zend\Config`, you can use any configuration package that extends to the `ArrayAccess` class.

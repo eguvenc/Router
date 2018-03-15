@@ -4,7 +4,7 @@
 > Türler route kuralları içerisindeki argümanların daha esnek bir biçimde yönetilmesini sağlar ve güvenliği arttırır.
 
 ```php
-$configArray = array(
+$config = array(
     'types' => [
         new IntType('<int:id>'),
         new StrType('<str:name>'),
@@ -16,7 +16,6 @@ $configArray = array(
         new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)'), // slug with underscore
     ]
 );
-$config = new Zend\Config\Config($configArray);
 ```
 
 > `Zend\Config` paketi yerine `ArrayAccess` sınıfına genişleyen herhangi bir konfigürasyon paketi kullanabilirsiniz.

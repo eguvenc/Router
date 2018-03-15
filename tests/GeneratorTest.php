@@ -35,7 +35,7 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
             ]
         );
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $this->config = new Zend\Config\Config($configArray);
+        $this->config  = $configArray;
         $this->context = new RequestContext;
         $this->context->fromRequest($request);
 

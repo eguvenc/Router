@@ -4,14 +4,13 @@
 Route kurallarınıza çoklu dil desteği eklemek için `TranslationType` sınıfının konfigüre edilmesi gerekir. 
 
 ```php
-$configArray = array(
+$config = array(
     'types' => [
         new IntType('<int:id>'),
         new StrType('<str:name>'),
         new TranslationType('<locale:locale>'),
     ]
 );
-$config = new Zend\Config\Config($configArray);
 ```
 
 Opsiyonel olarak, dilleri belirli değerlere sınırlamak için ikinci parametreyi kullanabilirsiniz.

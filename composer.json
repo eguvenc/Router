@@ -1,16 +1,16 @@
 {
     "name": "obullo/router",
     "type": "library",
-    "description": "Php7 router inspired from Django Url Dispatcher. Secure and Fast.",
+    "description": "Php7 standalone router inspired by the Django Url Dispatcher package. Easy to use and Secure.",
     "keywords": [
+        "route",
+        "django",
+        "url dispatcher",
         "router",
         "psr-7",
         "restful",
         "middleware",
-        "psr-15",
-        "http",
-        "zend-diactoros",
-        "zend"
+        "psr-15"
     ],
     "homepage": "http://router.obullo.com",
     "license": "MIT",
@@ -32,10 +32,6 @@
         "php": "^7.0",
         "phpunit/phpunit": "^4.8",
         "zendframework/zend-diactoros": "^1.3",
-        "obullo/stack": "^1.0",
-        "symfony/yaml": "^3.0",
-        "zendframework/zend-config": "^3.1",
-        "phroute/phroute": "^2.1",
-        "nikic/fast-route": "^1.3"
+        "symfony/yaml": "^3.0"
     }
 }
