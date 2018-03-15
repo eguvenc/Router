@@ -132,9 +132,9 @@ class DummyController
 
 [Types.md](/tr/types.md)
 
-## Yükleyiciler
+## Kolleksiyon oluşturucu
 
-[Loaders.md](/tr/loaders.md)
+[Builder.md](/tr/builder.md)
 
 ## Pipe ile gruplama
 

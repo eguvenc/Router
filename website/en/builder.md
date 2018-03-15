@@ -1,9 +1,9 @@
 
-## Loaders
+## Builder
 
-To make your application more understandable, you may want to keep the route collection in a file. The loaders create a route collection class by reading a route file defined in your application.
+To make your application more understandable, you may want to keep the route data in a file. Once you have read a route file defined in your application then builder will be able to create the route collection class.
 
-### Yaml file loader
+### Yaml file
 
 An example .yaml file.
 
@@ -52,13 +52,18 @@ $collection = new RouteCollection($config);
 $collection->setContext($context);
 ```
 
-Loader
+Builder
 
 ```php
-$loader = new YamlFileLoader;
-$loader->load('/var/www/MyProject/App/routes.yaml');
-$collection = $loader->build($collection);
+use Symfony\Component\Yaml\Yaml;
+
+$data = Yaml::parseFile('/var/www/MyProject/App/routes.yaml');
+
+$builder = new Builder($collection);
+$collection = $builder->build($data);
 ```
+
+* If you want to cache route data, you can do this step before the build method.
 
 Router
 
@@ -69,7 +74,7 @@ if ($route = $router->matchRequest()) {
 }
 ```
 
-### Php file loader
+### Php file
 
 An example .php file.
 
@@ -91,12 +96,11 @@ return [
 ];
 ```
 
-Loader
+Builder
 
 ```php
-$loader = new PhpFileLoader;
-$loader->load('/var/www/MyProject/App/routes.php');
-$collection = $loader->build($collection);
-```
+$data = require '/var/www/MyProject/App/routes.php';
 
-You only need to replace the loader part.
+$builder = new Builder($collection);
+$collection = $builder->build($data);
+```

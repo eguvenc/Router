@@ -3,7 +3,6 @@
 use Obullo\Router\Builder;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
-use Obullo\Router\Loader\YamlFileLoader;
 use Obullo\Router\Types\{
     StrType,
     IntType,
@@ -15,14 +14,15 @@ use Obullo\Router\Types\{
     TwoDigitDayType,
     TranslationType
 };
+use Symfony\Component\Yaml\Yaml;
+
 class BuilderTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $loader = new YamlFileLoader;
         $file = dirname(__DIR__).'/tests/Resources/routes.yaml';
-        $this->routes = $loader->load($file)->all();
+        $this->routes = Yaml::parseFile($file);
 
         $configArray = array(
             'types' => [

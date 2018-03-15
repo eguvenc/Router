@@ -1,9 +1,9 @@
 
-## Yükleyiciler
+## Kolleksiyon oluşturucu
 
-Uygulamanızı daha anlaşılabilir kılmak amacı ile route kolleksiyonunu  bir dosya içerisinde tutmak isteyebilirsiniz. Yükleyiciler uygulamanızda tanımlı olan bir route dosyasını okuyarak route kolleksiyon sınıfını oluştururlar.
+Uygulamanızı daha anlaşılabilir kılmak amacı ile route verilerinizi bir dosya içerisinde tutmak isteyebilirsiniz. Kolleksiyon oluşturucu uygulamanızda tanımlı olan bir route dosyasını okuduktan sonra route kolleksiyon sınıfını oluşturmanızı sağlar.
 
-### Yaml dosya yükleyicisi
+### Yaml dosyaları
 
 Örnek bir .yaml dosyası
 
@@ -52,13 +52,18 @@ $collection = new RouteCollection($config);
 $collection->setContext($context);
 ```
 
-Yükleyici
+Kolleksiyon oluşturucu
 
 ```php
-$loader = new YamlFileLoader;
-$loader->load('/var/www/MyProject/App/routes.yaml');
-$collection = $loader->build($collection);
+use Symfony\Component\Yaml\Yaml;
+
+$data = Yaml::parseFile('/var/www/MyProject/App/routes.yaml');
+
+$builder = new Builder($collection);
+$collection = $builder->build($data);
 ```
+
+* Eğer route verilerinin önbelleklenmesini istiyorsanız bu aşamayı build metodu aşamasından önce gerçekleştirebilirsiniz.
 
 Url Çözümleme
 
@@ -69,7 +74,7 @@ if ($route = $router->matchRequest()) {
 }
 ```
 
-### Php dosya yükleyicisi
+### Php dosyası
 
 Örnek bir .php dosyası
 
@@ -91,12 +96,11 @@ return [
 ];
 ```
 
-Yükleyici
+Kolleksiyon oluşturucu
 
 ```php
-$loader = new PhpFileLoader;
-$loader->load('/var/www/MyProject/App/routes.php');
-$collection = $loader->build($collection);
-```
+$data = require '/var/www/MyProject/App/routes.php';
 
-Bu kısımda sadece yükleyici değiştirmeniz yeterli olacaktır.
+$builder = new Builder($collection);
+$collection = $builder->build($data);
+```

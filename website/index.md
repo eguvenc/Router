@@ -133,9 +133,9 @@ class DummyController
 
 [Types.md](/en/types.md)
 
-## Loaders
+## Builder
 
-[Loaders.md](/en/loaders.md)
+[Builder.md](/en/Builder.md)
 
 ## Pipes
 
