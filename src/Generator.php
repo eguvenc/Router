@@ -49,7 +49,7 @@ class Generator implements GeneratorInterface
         }
         $pattern = $route->getPattern();
         if (empty($params)) {
-            return rtrim($pattern, '/');
+            return ($pattern == '/') ? '/' : rtrim($pattern, '/');
         }
         if (false == Self::isAssoc($params)) {
             throw new InvalidArgumentException('The url generator parameters must be key-value pairs.');
