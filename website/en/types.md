@@ -18,8 +18,6 @@ $config = array(
 );
 ```
 
-> Instead of the `Zend\Config`, you can use any configuration package that extends to the `ArrayAccess` class.
-
 ### Default types
 
 <table>

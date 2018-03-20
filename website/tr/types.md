@@ -18,8 +18,6 @@ $config = array(
 );
 ```
 
-> `Zend\Config` paketi yerine `ArrayAccess` sınıfına genişleyen herhangi bir konfigürasyon paketi kullanabilirsiniz.
-
 ### Varsayılan türler
 
 <table>

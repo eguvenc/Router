@@ -177,6 +177,16 @@ class Router
     }
 
     /**
+     * Returns to route collection
+     * 
+     * @return object
+     */
+    public function getCollection() : RouteCollection
+    {
+        return $this->collection;
+    }
+
+    /**
      * Format arguments
      * 
      * @param $args matched arguments
