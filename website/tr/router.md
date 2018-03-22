@@ -71,7 +71,7 @@ class DummyController
 }
 ```
 
-> ReflectionClass sınıfı kullanarak kontrolör sınıfı çözümlenirken dependency injection yöntemi ile bu sınıfa ait nesneleri otomatik çağırabilirsiniz.
+> Php ReflectionClass sınıfını kullanarak kontrolör sınıfı çözümlenirken dependency injection yöntemi ile bu sınıfa ait nesneleri otomatik çağırabilirsiniz.
 
 
 ### Match

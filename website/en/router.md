@@ -72,7 +72,7 @@ class DummyController
 }
 ```
 
-> Using the ReflectionClass class, you can automatically call objects belonging to this class with the dependency injection method while resolving the controller class.
+> Using the Php ReflectionClass class, you can automatically call objects belonging to this class with the dependency injection method while resolving the controller class.
 
 
 ### Match

@@ -141,4 +141,4 @@ new SlugType('<slug:slug>');
 new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)');  // slug with underscore
 ```
 
-Klonlanan türe ait ismi değiştirmeniz gerekir. Yukarıdaki örnekte slug türü alt çizgi desteği eklemek için `<slug:slug_>` olarak klonlandı. 
+Klonlanan türe ait ismi değiştirmeniz gerekir. Yukarıdaki örnekte slug türüne alt çizgi desteği ekleyebilmek için etiket `<slug:slug_>` olarak değiştirildi.
