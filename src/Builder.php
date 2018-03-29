@@ -3,11 +3,11 @@
 namespace Obullo\Router;
 
 use Obullo\Router\{
-	Pipe,
+    Pipe,
     Route,
-	RouteCollection,
+    RouteCollection,
     Exception\BadRouteException,
-	Exception\UndefinedRouteNameException
+    Exception\UndefinedRouteNameException
 };
 
 /**
@@ -18,26 +18,26 @@ use Obullo\Router\{
  */
 class Builder
 {
-	protected $collection;
+    protected $collection;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param RouteCollection $collection collection
-	 */
-	public function __construct(RouteCollection $collection)
-	{
-		$this->collection = $collection;
-	}
+    /**
+     * Constructor
+     * 
+     * @param RouteCollection $collection collection
+     */
+    public function __construct(RouteCollection $collection)
+    {
+        $this->collection = $collection;
+    }
 
-	/**
-	 * Build routes
-	 * 
-	 * @param  array  $routes rotues
-	 * @return RouteCollection object
-	 */
-	public function build(array $routes) : RouteCollection
-	{    
+    /**
+     * Build routes
+     * 
+     * @param  array  $routes rotues
+     * @return RouteCollection object
+     */
+    public function build(array $routes) : RouteCollection
+    {    
         foreach ($routes as $name => $route) {
             if (! is_array($route)) {
                 throw new BadRouteException('A route rule does not have route name in your routes.');
@@ -88,7 +88,7 @@ class Builder
             }
         }
         return $this->collection;
-	}
+    }
 
     /**
      * Returns to array
