@@ -3,6 +3,26 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.2 - 2018-03-29
+
+Updated composer.json file.
+
+### Added
+
+- Nothing
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 1.0.1 - 2018-03-21
 
 Added change log file, added getCollection method.

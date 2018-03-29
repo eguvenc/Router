@@ -24,7 +24,11 @@
     ],
     "autoload": {
         "psr-4": {
-            "Obullo\\Router\\": "src/",
+            "Obullo\\Router\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": { 
             "": ""
         }
     },
