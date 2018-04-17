@@ -2,11 +2,12 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\{
-    RequestContext,
-    Exception\BadRouteException,
-    Exception\UndefinedTypeException,
-    Traits\RequestContextAwareTrait
+use Obullo\Router\RequestContext;
+use Obullo\Router\Traits\RequestContextAwareTrait;
+use Obullo\Router\Exception\{
+    BadRouteException,
+    UndefinedTypeException,
+    RouteConfigurationException
 };
 use ArrayIterator;
 use IteratorAggregate;
@@ -32,15 +33,20 @@ class RouteCollection implements IteratorAggregate, Countable
      * 
      * @param ArrayAccess $config config
      */
-	public function __construct($config)
-	{
+    public function __construct(array $config)
+    {
+        if (! isset($config['types'])) {
+            throw new RouteConfigurationException(
+                'Please provide route types to create the route collection.'
+            );
+        }
         foreach ($config['types'] as $object) {
             $type = $object->getType();
             $tag  = $object->getTag();
             $this->rules[$type] = $object->convert()->getValue();
             $this->types[$tag]  = $object;
         }
-	}
+    }
 
     /**
      * Add pipe
@@ -62,7 +68,7 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function add(string $name, RouteInterface $route)
     {
-		$unformatted = $route->getPattern();
+        $unformatted = $route->getPattern();
         $this->validateUnformattedPattern($unformatted);
         $formatted = $this->formatPattern($unformatted);
         $host = $this->formatPattern($route->getHost());
@@ -79,7 +85,7 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function count() : int
     {
-    	return count($this->routes);
+        return count($this->routes);
     }
 
     /**
@@ -89,7 +95,7 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function all() : array
     {
-    	return $this->routes;
+        return $this->routes;
     }
 
     /**
@@ -132,7 +138,7 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function get(string $name)
     {
-    	return isset($this->routes[$name]) ? $this->routes[$name] : false;
+        return isset($this->routes[$name]) ? $this->routes[$name] : false;
     }
 
     /**
@@ -143,7 +149,7 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function remove(string $name)
     {
-    	unset($this->routes[$name]);
+        unset($this->routes[$name]);
     }
 
     /**
@@ -154,7 +160,7 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function formatPattern($unformatted)
     {
-    	return str_replace(
+        return str_replace(
             array_keys($this->rules),
             array_values($this->rules),
             $unformatted

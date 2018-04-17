@@ -3,6 +3,26 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.3 - 2018-04-17
+
+Added configuration exception feature to RouteCollection class.
+
+### Added
+
+- Added RouteConfigurationException file.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 1.0.2 - 2018-03-29
 
 Updated composer.json file.
