@@ -188,4 +188,17 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $router = new Router($collection);
         $this->assertInstanceOf('Obullo\Router\RouteCollection', $router->getCollection());
     }
+
+    public function testUrl()
+    {
+        $collection = new RouteCollection($this->config);
+        $collection->setContext($this->context);
+        $collection->add(
+            'dummy',
+            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'test.example.com','http')
+        );
+        $router = new Router($collection);
+        $dummy = $router->url('dummy', ['name' => 'test', 'id' => 5]);
+        $this->assertEquals($dummy, '/test/dummy/test/5');
+    }
 }

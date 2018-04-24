@@ -111,3 +111,17 @@ if ($route = $router->match('/dummy/test/55','example.com','http')) {
     echo $route->getHandler(); // App\Controller\DefaultController::dummy
 }
 ```
+
+### Url
+
+The Url method generates secure addresses using the Generator class according to the route name entered.
+
+```php
+echo $router->url('dummy', ['locale' => 'en', 'name' => 'test']);
+```
+
+Output of above the example
+
+```php
+// '/en/dummy/test'
+```

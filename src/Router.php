@@ -6,6 +6,7 @@ use Obullo\Router\Matcher\{
     PipeMatcher,
     RouteMatcher
 };
+use Obullo\Router\Generator;
 
 /**
  * Router
@@ -184,6 +185,19 @@ class Router
     public function getCollection() : RouteCollection
     {
         return $this->collection;
+    }
+
+    /**
+     * Url generator helper
+     * 
+     * @param  string $name   route name
+     * @param  array  $params url parameters
+     * @return string
+     */
+    public function url(string $name, $params = array())
+    {
+        $generator = new Generator($this->getCollection());
+        return $generator->generate($name, $params);
     }
 
     /**

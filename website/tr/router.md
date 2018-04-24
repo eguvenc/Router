@@ -110,3 +110,17 @@ if ($route = $router->match('/dummy/test/55','example.com','http')) {
     echo $route->getHandler(); // App\Controller\DefaultController::dummy
 }
 ```
+
+### Url
+
+Url metodu girilen route ismine göre Generator sınıfını kullanarak güvenli url adresleri üretir.
+
+```php
+echo $router->url('dummy', ['locale' => 'en', 'name' => 'test']);
+```
+
+Çıktı
+
+```php
+// '/en/dummy/test'
+```
