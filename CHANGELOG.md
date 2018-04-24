@@ -3,6 +3,27 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.4 - 2018-04-24
+
+Added url method to Router class. 
+
+### Added
+
+- Added url method to Router class.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.0.3 - 2018-04-17
 
 Added configuration exception feature to RouteCollection class.
