@@ -3,3 +3,4 @@ public/
 vendor/
 App/
 composer.lock
+.php_cs.cache
