@@ -10,12 +10,12 @@ namespace Obullo\Router;
  */
 interface GeneratorInterface
 {
-	/**
-	 * Generate url
-	 * 
-	 * @param  string $name       route name
-	 * @param  array  $parameters url parameters
-	 * @return string
-	 */
-	public function generate(string $name, $parameters = array());
+    /**
+     * Generate url
+     *
+     * @param  string $name       route name
+     * @param  array  $parameters url parameters
+     * @return string
+     */
+    public function generate(string $name, $parameters = array());
 }

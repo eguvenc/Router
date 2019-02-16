@@ -10,22 +10,24 @@ class PipeTest extends PHPUnit_Framework_TestCase
         $this->pipe = new Pipe(
             'test/',
             [
-                'App\Middleware\Dummy',
-                'App\Middleware\Test',
-            ],
-            '(?<name>\w+).example.com',
-            [
-                'http',
-                'https',
+
+                'middleware' => [
+                    'App\Middleware\Dummy',
+                    'App\Middleware\Test',
+                ],
+                'host' => '(?<name>\w+).example.com',
+                'scheme' => ['http','https'],
             ]
         );
         $this->pipe->add(
             'dummy',
             new Route(
-                'POST',
-                '/dummy/<str:name>/<int:id>',
-                'App\Controller\DefaultController::dummy',
-                ['App\Middleware\Lucky']
+                [
+                    'method' => 'POST',
+                    'path' => '/dummy/<str:name>/<int:id>',
+                    'handler' => 'App\Controller\DefaultController::dummy',
+                    'middleware' => ['App\Middleware\Lucky']
+                ]
             )
         );
     }

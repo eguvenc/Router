@@ -15,11 +15,23 @@ Definitions for optional parameter.
 ```php
 $collection->add(
     'dummy/id',
-    new Route('GET', '/<int:id>', 'App\Controller\DummyController::index')
+    new Route(
+        [
+            'method' => 'GET',
+            'path' => '/<int:id>',
+            'handler' => 'App\Controller\DummyController::index'
+        ]
+    )
 );
 $collection->add(
     'dummy/id/name',
-    new Route('GET', '/<int:id>/<str:name>', 'App\Controller\DummyController::index')
+    new Route(
+        [
+            'method' => 'GET',
+            'path' => '/<int:id>/<str:name>',
+            'handler' => 'App\Controller\DummyController::index'
+        ]
+    )
 );
 ```
 
@@ -89,9 +101,11 @@ $collection->setContext($context);
 $collection->add(
     'dummy',
     new Route(
-        'GET',
-        '/dummy/<str:name>/<int:id>',
-        'App\Controller\DefaultController::dummy'
+        [
+            'method' => 'GET',
+            'path' => '/dummy/<str:name>/<int:id>',
+            'handler' => 'App\Controller\DefaultController::dummy'
+        ]
     )
 );
 ```

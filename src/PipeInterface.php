@@ -12,7 +12,7 @@ interface PipeInterface
 {
     /**
      * Add route
-     * 
+     *
      * @param string         $name  route name
      * @param RouteInterface $route route object
      */
@@ -20,7 +20,7 @@ interface PipeInterface
 
     /**
      * Returns to pipe
-     * 
+     *
      * @return string
      */
     public function getPipe() : string;
@@ -34,22 +34,22 @@ interface PipeInterface
 
     /**
      * Set host value
-     * 
+     *
      * @param string $host host
      */
     public function setHost($host);
 
     /**
      * Returns to host
-     * 
+     *
      * @return null|string
      */
     public function getHost();
 
     /**
      * Returns to schemes
-     * 
+     *
      * @return array
      */
-    public function getSchemes() : array;  
+    public function getSchemes() : array;
 }

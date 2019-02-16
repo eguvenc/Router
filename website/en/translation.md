@@ -29,9 +29,11 @@ http://example.com/en/dummy/test
 $collection->add(
     'dummy',
     new Route(
-        'GET',
-        '/<locale:locale>/dummy/<str:name>',
-        'App\Controller\DummyController::test'
+        [
+            'method' => 'GET',
+            'path' => '/<locale:locale>/dummy/<str:name>',
+            'handler' => 'App\Controller\DummyController::test'
+        ]
     )
 );
 ```

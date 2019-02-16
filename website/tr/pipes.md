@@ -6,8 +6,23 @@ Bir api tasarlıyorsanız yada uygulamanız genişleyebilir bir uygulama ise pip
 Örneğin `users/` adında bir veri yolu oluşturursak bir pipe bu gruba ait nitelikleri url parçaları üzerinde birleştirir.
 
 ```php
-$pipe = new Pipe('users/', [App\Middleware\Dummy::class], '<str:name>.router');
-$pipe->add('test', new Route('GET', '/test', 'App\Controller\DefaultController::test'));
+$pipe = new Pipe(
+	'users/',
+	[
+		'middleware' => [App\Middleware\Dummy::class], 
+		'host' => '<str:name>.example.com'
+	]
+);
+$pipe->add(
+	'test',
+	new Route(
+		[
+			'method' => 'GET',
+			'path' => '/',
+			'handler' => 'App\Controller\DefaultController::index'
+		]
+	)
+);
 ```
 
 Http isteği `users/` gelmediği sürece bu nesneye ait route kümeleri için `preg_match` operasyonu uygulanmaz ve uygulamanız parçalara ayrıldığı için performanstan kazanılmış olur.
@@ -16,10 +31,34 @@ Http isteği `users/` gelmediği sürece bu nesneye ait route kümeleri için `p
 $collection = new RouteCollection($config);
 $collection->setContext($context);
 
-$collection->add('home', new Route('GET', '/', 'App\Controller\DefaultController::index'));
+$collection->add(
+	'home', 
+	new Route(
+		[
+			'method' => 'GET',
+			'path' => '/',
+			'handler' => 'App\Controller\DefaultController::index'
+		]
+	)
+);
 
-$pipe = new Pipe('users/example/', [App\Middleware\Dummy::class], '<str:name>.router');
-$pipe->add('dummy', new Route('GET', '/<int:id>/<str:name', 'App\Controller\DefaultController::test'));
+$pipe = new Pipe(
+	'users/example/', 
+	[
+		'middleware' => [App\Middleware\Dummy::class], 
+		'host' => '<str:name>.example.com'
+	]
+);
+$pipe->add(
+	'dummy',
+	new Route(
+		[
+			'method' => 'GET',
+			'path' => '/<int:id>/<str:name>',
+			'handler' => 'App\Controller\DefaultController::test'
+		]
+	)
+);
 $collection->addPipe($pipe);
 ```
 

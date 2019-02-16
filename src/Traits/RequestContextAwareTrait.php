@@ -16,7 +16,7 @@ trait RequestContextAwareTrait
     
     /**
      * Set request context
-     * 
+     *
      * @param RequestContext $context object
      */
     public function setContext(RequestContext $context)
@@ -26,7 +26,7 @@ trait RequestContextAwareTrait
 
     /**
      * Returns to request context
-     * 
+     *
      * @return object
      */
     public function getContext() : RequestContext

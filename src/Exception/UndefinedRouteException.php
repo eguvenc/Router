@@ -4,6 +4,6 @@ namespace Obullo\Router\Exception;
 
 use InvalidArgumentException;
 
-class UndefinedRouteNameException extends InvalidArgumentException
+class UndefinedRouteException extends InvalidArgumentException
 {
 }

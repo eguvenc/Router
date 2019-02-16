@@ -3,6 +3,32 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.1 - 2019-02-16
+
+Added url method to Router class. 
+
+### Added
+
+- Added add special route attributes functionality.
+- Added setAttribute() and getAttribute() methods to route, router and pipe classes.
+- Added AttributeAwareTrait class.
+- The construct parameter of route class has been converted to array type to send route attributes as associative array.
+- The construct parameter of pipe class has been converted to array type to send pipe attributes as associative array.
+
+### Deprecated
+
+- Deprecated adding route and pipe parameters one by one. Instead of we use one parameter as array.
+- Deprecated StackAwareInferface.
+
+### Removed
+
+- UndefinedRouteNameException renamed as UndefinedRouteException.
+- Removed Stack folder.
+
+### Fixed
+
+- Nothing.
+
 ## 1.0.4 - 2018-04-24
 
 Added url method to Router class. 

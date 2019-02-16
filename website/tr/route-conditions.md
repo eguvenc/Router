@@ -10,11 +10,12 @@ Aşağıdaki route kuralının çalışabilmesi `test.example.com` host eşleşm
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [],
-        'test.example.com'
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'host' => 'test.example.com'
+        ]
     )
 );
 ```
@@ -24,11 +25,12 @@ Aşağıdaki route kuralının çalışabilmesi  `(?<name>\w+).example.com` host
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [],
-        '<str:name>.example.com'
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'host' => '<str:name>.example.com'
+        ]
     )
 );
 ```
@@ -47,7 +49,14 @@ if ($router->matchRequest()) {
 Pipe için bir örnek
 
 ```php
-$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
+$pipe = new Pipe(
+    'test/',
+    [
+        'middleware' => App\Middleware\Dummy::class,
+        'host' => '<str:name>.example.com',
+        'scheme' => ['https']
+    ]
+);
 ```
 
 ### Scheme
@@ -57,12 +66,13 @@ Bir route yada pipe kuralının son parametresi eşleşmeyi uri scheme koşuluna
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [],
-        'test.example.com'
-        ['http', 'https']
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'host' => 'test.example.com'
+            'scheme' => ['http', 'https']
+        ]
     )
 );
 ```
@@ -87,8 +97,18 @@ admin/:
 Herbir alt domain adına ait farklı route dosyası yükleyen bir yükleyici.
 
 ```php
-$subdomain = strstr($context->getHost(), '.example.com', true); // admin
+use Symfony\Component\Yaml\Yaml;
 
-$loader->load('/var/www/MyProject/'.$subdomain.'_routes.yaml');
-$collection = $loader->build($collection);
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$context = new RequestContext;
+$context->fromRequest($request);
+
+$collection = new RouteCollection($config);
+$collection->setContext($context);
+
+$subdomain = strstr($context->getHost(), '.example.com', true); // admin.example.com
+$data = Yaml::parseFile('/var/www/MyProject/'.$subdomain.'/routes.yaml');
+
+$builder = new Builder($collection);
+$collection = $builder->build($data);
 ```

@@ -4,11 +4,9 @@ namespace Obullo\Router;
 
 use Obullo\Router\RequestContext;
 use Obullo\Router\Traits\RequestContextAwareTrait;
-use Obullo\Router\Exception\{
-    BadRouteException,
-    UndefinedTypeException,
-    RouteConfigurationException
-};
+use Obullo\Router\Exception\BadRouteException;
+use Obullo\Router\Exception\UndefinedTypeException;
+use Obullo\Router\Exception\RouteConfigurationException;
 use ArrayIterator;
 use IteratorAggregate;
 use Countable;
@@ -30,7 +28,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Constructor
-     * 
+     *
      * @param ArrayAccess $config config
      */
     public function __construct(array $config)
@@ -50,7 +48,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Add pipe
-     * 
+     *
      * @param PipeInterface $pipe object
      */
     public function addPipe(PipeInterface $pipe)
@@ -62,7 +60,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Add route
-     * 
+     *
      * @param string         $name  route name
      * @param RouteInterface $route object
      */
@@ -80,7 +78,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Returns to number of routes
-     * 
+     *
      * @return int
      */
     public function count() : int
@@ -90,7 +88,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Returns to all toutes
-     * 
+     *
      * @return array
      */
     public function all() : array
@@ -100,7 +98,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Returns to all pipes
-     * 
+     *
      * @return array
      */
     public function getPipes() : array
@@ -122,7 +120,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Returns types
-     * 
+     *
      * @return array
      */
     public function getTypes()
@@ -132,7 +130,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Returns to selected route
-     * 
+     *
      * @param  string $name name
      * @return boolean
      */
@@ -143,7 +141,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Remove route
-     * 
+     *
      * @param  string $name name
      * @return void
      */
@@ -154,7 +152,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Format pattern
-     * 
+     *
      * @param  string $unformatted string
      * @return string
      */
@@ -169,14 +167,14 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Validate route types
-     * 
+     *
      * @param  string $pattern types
      * @return void
      */
     protected function validateUnformattedPattern(string $pattern)
     {
         foreach (explode('/', $pattern) as $value) {
-            if ((substr($value, 0, 1) == '<' && substr($value, -1) == '>') && ! array_key_exists($value, $this->rules))  {
+            if ((substr($value, 0, 1) == '<' && substr($value, -1) == '>') && ! array_key_exists($value, $this->rules)) {
                 throw new UndefinedTypeException(
                     sprintf(
                         'The route type %s you used is undefined.',

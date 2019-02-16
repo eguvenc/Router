@@ -1,12 +1,12 @@
 <?php
 
-namespace Obullo\Router\Stack;
+namespace Obullo\Router\Traits;
 
 trait StackAwareTrait
 {
     /**
      * Returns to all middlewares
-     * 
+     *
      * @return array
      */
     public function getStack() : array

@@ -7,19 +7,14 @@ class RouteMatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $route = new Route(
-            'GET',
-            '/dummy/(?<name>\w+)/(?<id>\d+)',
-            'App\Controller\DefaultController::index',
-            [
-                'App\Middleware\Dummy'
-            ],
-            '(?<name>\w+).example.com',
-            [
-                'http',
-                'https'
-            ]
-        );
+        $route = new Route([
+            'method' => 'GET',
+            'path' => '/dummy/(?<name>\w+)/(?<id>\d+)',
+            'handler' => 'App\Controller\DefaultController::index',
+            'middleware' => ['App\Middleware\Dummy'],
+            'host' => '(?<name>\w+).example.com',
+            'scheme' => ['http','https']
+        ]);
         $route->setName('dummy');
         $this->matcher = new RouteMatcher($route);
     }

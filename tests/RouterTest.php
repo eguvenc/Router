@@ -45,8 +45,21 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
 
-        $pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
-        $pipe->add('dummy', new Route('GET', '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController::test'));
+        $pipe = new Pipe(
+            'test/',
+            [
+                'middleware' => 'App\Middleware\Dummy',
+                'host' =>  '<str:name>.example.com',
+                'scheme' => ['http','https']
+            ]
+        );
+        $pipe->add('dummy', new Route(
+            [
+                'method' => 'GET',
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController::test'
+            ]
+        ));
         $collection->addPipe($pipe);
 
         $router = new Router($collection);
@@ -63,7 +76,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'test.example.com','http')
+            new Route([
+                'method' => 'GET',
+                'path' => '/test/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController::dummy',
+                'middleware' => [],
+                'test.example.com',
+                'http'
+            ])
         );
         $router = new Router($collection);
         $router->popPipe();
@@ -79,7 +99,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'(?<name>\w+).example.com','https')
+            new Route([
+                'method' => 'GET',
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController::dummy',
+                'middleware' => [],
+                'host' => '(?<name>\w+).example.com',
+                'scheme' => 'https'
+            ])
         );
         $router = new Router($collection);
         $route = $router->match('/dummy/test/55','admin.example.com','https');
@@ -96,7 +123,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'(?<name>\w+).example.com','http')
+            new Route([
+                'method' => 'GET',
+                'path' => '/test/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController::dummy',
+                'middleware' => [],
+                'host' => '(?<name>\w+).example.com',
+                'scheme' => 'http'
+            ])
         );
         $router = new Router($collection);
         $route = $router->matchRequest();
@@ -114,12 +148,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->add(
             'dummy',
             new Route(
-                'GET',
-                '/test/dummy/<str:name>/<int:id>',
-                'App\Controller\DefaultController::dummy',
-                ['App\Middleware\Dummy','App\Middleware\Test'],
-                '(?<name>\w+).example.com',
-                'http'
+                [
+                    'method' => 'GET',
+                    'path' => '/test/dummy/<str:name>/<int:id>',
+                    'handler' => 'App\Controller\DefaultController::dummy',
+                    'middleware' => ['App\Middleware\Dummy','App\Middleware\Test'],
+                    'host' => '(?<name>\w+).example.com',
+                    'scheme' => 'http'
+                ]
             )
         );
         $router = new Router($collection);
@@ -133,7 +169,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'(?<name>\w+).example.com','http')
+            new Route([
+                'method' => 'GET',
+                'path' => '/test/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController::dummy',
+                'middleware' => [],
+                'host' => '(?<name>\w+).example.com',
+                'scheme' => 'http'
+            ])
         );
         $router = new Router($collection);
         $router->matchRequest();
@@ -146,7 +189,13 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'(?<name>\w+).example.com','http')
+            new Route([
+                'method' => 'GET',
+                'path' => '/test/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController::dummy',
+                'host' => '(?<name>\w+).example.com',
+                'scheme' => 'http'
+            ])
         );
         $router = new Router($collection);
         $router->matchRequest();
@@ -160,7 +209,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'test.example.com','http')
+            new Route(
+                [
+                    'method' => 'GET',
+                    'path' => '/test/dummy/<str:name>/<int:id>',
+                    'handler' => 'App\Controller\DefaultController::dummy',
+                    'host' => 'test.example.com',
+                    'scheme' => 'http'
+                ]
+            )
         );
         $router = new Router($collection);
         $router->matchRequest();
@@ -170,7 +227,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'(?<name>\w+).example.com','http')
+            new Route(
+                [
+                    'method' => 'GET',
+                    'path' => '/test/dummy/<str:name>/<int:id>',
+                    'handler' => 'App\Controller\DefaultController::dummy',
+                    'host' => '(?<name>\w+).example.com',
+                    'scheme' => 'http'
+                ]
+            )
         );
         $router = new Router($collection);
         $router->matchRequest();
@@ -183,7 +248,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'test.example.com','http')
+            new Route(
+                [
+                    'method' => 'GET',
+                    'path' => '/test/dummy/<str:name>/<int:id>',
+                    'handler' => 'App\Controller\DefaultController::dummy',
+                    'host' => 'test.example.com',
+                    'scheme' => 'http'
+                ]
+            )
         );
         $router = new Router($collection);
         $this->assertInstanceOf('Obullo\Router\RouteCollection', $router->getCollection());
@@ -195,7 +268,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->setContext($this->context);
         $collection->add(
             'dummy',
-            new Route('GET','/test/dummy/<str:name>/<int:id>','App\Controller\DefaultController::dummy',[],'test.example.com','http')
+            new Route(
+                [
+                    'method' => 'GET',
+                    'path' => '/test/dummy/<str:name>/<int:id>',
+                    'handler' => 'App\Controller\DefaultController::dummy',
+                    'host' => 'test.example.com',
+                    'scheme' => 'http'
+                ]
+            )
         );
         $router = new Router($collection);
         $dummy = $router->url('dummy', ['name' => 'test', 'id' => 5]);

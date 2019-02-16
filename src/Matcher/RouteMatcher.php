@@ -12,22 +12,22 @@ use Obullo\Router\RouteInterface;
  */
 class RouteMatcher extends Matcher
 {
-	protected $route;
-	protected $arguments;
+    protected $route;
+    protected $arguments;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param RouteInterface $route route
-	 */
-	public function __construct(RouteInterface $route)
-	{
-		$this->route = $route;
-	}
+    /**
+     * Constructor
+     *
+     * @param RouteInterface $route route
+     */
+    public function __construct(RouteInterface $route)
+    {
+        $this->route = $route;
+    }
 
-	/**
+    /**
      * Returns to true if route matched with path otherwise false
-     * 
+     *
      * @param  string $path path
      * @return boolean
      */
@@ -35,21 +35,21 @@ class RouteMatcher extends Matcher
     {
         $pattern = $this->route->getPattern();
         $arguments = array();
-        if ($path == $pattern OR preg_match('#^'.$pattern.'$#', $path, $arguments)) {
-        	array_shift($arguments);
-        	$this->arguments = $arguments;
-        	return true;
+        if ($path == $pattern or preg_match('#^'.$pattern.'$#', $path, $arguments)) {
+            array_shift($arguments);
+            $this->arguments = $arguments;
+            return true;
         }
         return false;
     }
 
     /**
-	 * Returns to matched route arguments
-	 * 
-	 * @return array
-	 */
-	public function getArguments() : array
-	{
-		return $this->arguments;
-	}
+     * Returns to matched route arguments
+     *
+     * @return array
+     */
+    public function getArguments() : array
+    {
+        return $this->arguments;
+    }
 }

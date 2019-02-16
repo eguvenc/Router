@@ -66,14 +66,16 @@ Route Collection
 ```php
 $collection = new RouteCollection($config);
 $collection->setContext($context);
-$collection->add('home', new Route('GET', '/', 'App\Controller\DefaultController::index'));
+$collection->add('home', new Route(['path' => '/', 'handler' => 'App\Controller\DefaultController::index']));
 $collection->add(
     'dummy',
     new Route(
-        'GET',
-        '/dummy/index/<int:id>/<str:name>',
-        'App\Controller\DummyController::index'
-        ['App\Middleware\Dummy::class']
+        [
+            'method' => 'GET',
+            'path' => '/dummy/index/<int:id>/<str:name>',
+            'handler' => 'App\Controller\DummyController::index'
+            'middleware' => ['App\Middleware\Dummy::class']
+        ]
     )
 );
 ```
@@ -132,9 +134,9 @@ class DummyController
 
 [Types.md](/en/types.md)
 
-## Loaders
+## Builder
 
-[Loaders.md](/en/loaders.md)
+[Builder.md](/en/builder.md)
 
 ## Pipes
 
@@ -159,6 +161,10 @@ class DummyController
 ## Generator
 
 [Generator.md](/en/generator.md)
+
+## Attributes
+
+[Attributes.md](/en/attributes.md)
 
 ## Performance
 

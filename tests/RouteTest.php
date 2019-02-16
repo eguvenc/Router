@@ -6,13 +6,19 @@ class RouteTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-    	$this->route = new Route(['GET','POST'], '/dummy/(?<name>\w+)', 'App\Controller\DefaultController:index',
-    		[
-    			'App\Middleware\Dummy',
-    			'App\Middleware\Lucky',
-    		],
-    		'test.example.com',
-    		['http','https']
+    	$this->route = new Route(
+            [
+                'method' => ['GET','POST'],
+                'path' => '/dummy/(?<name>\w+)',
+                'handler' => 'App\Controller\DefaultController:index',
+                'middleware' => [
+                    'App\Middleware\Dummy',
+                    'App\Middleware\Lucky',
+                ],
+                'host' => 'test.example.com',
+                'scheme' => ['http','https'],
+                '$variable' => 'test attribute'
+            ]
     	);
     	$this->route->setArguments(['name' => 'test', 'id' => 5]);
     }
@@ -92,6 +98,17 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
     	$this->route->setPattern('/dummy/(?<name>\w+)/(?<id>\d+)');
     	$this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $this->route->getPattern());
+    }
+
+    public function testGetAttribute()
+    {
+        $this->assertEquals('test attribute', $this->route->getAttribute('variable'));
+    }
+
+    public function testSetAttribute()
+    {
+        $this->route->setAttribute('foo', 'bar');
+        $this->assertEquals('bar', $this->route->getAttribute('foo'));
     }
 
     public function testGetStack()

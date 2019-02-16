@@ -8,10 +8,12 @@ Router sınıfının dördüncü parametresi bir router kuralına http katmanı 
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [App\Middleware\Dummy],
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'middleware' =>  [App\Middleware\Dummy::class],
+        ]
     )
 );
 ```
@@ -19,7 +21,13 @@ $collection->add('dummy',
 Pipe sınıfında ise ikinci parametreden http katmanı gönderilir.
 
 ```php
-$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
+$pipe = new Pipe('test/',
+    [
+        'middleware' => App\Middleware\Dummy::class,
+        'host' => '<str:name>.example.com',
+        'scheme' => ['http','https']
+    ]
+);
 ```
 
 Yaml içinde,

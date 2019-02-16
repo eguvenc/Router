@@ -6,8 +6,23 @@ If you are designing an API or an expandable application, grouping the applicati
 For example, when creating a data path called `users/`, a pipe combines the attributes of this group on the url.
 
 ```php
-$pipe = new Pipe('users/', [App\Middleware\Dummy::class], '<str:name>.router');
-$pipe->add('test', new Route('GET', '/test', 'App\Controller\DefaultController::test'));
+$pipe = new Pipe(
+	'users/',
+	[
+		'middleware' => [App\Middleware\Dummy::class], 
+		'host' => '<str:name>.example.com'
+	]
+);
+$pipe->add(
+	'test',
+	new Route(
+		[
+			'method' => 'GET',
+			'path' => '/',
+			'handler' => 'App\Controller\DefaultController::index'
+		]
+	)
+);
 ```
 
 As long as the http request `users/` does not exist, the `preg_match` operation is not applied to the routes of this object, and performance will be improved because your application is fragmented.
@@ -17,10 +32,34 @@ As long as the http request `users/` does not exist, the `preg_match` operation 
 $collection = new RouteCollection($config);
 $collection->setContext($context);
 
-$collection->add('home', new Route('GET', '/', 'App\Controller\DefaultController::index'));
+$collection->add(
+	'home', 
+	new Route(
+		[
+			'method' => 'GET',
+			'path' => '/',
+			'handler' => 'App\Controller\DefaultController::index'
+		]
+	)
+);
 
-$pipe = new Pipe('users/example/', [App\Middleware\Dummy::class], '<str:name>.router');
-$pipe->add('dummy', new Route('GET', '/<int:id>/<str:name', 'App\Controller\DefaultController::test'));
+$pipe = new Pipe(
+	'users/example/', 
+	[
+		'middleware' => [App\Middleware\Dummy::class], 
+		'host' => '<str:name>.example.com'
+	]
+);
+$pipe->add(
+	'dummy',
+	new Route(
+		[
+			'method' => 'GET',
+			'path' => '/<int:id>/<str:name>',
+			'handler' => 'App\Controller\DefaultController::test'
+		]
+	)
+);
 $collection->addPipe($pipe);
 ```
 

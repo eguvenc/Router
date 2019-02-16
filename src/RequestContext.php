@@ -12,10 +12,10 @@ use Psr\Http\Message\RequestInterface as Request;
  */
 class RequestContext
 {
-	protected $path;
-	protected $host;
+    protected $path;
+    protected $host;
     protected $method;
-	protected $scheme;
+    protected $scheme;
 
     /**
      * Updates the RequestContext information based on a Psr\Http\Message\RequestInterface
@@ -34,81 +34,81 @@ class RequestContext
 
     /**
      * Set path
-     * 
+     *
      * @param string $path path
      */
     public function setPath($path)
     {
-    	$this->path = $path;
+        $this->path = $path;
     }
 
     /**
      * Set method
-     * 
+     *
      * @param method $method method
      */
     public function setMethod($method)
     {
-    	$this->method = $method;
+        $this->method = $method;
     }
 
     /**
      * Set host
-     * 
+     *
      * @param host $host host
      */
     public function setHost($host)
     {
-    	$this->host = $host;
+        $this->host = $host;
     }
 
     /**
      * Set scheme
-     * 
+     *
      * @param string $scheme scheme
      */
     public function setScheme($scheme)
     {
-    	$this->scheme = $scheme;
+        $this->scheme = $scheme;
     }
 
     /**
      * Returns to path
-     * 
+     *
      * @return string|null
      */
     public function getPath()
     {
-    	return $this->path;
+        return $this->path;
     }
 
     /**
      * Returns to method
-     * 
+     *
      * @return string
      */
     public function getMethod()
     {
-    	return $this->method;
+        return $this->method;
     }
 
     /**
      * Returns to host
-     * 
+     *
      * @return string
      */
     public function getHost()
     {
-    	return $this->host;
+        return $this->host;
     }
 
     /**
      * Returns to scheme
-     * 
+     *
      * @return string
      */
     public function getScheme()
     {
-    	return $this->scheme;
+        return $this->scheme;
     }
 }

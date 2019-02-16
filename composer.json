@@ -11,7 +11,8 @@
         "restful",
         "middleware aware",
         "stack aware",
-        "psr15"
+        "psr15",
+        "secure"
     ],
     "homepage": "http://router.obullo.com",
     "license": "MIT",

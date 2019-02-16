@@ -16,9 +16,11 @@ An example.
 $collection->add(
     'dummy/name',
     new Route(
-        'GET',
-        '/<locale:locale>/dummy/<str:name>',
-        'App\Controller\DefaultController::dummy'
+        [
+            'method' => 'GET'
+            'path' => '/<locale:locale>/dummy/<str:name>',
+            'handler' => 'App\Controller\DefaultController::dummy'
+        ]
     )
 );
 ```
@@ -41,7 +43,13 @@ An another example.
 ```php
 $collection->add(
     'dummy/name/id',
-    new Route('GET', '/<str:name>/<int:id>', 'App\Controller\DummyController::index')
+    new Route(
+        [
+            'method' => 'GET',
+            'path' => '/<str:name>/<int:id>',
+            'handler' => 'App\Controller\DummyController::index'
+        ]
+    )
 );
 ```
 

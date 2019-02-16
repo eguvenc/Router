@@ -2,8 +2,8 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\Stack\StackAwareTrait;
-use Obullo\Router\Stack\StackAwareInterface;
+use Obullo\Router\Traits\StackAwareTrait;
+use Obullo\Router\Traits\AttributeAwareTrait;
 
 /**
  * Route
@@ -11,9 +11,10 @@ use Obullo\Router\Stack\StackAwareInterface;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class Route implements StackAwareInterface, RouteInterface
+class Route implements RouteInterface
 {
     use StackAwareTrait;
+    use AttributeAwareTrait;
 
     protected $name;
     protected $host;
@@ -33,7 +34,7 @@ class Route implements StackAwareInterface, RouteInterface
     */
     public function __construct(array $route)
     {
-        $this->route = $route;
+        $this->attributes = $route;
         $method = isset($route['method']) ? $route['method'] : 'GET';
         foreach ((array)$method as $name) {
             $this->methods[] = strtoupper($name);
@@ -177,28 +178,6 @@ class Route implements StackAwareInterface, RouteInterface
     public function getArguments() : array
     {
         return $this->arguments;
-    }
-
-    /**
-     * Set route attribute
-     *
-     * @param string $key   string
-     * @param mixed  $value value
-     */
-    public function setAttribute(string $key, $value)
-    {
-        $this->route[$key] = $value;
-    }
-
-    /**
-     * Returns to route attribute
-     *
-     * @param  string $key name
-     * @return mixed
-     */
-    public function getAttribute(string $key)
-    {
-        return isset($this->route[$key]) ? $this->route[$key] : null;
     }
 
     /**

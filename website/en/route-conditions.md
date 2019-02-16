@@ -10,11 +10,12 @@ The following route rule depends on the `test.example.com` host match.
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [],
-        'test.example.com'
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'host' => 'test.example.com'
+        ]
     )
 );
 ```
@@ -24,11 +25,12 @@ The following route rule can be run depends on the `(?<name>\w+).example.com` ho
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [],
-        '<str:name>.example.com'
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'host' => '<str:name>.example.com'
+        ]
     )
 );
 ```
@@ -47,7 +49,14 @@ if ($router->matchRequest()) {
 An example for pipe.
 
 ```php
-$pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
+$pipe = new Pipe(
+    'test/',
+    [
+        'middleware' => App\Middleware\Dummy::class,
+        'host' => '<str:name>.example.com',
+        'scheme' => ['https']
+    ]
+);
 ```
 
 ### Scheme
@@ -57,12 +66,13 @@ A route binds the last parameter of the pipe rule to the uri scheme condition.
 ```php
 $collection->add('dummy',
     new Route(
-        ['GET','POST'],
-        '/dummy/(?<name>\w+)',
-        'App\Controller\DefaultController:index',
-        [],
-        'test.example.com'
-        ['http', 'https']
+        [
+            'method' => ['GET','POST'],
+            'path' => '/dummy/(?<name>\w+)',
+            'handler' => 'App\Controller\DefaultController:index',
+            'host' => 'test.example.com'
+            'scheme' => ['http', 'https']
+        ]
     )
 );
 ```
@@ -82,13 +92,23 @@ admin/:
         handler: App\Controller\UserController::dummy
 ```
 
-### Conditional loader
+### Conditional builder
 
-An installer solution that installs a different route file for each sub-domain name.
+A route builder solution that load a different route file for each sub-domain name.
 
 ```php
-$subdomain = strstr($context->getHost(), '.example.com', true); // admin
+use Symfony\Component\Yaml\Yaml;
 
-$loader->load('/var/www/MyProject/'.$subdomain.'_routes.yaml');
-$collection = $loader->build($collection);
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$context = new RequestContext;
+$context->fromRequest($request);
+
+$collection = new RouteCollection($config);
+$collection->setContext($context);
+
+$subdomain = strstr($context->getHost(), '.example.com', true); // admin.example.com
+$data = Yaml::parseFile('/var/www/MyProject/'.$subdomain.'/routes.yaml');
+
+$builder = new Builder($collection);
+$collection = $builder->build($data);
 ```

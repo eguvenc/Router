@@ -7,6 +7,8 @@ home:
     path: /
     handler: App\Controller\DefaultController::index
     middleware: App\Middleware\Dummy
+    $variable:
+        - test_route_value
 
 dummy:
     path: /<locale:locale>/dummy/<str:name>
@@ -21,6 +23,8 @@ test_host:
     handler: App\Controller\DefaultController::dummy
 
 user/:
+    $variable:
+        - test_pipe_value
     middleware: 
         - App\Middleware\Dummy
     dummy:

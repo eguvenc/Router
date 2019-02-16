@@ -45,21 +45,33 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testAddPipe()
     {
-        $pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
+        $pipe = new Pipe('test/',[
+            'middleware' => 'App\Middleware\Dummy',
+            'host' => '<str:name>.example.com',
+            'scheme' => ['http','https'],
+            '$variable' => 'test attribute'
+        ]);
         $this->collection->addPipe($pipe);
         $p = $this->collection->getPipes()[0];
 
         $this->assertInstanceOf('Obullo\Router\Pipe', $p);
         $this->assertEquals('(?<name>\w+).example.com', $p->getHost());
         $this->assertEquals('test/', $p->getPipe());
+        $this->assertEquals('test attribute', $p->getAttribute('variable'));
     }
 
     public function testAdd()
     {
-        $route = new Route(['GET','POST'], '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController:index',
-            'App\Middleware\Dummy',
-            '<str:name>.example.com',
-            ['http','https']
+        $route = new Route(
+            [
+                'method' => ['GET','POST'],
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController:index',
+                'middleware' => 'App\Middleware\Dummy',
+                'host' => '<str:name>.example.com',
+                'scheme' => ['http','https'],
+                '$variable' => 'test attribute'
+            ]
         );
         $this->collection->add('dummy', $route);
         $r = $this->collection->get('dummy');
@@ -70,14 +82,20 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('(?<name>\w+).example.com', $r->getHost());
         $this->assertEquals(['http','https'], $r->getSchemes());
         $this->assertEquals(['App\Middleware\Dummy'], $r->getStack());
+        $this->assertEquals('test attribute', $r->getAttribute('variable'));
     }
 
     public function testCount()
     {
-        $route = new Route(['GET','POST'], '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController:index',
-            'App\Middleware\Dummy',
-            '<str:name>.example.com',
-            ['http','https']
+        $route = new Route(
+            [
+                'method' => ['GET','POST'],
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController:index',
+                'middleware' => 'App\Middleware\Dummy',
+                'host' => '<str:name>.example.com',
+                'scheme' => ['http','https']
+            ]
         );
         $this->collection->add('dummy', $route);
         $this->collection->add('dummy2', $route);
@@ -86,10 +104,15 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testAll()
     {
-        $route = new Route(['GET','POST'], '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController:index',
-            'App\Middleware\Dummy',
-            '<str:name>.example.com',
-            ['http','https']
+        $route = new Route(
+            [
+                'method' => ['GET','POST'],
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController:index',
+                'middleware' => 'App\Middleware\Dummy',
+                'host' =>  '<str:name>.example.com',
+                'scheme' => ['http','https']
+            ]  
         );
         $this->collection->add('dummy', $route);
         $r = $this->collection->all();
@@ -98,7 +121,13 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testGetPipes()
     {
-        $pipe = new Pipe('test/','App\Middleware\Dummy','<str:name>.example.com',['http','https']);
+        $pipe = new Pipe('test/',
+            [
+                'middleware' => 'App\Middleware\Dummy',
+                'host' => '<str:name>.example.com',
+                'method' => ['http','https']
+            ]
+        );
         $this->collection->addPipe($pipe);
         $this->assertInstanceOf('Obullo\Router\Pipe', $this->collection->getPipes()[0]);
     }
@@ -122,10 +151,15 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testGet()
     {
-        $route = new Route(['GET','POST'], '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController:index',
-            'App\Middleware\Dummy',
-            '<str:name>.example.com',
-            ['http','https']
+        $route = new Route(
+            [
+                'method' => ['GET','POST'],
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController:index',
+                'middleware' => 'App\Middleware\Dummy',
+                'host' =>  '<str:name>.example.com',
+                'scheme' => ['http','https']
+            ]  
         );
         $this->collection->add('dummy', $route);
         $r = $this->collection->get('dummy');
@@ -134,10 +168,15 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testRemove()
     {
-        $route = new Route(['GET','POST'], '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController:index',
-            'App\Middleware\Dummy',
-            '<str:name>.example.com',
-            ['http','https']
+        $route = new Route(
+            [
+                'method' => ['GET','POST'],
+                'path' => '/dummy/<str:name>/<int:id>',
+                'handler' => 'App\Controller\DefaultController:index',
+                'middleware' => 'App\Middleware\Dummy',
+                'host' =>  '<str:name>.example.com',
+                'scheme' => ['http','https']
+            ]
         );
         $this->collection->add('dummy', $route);
         $this->collection->add('dummy2', $route);
