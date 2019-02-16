@@ -40,9 +40,24 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
         $this->context->fromRequest($request);
 
         $this->collection = new RouteCollection($this->config, $this->context);
-        $this->collection->add('dummy', new Route('GET', '/<locale:locale>/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController::dummy'));
-        $this->collection->add('slug', new Route('GET', '/slug/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
-        $this->collection->add('test', new Route('GET', '/test/me', 'App\Controller\DefaultController::dummy'));
+        $route = [
+            'method' =>  'GET',
+            'path' => '/<locale:locale>/dummy/<str:name>/<int:id>',
+            'handler' => 'App\Controller\DefaultController::dummy'
+        ];
+        $this->collection->add('dummy', new Route($route));
+        $route = [
+            'method' => 'GET',
+            'path' => '/slug/<slug:slug_>',
+            'handler' => 'App\Controller\DefaultController::dummy'
+        ];
+        $this->collection->add('slug', new Route($route));
+        $route = [
+            'method' => 'GET',
+            'path' => '/test/me',
+            'handler' => 'App\Controller\DefaultController::dummy'
+        ];
+        $this->collection->add('test', new Route($route));
     }
 
     public function testGenerate()            

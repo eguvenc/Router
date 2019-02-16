@@ -8,10 +8,17 @@ class PipeMatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $pipe  = new Pipe('user/test/', ['App\Middleware\Dummy'], '(?<name>\w+).example.com', ['http', 'https']);
-        $route = new Route('GET', '/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController::index');
-        $pipe->add('dummy', $route);
-
+        $pipe  = new Pipe('user/test/', [
+            'handler' => 'App\Middleware\Dummy',
+            'host' => '(?<name>\w+).example.com',
+            'scheme' => ['http', 'https'],
+        ]);
+        $route = [
+            'method' => 'GET',
+            'path' => '/dummy/<str:name>/<int:id>',
+            'handler' => 'App\Controller\DefaultController::index'
+        ];
+        $pipe->add('dummy', new Route($route));
         $this->matcher = new PipeMatcher($pipe);
     }
 

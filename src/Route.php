@@ -19,6 +19,7 @@ class Route implements StackAwareInterface, RouteInterface
 	protected $name;
 	protected $host;
 	protected $pattern;
+	protected $route = array();
 	protected $methods = array();
 	protected $middlewares = array();
 	protected $handler = null;
@@ -28,25 +29,21 @@ class Route implements StackAwareInterface, RouteInterface
 	 /**
      * Create a new route
      *
-     * @param string|array $method http method
-     * @param string $pattern regex pattern
-     * @param string|callable $handler handler
-     * @param string|array $middlewares string|array
-     * @param string $host the host pattern to match
-     * @param string|array $schemes A required URI scheme or an array of restricted schemes
-     *
+     * @param string|array $route attributes
      * @return object
      */
-	public function __construct($method, string $pattern, $handler, $middlewares = array(), $host = null, $schemes = null)
+	public function __construct(array $route)
 	{
+		$this->route = $route;
+      	$method = isset($route['method']) ? $route['method'] : 'GET';
         foreach ((array)$method as $name) {
         	$this->methods[] = strtoupper($name);
         }
-        $this->handler = $handler;
-        $this->pattern = '/'.ltrim($pattern, '/');
-        $this->middlewares = (array)$middlewares;
-        $this->host = $host;
-        $this->schemes = (array)$schemes;
+        $this->handler = $route['handler'];
+        $this->pattern = '/'.ltrim($route['path'], '/');
+        $this->middlewares = empty($route['middleware']) ? array() : (array)$route['middleware'];
+        $this->host = empty($route['host']) ? null : $route['host'];
+        $this->schemes = empty($route['scheme']) ? array() : (array)$route['scheme'];
 	}
 
 	/**
@@ -181,6 +178,28 @@ class Route implements StackAwareInterface, RouteInterface
     public function getArguments() : array
     {
         return $this->arguments;
+    }
+
+    /**
+     * Set route attribute
+     * 
+     * @param string $key   string
+     * @param mixed  $value value
+     */
+    public function setAttribute(string $key, $value)
+    {
+    	$this->route[$key] = $value;
+    }
+
+    /**
+     * Returns to route attribute
+     * 
+     * @param  string $key name
+     * @return mixed
+     */
+    public function getAttribute(string $key)
+    {
+    	return isset($this->route[$key]) ? $this->route[$key] : null;
     }
 
 	/**

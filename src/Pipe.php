@@ -3,10 +3,9 @@
 namespace Obullo\Router;
 
 use Obullo\Router\{
-	Stack\StackAwareTrait,
-	Stack\StackAwareInterface
+    Stack\StackAwareTrait,
+    Stack\StackAwareInterface
 };
-
 /**
  * Route pipe
  *
@@ -19,23 +18,24 @@ class Pipe implements PipeInterface, StackAwareInterface
 
     protected $pipe;
     protected $host;
-    protected $routes = array();
+    protected $routes = array();  // route collection
+    protected $attributes = array(); // pipe attributes
     protected $schemes = array();
     protected $middlewares = array();
 
     /**
      * Constructor
      * 
-     * @param string $pipe        pipe
-     * @param array  $routes      routes
-     * @param array  $middlewares middlewares
+     * @param string $pipe   pipe
+     * @param array  $attributes attributes
      */
-    public function __construct(string $pipe, $middlewares = null, $host = null, $schemes = array())
+    public function __construct(string $pipe, array $attributes)
     {
     	$this->pipe = ltrim($pipe, '/');
-        $this->host = $host;
-        $this->schemes = (array)$schemes;
-    	$this->middlewares = (array)$middlewares;
+        $this->host = empty($attributes['host']) ? null : $attributes['host'];
+        $this->schemes = empty($attributes['scheme']) ? null : (array)$attributes['scheme'];
+    	$this->attributes = $attributes;
+        $this->middlewares = empty($attributes['middleware']) ? array() : (array)$middlewares; 
     }
 
     /**
@@ -68,6 +68,28 @@ class Pipe implements PipeInterface, StackAwareInterface
     public function getRoutes() : array
     {
         return $this->routes;
+    }
+
+    /**
+     * Set pipe attribute
+     * 
+     * @param string $key   string
+     * @param mixed  $value value
+     */
+    public function setAttribute(string $key, $value)
+    {
+        $this->attributes[$key] = $value;
+    }
+
+    /**
+     * Returns to pipe attribute
+     * 
+     * @param  string $key name
+     * @return mixed value
+     */
+    public function getAttribute(string $key)
+    {
+        return isset($this->attributes[$key]) ? $this->attributes[$key] : null;
     }
 
     /**

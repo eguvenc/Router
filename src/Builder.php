@@ -9,7 +9,6 @@ use Obullo\Router\{
     Exception\BadRouteException,
     Exception\UndefinedRouteNameException
 };
-
 /**
  * Build route data
  *
@@ -39,110 +38,70 @@ class Builder
     public function build(array $routes) : RouteCollection
     {    
         foreach ($routes as $name => $route) {
+
+            echo '<pre>'.print_r($route, true).'</pre>';
+
             if (! is_array($route)) {
-                throw new BadRouteException('A route rule does not have route name in your routes.');
+                throw new BadRouteException('There is no rule defined in the configuration file.');
             }
             if ($name != '/' && substr($name, -1) == '/') { // pipes
-                $pipe = new Pipe($name, Self::getMiddlewares($route), Self::getHost($route), Self::getScheme($route));
-                unset($route['middleware'], $route['host'], $route['scheme']);
 
-                $keys = array_keys($route);
+                $pipe = new Pipe($name, $route);
+                unset($route['host'], $route['scheme']);
+
+                $keys = array_keys($route); // Get all route names of the current pipe
                 foreach ($keys as $key) {
-                    if (! is_array($route[$key])) {
+                    $isAttribute = Self::isAttribute($key);
+                    if (false == $isAttribute && false == is_array($route[$key])) {
                         throw new UndefinedRouteNameException(
                             sprintf(
-                                'There is a undefined route name under the "%s" pipe.',
+                                'There is an unknown route name under the "%s" pipe.',
                                 $name
                             )
                         );
                     }
-                    Self::ValidateRoute($key, $route[$key]);
-                    $method = isset($route[$key]['method']) ? $route[$key]['method'] : 'GET';
-                    $pipe->add(
-                        $key,
-                        new Route(
-                            $method,
-                            $route[$key]['path'],
-                            $route[$key]['handler'],
-                            Self::getMiddlewares($route[$key]),
-                            Self::getHost($route[$key]),
-                            Self::getScheme($route[$key])
-                        )
-                    );
+                    if (false == $isAttribute) {
+                        Self::ValidateRoute($route[$key]);
+                        $pipe->add($key, new Route($route[$key]));
+                    }
                 }
                 $this->collection->addPipe($pipe);
+
             } else {  // routes
-                Self::ValidateRoute($name, $route);
-                $method = isset($route['method']) ? $route['method'] : 'GET';
-                $this->collection->add(
-                    $name,
-                    new Route(
-                        $method,
-                        $route['path'],
-                        $route['handler'],
-                        Self::getMiddlewares($route),
-                        Self::getHost($route),
-                        Self::getScheme($route)
-                    )
-                );
+
+                Self::ValidateRoute($route);
+                $this->collection->add($name, new Route($route));
             }
         }
         return $this->collection;
     }
 
     /**
-     * Returns to array
+     * Check route name is attribute
      * 
-     * @param  array  $route route
-     * @return array
+     * @param  string  $key name
+     * @return boolean
      */
-    protected static function getMiddlewares(array $route) : array
+    protected function isAttribute($key)
     {
-        if (empty($route['middleware'])) {
-            return array();
-        }
-        return (array)$route['middleware'];
-    }
-
-    /**
-     * Returns to host
-     * 
-     * @param  array  $route array
-     * @return null|string
-     */
-    protected static function getHost(array $route)
-    {
-        if (empty($route['host'])) {
-            return;
-        }
-        return $route['host'];
-    }
-
-    /**
-     * Returns to uri scheme
-     * 
-     * @param  array  $route array
-     * @return null|string
-     */
-    protected static function getScheme(array $route)
-    {
-        if (empty($route['scheme'])) {
-            return;
-        }
-        return $route['scheme'];
+        return strpos($key, '$') === 0;
     }
 
     /**
      * Validate route
-
-     * @param  string $name  name
      * 
+     * @param  array  $route route
      * @return void
      */
-    protected static function validateRoute(string $name, $route)
+    protected static function validateRoute(array $route)
     {
         if (empty($route['path'])) {
-            throw new BadRouteException('Route path is undefined.');
+            throw new BadRouteException(
+                sprintf(
+                    'Route path is undefined in %s route.',
+                    $route['name']
+                )
+            );
         }
         if (empty($route['handler'])) {
             throw new BadRouteException('Route handler is undefined.');
