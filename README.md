@@ -62,14 +62,16 @@ Route Collection
 ```php
 $collection = new RouteCollection($config);
 $collection->setContext($context);
-$collection->add('home', new Route('GET', '/', 'App\Controller\DefaultController::index'));
+$collection->add('home', new Route(['path' => '/', 'handler' => 'App\Controller\DefaultController::index'));
 $collection->add(
     'dummy',
     new Route(
-        'GET',
-        '/dummy/index/<int:id>/<str:name>',
-        'App\Controller\DummyController::index'
-        ['App\Middleware\Dummy::class']
+        [
+            'method' => 'GET',
+            'path' => '/dummy/index/<int:id>/<str:name>',
+            'handler' => 'App\Controller\DummyController::index'
+            'middleware' => ['App\Middleware\Dummy::class']
+        ]
     )
 );
 ```
