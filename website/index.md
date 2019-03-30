@@ -5,7 +5,7 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/obullo/router.svg)](https://packagist.org/packages/obullo/router)
 
-> Obullo router is a standalone route package inspired by the <a href="https://docs.djangoproject.com/en/2.0/topics/http/urls/">Django Url Dispatcher</a> package.
+> Obullo router is a standalone route package inspired by the <a href="https://docs.djangoproject.com/en/2.0/topics/http/urls/">Django Url Dispatcher</a>.
 
 
 ## Install
@@ -66,14 +66,16 @@ Route Collection
 ```php
 $collection = new RouteCollection($config);
 $collection->setContext($context);
-$collection->add('home', new Route('GET', '/', 'App\Controller\DefaultController::index'));
+$collection->add('home', new Route(['path' => '/', 'handler' => 'App\Controller\DefaultController::index']));
 $collection->add(
     'dummy',
     new Route(
-        'GET',
-        '/dummy/index/<int:id>/<str:name>',
-        'App\Controller\DummyController::index'
-        ['App\Middleware\Dummy::class']
+        [
+            'method' => 'GET',
+            'path' => '/dummy/index/<int:id>/<str:name>',
+            'handler' => 'App\Controller\DummyController::index'
+            'middleware' => ['App\Middleware\Dummy::class']
+        ]
     )
 );
 ```
@@ -134,7 +136,7 @@ class DummyController
 
 ## Builder
 
-[Builder.md](/en/Builder.md)
+[Builder.md](/en/builder.md)
 
 ## Pipes
 
@@ -159,6 +161,10 @@ class DummyController
 ## Generator
 
 [Generator.md](/en/generator.md)
+
+## Attributes
+
+[Attributes.md](/en/attributes.md)
 
 ## Performance
 

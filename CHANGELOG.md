@@ -3,6 +3,26 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.6 - 2019-04-30
+
+Match path trailing slash bug fixed.
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Match path trailing slash bug fixed.
+
 ## 1.0.5 - 2019-02-16
 
 Added url method to Router class. 
