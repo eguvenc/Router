@@ -33,8 +33,8 @@ class RouteMatcher extends Matcher
      */
     public function matchPath(string $path) : bool
     {
-        $path = rtrim($path, "/");  // Normalize path
         $pattern = $this->route->getPattern();
+        $path = ($path == "/") ? "/" : rtrim($path, "/");  // Normalize path
         $arguments = array();
         if ($path == $pattern or preg_match('#^'.$pattern.'$#', $path, $arguments)) {
             array_shift($arguments);
