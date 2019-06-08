@@ -126,6 +126,89 @@ class DummyController
 }
 ```
 
+### YAML example
+
+Yaml basic
+
+```yaml
+home: 
+    path: /
+    handler: App\Controller\DefaultController::index
+    $variable:
+        - test_route_value
+
+dummy:
+     path: /<locale:locale>/dummy/<str:name>
+     handler: App\Controller\DefaultController::dummy
+     middleware: App\Middleware\Dummy
+```
+
+Yaml group 
+
+```yaml
+user/:
+    $variable:
+        - test_pipe_value
+    host: router
+    scheme: http
+    middleware: 
+        - App\Middleware\Auth
+        - App\Middleware\Dummy
+    dummy:
+        path: /dummy/<str:name>
+        handler: App\Controller\UserController::dummy
+    dummy_with_id:
+        path: /dummy/<str:name>/<int:id>
+        handler: App\Controller\UserController::dummy
+    lucky:
+        path: /lucky/<str:name>/<slug:slug>
+        handler: App\Controller\DefaultController::lucky
+```
+
+Parsing yaml
+
+```php
+use Obullo\Router\Route;
+use Obullo\Router\RequestContext;
+use Obullo\Router\RouteCollection;
+use Obullo\Router\Router;
+use Obullo\Router\Builder;
+use Obullo\Router\Generator;
+use Obullo\Router\Types\{
+    StrType,
+    IntType,
+    SlugType,
+    TranslationType
+};
+$config = array(
+    'patterns' => [
+        new IntType('<int:id>'),
+        new StrType('<str:name>'),
+        new SlugType('<slug:slug>'),
+        new TranslationType('<locale:locale>'),
+    ]
+);
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$context = new RequestContext;
+$context->fromRequest($request);
+
+$collection = new RouteCollection($config);
+$collection->setContext($context);
+
+use Symfony\Component\Yaml\Yaml;
+
+$builder = new Builder($collection);
+$collection = $builder->build(Yaml::parseFile('/var/www/myproject/App/routes.yaml'));
+
+if ($route = $router->matchRequest()) {
+
+    $handler = $route->getHandler();
+    $methods = $route->getMethods();
+
+    print_r($route->getAttribute('variable')); // test_route_value
+}
+```
+
 ## Documentation
 
-Documents are available at <a href="http://router.obullo.com/">http://router.obullo.com/</a>
+Documents are available at <a href="http://obullo.com/">http://obullo.com/</a>
