@@ -25,7 +25,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $this->routes = Yaml::parseFile($file);
 
         $config = array(
-            'types' => [
+            'patterns' => [
                 new IntType('<int:id>'),  // \d+
                 new StrType('<str:name>'),     // \w+
                 new StrType('<str:word>'),     // \w+

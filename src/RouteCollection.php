@@ -22,7 +22,7 @@ class RouteCollection implements IteratorAggregate, Countable
     use RequestContextAwareTrait;
 
     protected $rules = array();
-    protected $types = array();
+    protected $patterns = array();
     protected $pipes = array();
     protected $routes = array();
 
@@ -33,16 +33,16 @@ class RouteCollection implements IteratorAggregate, Countable
      */
     public function __construct(array $config)
     {
-        if (! isset($config['types'])) {
+        if (! isset($config['patterns'])) {
             throw new RouteConfigurationException(
-                'Please provide route types to create the route collection.'
+                'Please provide route patterns to create the route collection.'
             );
         }
-        foreach ($config['types'] as $object) {
+        foreach ($config['patterns'] as $object) {
             $type = $object->getType();
             $tag  = $object->getTag();
             $this->rules[$type] = $object->convert()->getValue();
-            $this->types[$tag]  = $object;
+            $this->patterns[$tag] = $object;
         }
     }
 
@@ -119,13 +119,13 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Returns types
+     * Returns patterns
      *
      * @return array
      */
-    public function getTypes()
+    public function getPatterns()
     {
-        return $this->types;
+        return $this->patterns;
     }
 
     /**
@@ -166,9 +166,9 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Validate route types
+     * Validate route patterns
      *
-     * @param  string $pattern types
+     * @param  string $pattern patterns
      * @return void
      */
     protected function validateUnformattedPattern(string $pattern)

@@ -54,7 +54,7 @@ class Generator implements GeneratorInterface
         if (false == Self::isAssoc($params)) {
             throw new InvalidArgumentException('The url generator parameters must be key-value pairs.');
         }
-        $types = $this->collection->getTypes();
+        $types = $this->collection->getPatterns();
         $paramPattern = array();
         $paramReplace = array();
         foreach ($params as $key => $value) {

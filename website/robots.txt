@@ -1,2 +1,0 @@
-user-agent: *
-Sitemap: http://router.obullo.com/sitemap.xml

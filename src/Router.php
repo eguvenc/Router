@@ -2,10 +2,8 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\Matcher\{
-    PipeMatcher,
-    RouteMatcher
-};
+use Obullo\Router\Matcher\PipeMatcher;
+use Obullo\Router\Matcher\RouteMatcher;
 use Obullo\Router\Generator;
 
 /**
@@ -46,7 +44,7 @@ class Router
 
     /**
      * Pipe process
-     * 
+     *
      * @return void
      */
     public function popPipe()
@@ -72,7 +70,7 @@ class Router
 
     /**
      * Route process
-     * 
+     *
      * @return false|RouteInterface
      */
     public function popRoute()
@@ -97,7 +95,7 @@ class Router
 
     /**
      * Match
-     * 
+     *
      * @param  string $path   path
      * @param  string $host   host optional
      * @param  mixed  $scheme scheme optional
@@ -118,7 +116,7 @@ class Router
 
     /**
      * Dispatch request
-     * 
+     *
      * @return false|RouteInterface
      */
     public function matchRequest()
@@ -129,7 +127,7 @@ class Router
 
     /**
      * Returns to stack handler object
-     * 
+     *
      * @return object
      */
     public function getStack() : array
@@ -139,7 +137,7 @@ class Router
 
     /**
      * Returns to true if route match otherwise false
-     * 
+     *
      * @return boolean
      */
     public function hasMatch() : bool
@@ -149,7 +147,7 @@ class Router
 
     /**
      * Returns to matched route
-     * 
+     *
      * @return string
      */
     public function getMatchedRoute() : RouteInterface
@@ -159,7 +157,7 @@ class Router
 
     /**
      * Returns to matched route
-     * 
+     *
      * @return string
      */
     public function getMatchedPipe()
@@ -169,7 +167,7 @@ class Router
 
     /**
      * Returns to matched host params
-     * 
+     *
      * @return array
      */
     public function getHostMatches() : array
@@ -179,7 +177,7 @@ class Router
 
     /**
      * Returns to route collection
-     * 
+     *
      * @return object
      */
     public function getCollection() : RouteCollection
@@ -189,7 +187,7 @@ class Router
 
     /**
      * Url generator helper
-     * 
+     *
      * @param  string $name   route name
      * @param  array  $params url parameters
      * @return string
@@ -202,15 +200,15 @@ class Router
 
     /**
      * Format arguments
-     * 
+     *
      * @param $args matched arguments
-     * 
+     *
      * @return array arguments
      */
     protected function formatArguments(array $args) : array
     {
         $newArgs = array();
-        $types = $this->collection->getTypes();
+        $types = $this->collection->getPatterns();
         foreach ($args as $key => $value) {
             if (! is_numeric($key) && isset($types[$key])) {
                 $newArgs[$key] = $types[$key]->toPhp($value);
@@ -221,7 +219,7 @@ class Router
             
     /**
      * Attach middlewares to stack object
-     * 
+     *
      * @param RouteRule|RouteGroup $object route objects
      */
     protected function buildStack($object)

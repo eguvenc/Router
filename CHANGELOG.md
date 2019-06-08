@@ -3,6 +3,30 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.7 - 2019-06-08
+
+The name of the 'types' key in the configuration entered in the route collection has been changed to 'patterns'.
+
+### Added
+
+- Added 'patterns' key to route collection configuration.
+- getPatterns() method to route collection.
+
+### Deprecated
+
+- 'types' key in the route collection.
+- getTypes() method in the route collection.
+
+### Removed
+
+- 'types' key in the route collection.
+- getTypes() method in the route collection.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.0.6 - 2019-04-30
 
 Match path trailing slash bug fixed.

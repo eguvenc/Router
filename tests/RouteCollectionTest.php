@@ -20,7 +20,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
     {
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
         $config = array(
-            'types' => [
+            'patterns' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
@@ -139,7 +139,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testGetTypes()
     {
-        $types = $this->collection->getTypes();
+        $types = $this->collection->getPatterns();
         $this->assertEquals('<int:id>', $types['id']->getType());
         $this->assertEquals('<str:name>', $types['name']->getType());
         $this->assertEquals('<str:word>', $types['word']->getType());

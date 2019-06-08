@@ -22,7 +22,7 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
     public function setup()
     {
         $configArray = array(
-            'types' => [
+            'patterns' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),

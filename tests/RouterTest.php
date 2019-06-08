@@ -21,7 +21,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
         $config = array(
-            'types' => [
+            'patterns' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),

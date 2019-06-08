@@ -3,18 +3,18 @@
     "type": "library",
     "description": "Php7 standalone router inspired by the Django Url Dispatcher. Easy to use and Secure.",
     "keywords": [
+        "router",
         "route",
+        "restful",
         "django",
         "url dispatcher",
-        "router",
         "psr7",
-        "restful",
         "middleware aware",
         "stack aware",
         "psr15",
         "secure"
     ],
-    "homepage": "http://router.obullo.com",
+    "homepage": "http://obullo.com",
     "license": "MIT",
     "authors": [
         {
