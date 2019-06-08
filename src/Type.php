@@ -13,6 +13,7 @@ use Obullo\Router\Exception\BadTypeException;
 abstract class Type
 {
     protected $tag;   // id, name
+    protected $type;
     protected $rule;  // <int:id>, <str:name>
     protected $value; // (?<any>.*) regex value
     protected $tags = array();
