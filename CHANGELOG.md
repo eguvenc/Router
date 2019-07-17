@@ -3,6 +3,27 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.8 - 2019-07-17
+
+Fixed Pipe matcher bug, added extra slash to $requestContext->getPath() method.
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Fixed Pipe matcher bug, added extra slash to $requestContext->getPath() method.
+
+
 ## 1.0.7 - 2019-06-08
 
 The name of the 'types' key in the configuration entered in the route collection has been changed to 'patterns'.
