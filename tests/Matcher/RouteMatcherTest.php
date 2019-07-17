@@ -21,7 +21,7 @@ class RouteMatcherTest extends PHPUnit_Framework_TestCase
 
     public function testMatchPath()
     {
-        $path = '/dummy/name/5';
+        $path = '/dummy/name/5/';
         $this->assertTrue($this->matcher->matchPath($path));
     }
 
@@ -44,7 +44,7 @@ class RouteMatcherTest extends PHPUnit_Framework_TestCase
 
     public function testGetArguments()
     {
-        $path = '/dummy/name/5';
+        $path = '/dummy/name/5/';
         $this->matcher->matchPath($path);
         $args = $this->matcher->getArguments();
         $this->assertEquals('name', $args['name']);

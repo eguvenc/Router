@@ -26,7 +26,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     public function testSetPipe()
     {
     	$this->route->setPipe('test/');
-    	$this->assertEquals('/test/dummy/(?<name>\w+)', $this->route->getPattern());
+    	$this->assertEquals('test/dummy/(?<name>\w+)/', $this->route->getPattern());
     }
 
     public function testSetName()
@@ -91,7 +91,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
 
     public function testGetPattern()
     {
-    	$this->assertEquals('/dummy/(?<name>\w+)', $this->route->getPattern());
+    	$this->assertEquals('/dummy/(?<name>\w+)/', $this->route->getPattern());
     }
 
     public function testSetPattern()

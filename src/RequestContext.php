@@ -39,7 +39,13 @@ class RequestContext
      */
     public function setPath($path)
     {
-        $this->path = $path;
+        /**
+         * Path must always end with forward slash.
+         *
+         * /
+         * /foo/bar/
+         */
+        $this->path = rtrim($path, "/")."/"; // normalize path
     }
 
     /**

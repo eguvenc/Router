@@ -10,7 +10,6 @@ class PipeTest extends PHPUnit_Framework_TestCase
         $this->pipe = new Pipe(
             'test/',
             [
-
                 'middleware' => [
                     'App\Middleware\Dummy',
                     'App\Middleware\Test',
@@ -38,13 +37,13 @@ class PipeTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('POST', $routes['test/dummy']->getMethods()[0]);
         $this->assertEquals('App\Controller\DefaultController::dummy', $routes['test/dummy']->getHandler());
-        $this->assertEquals('/test/dummy/<str:name>/<int:id>', $routes['test/dummy']->getPattern());
+        $this->assertEquals('/test/dummy/<str:name>/<int:id>/', $routes['test/dummy']->getPattern());
         $this->assertEquals('App\Middleware\Lucky', $routes['test/dummy']->getStack()[0]);
     }
 
     public function testGetPipe()
     {
-        $this->assertEquals('test/', $this->pipe->getPipe());
+        $this->assertEquals('/test/', $this->pipe->getPipe());
     }
 
     public function testSetHost()

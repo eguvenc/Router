@@ -40,7 +40,7 @@ class Route implements RouteInterface
             $this->methods[] = strtoupper($name);
         }
         $this->handler = $route['handler'];
-        $this->pattern = '/'.ltrim($route['path'], '/');
+        $this->pattern = ($route['path'] == '/') ? '/' : '/'.trim($route['path'], '/').'/'; // normalize route rules
         $this->middlewares = empty($route['middleware']) ? array() : (array)$route['middleware'];
         $this->host = empty($route['host']) ? null : $route['host'];
         $this->schemes = empty($route['scheme']) ? array() : (array)$route['scheme'];
@@ -54,7 +54,11 @@ class Route implements RouteInterface
      */
     public function setPipe(string $pipe)
     {
-        $this->pattern = '/'.ltrim($pipe, '/').ltrim($this->pattern, '/');
+        /**
+         * Pipe always end with forward slash,
+         * we do trim left to pattern.
+         */
+        $this->pattern = $pipe.ltrim($this->pattern, '/');
     }
 
     /**

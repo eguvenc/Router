@@ -10,75 +10,75 @@ namespace Obullo\Router;
  */
 interface RouteInterface
 {
-	/**
-	 * Set pipe
-	 * 
-	 * @param string $pipe pipe
-	 */
-	public function setPipe(string $pipe);
+    /**
+     * Set pipe
+     *
+     * @param string $pipe pipe
+     */
+    public function setPipe(string $pipe);
 
-	/**
-	 * Set route name
-	 * 
-	 * @param string $name name
-	 */
-	public function setName($name);
+    /**
+     * Set route name
+     *
+     * @param string $name name
+     */
+    public function setName($name);
 
-	/**
-	 * Returns to path name
-	 * 
-	 * @return string
-	 */
-	public function getName() : string;
+    /**
+     * Returns to path name
+     *
+     * @return string
+     */
+    public function getName() : string;
 
-	/**
-	 * Set host value
-	 * 
-	 * @param string $host host
-	 */
-	public function setHost($host);
+    /**
+     * Set host value
+     *
+     * @param string $host host
+     */
+    public function setHost($host);
 
-	/**
-	 * Returns to host
-	 * 
-	 * @return null|string
-	 */
-	public function getHost();
+    /**
+     * Returns to host
+     *
+     * @return null|string
+     */
+    public function getHost();
 
-	/**
-	 * Set schemes
-	 * 
-	 * @param array $schemes schemes
-	 */
-	public function setSchemes($schemes);
+    /**
+     * Set schemes
+     *
+     * @param array $schemes schemes
+     */
+    public function setSchemes($schemes);
 
-	/**
-	 * Returns to schemes
-	 * 
-	 * @return array
-	 */
-	public function getSchemes() : array;
+    /**
+     * Returns to schemes
+     *
+     * @return array
+     */
+    public function getSchemes() : array;
 
-	/**
-	 * Returns to route methods
-	 * 
-	 * @return array
-	 */
-	public function getMethods() : array;
+    /**
+     * Returns to route methods
+     *
+     * @return array
+     */
+    public function getMethods() : array;
 
-	/**
-	 * Returns to handler
-	 * 
-	 * @return mixed
-	 */
-	public function getHandler();
+    /**
+     * Returns to handler
+     *
+     * @return mixed
+     */
+    public function getHandler();
 
-	/**
-	 * Set arguments
-	 * 
-	 * @param array $args matched argumets
-	 */
-	public function setArguments(array $args);
+    /**
+     * Set arguments
+     *
+     * @param array $args matched argumets
+     */
+    public function setArguments(array $args);
 
     /**
      * Get one argument
@@ -94,17 +94,17 @@ interface RouteInterface
      */
     public function getArguments() : array;
 
-	/**
-	 * Set pattern
-	 * 
-	 * @param string $pattern 
-	 */
-	public function setPattern(string $pattern);
+    /**
+     * Set pattern
+     *
+     * @param string $pattern
+     */
+    public function setPattern(string $pattern);
 
-	/**
-	 * Returns to pattern
-	 * 
-	 * @return string
-	 */
-	public function getPattern() : string;
+    /**
+     * Returns to pattern
+     *
+     * @return string
+     */
+    public function getPattern() : string;
 }

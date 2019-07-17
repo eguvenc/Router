@@ -52,7 +52,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
 
         $dummyRoute = $collection->get('dummy');
         $this->assertEquals('App\Controller\DefaultController::dummy', $dummyRoute->getHandler());
-        $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)', $dummyRoute->getPattern());
+        $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)/', $dummyRoute->getPattern());
         /**
          * Render pipes
          */
@@ -63,11 +63,11 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         }
         $userRoute = $collection->get('user/dummy');
         $this->assertEquals('App\Controller\DefaultController::dummy', $userRoute->getHandler());
-        $this->assertEquals('/user/dummy/(?<name>\w+)/(?<id>\d+)', $userRoute->getPattern());
+        $this->assertEquals('/user/dummy/(?<name>\w+)/(?<id>\d+)/', $userRoute->getPattern());
         $this->assertEquals('App\Middleware\Dummy', $userRoute->getStack()[0]);
 
         $testRoute = $collection->get('test_host/dummy');
-        $this->assertEquals('/test_host/dummy/(?<name>\w+)/(?<id>\d+)', $testRoute->getPattern());
+        $this->assertEquals('/test_host/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPattern());
         $this->assertEquals('(?<name>\w+).example.com', $testRoute->getHost());
         $this->assertEquals(['http','https'], $testRoute->getSchemes());
     }

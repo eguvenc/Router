@@ -56,7 +56,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Obullo\Router\Pipe', $p);
         $this->assertEquals('(?<name>\w+).example.com', $p->getHost());
-        $this->assertEquals('test/', $p->getPipe());
+        $this->assertEquals('/test/', $p->getPipe());
         $this->assertEquals('test attribute', $p->getAttribute('variable'));
     }
 
@@ -77,7 +77,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
         $r = $this->collection->get('dummy');
 
         $this->assertEquals(['GET','POST'], $r->getMethods());
-        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $r->getPattern());
+        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $r->getPattern());
         $this->assertEquals('App\Controller\DefaultController:index', $r->getHandler());
         $this->assertEquals('(?<name>\w+).example.com', $r->getHost());
         $this->assertEquals(['http','https'], $r->getSchemes());

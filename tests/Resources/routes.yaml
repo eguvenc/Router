@@ -35,6 +35,23 @@ user/:
         path: /lucky/<str:name>/<slug:slug>
         handler: App\Controller\DefaultController::lucky
 
+# user/test/:
+#     middleware: 
+#         - App\Middleware\Auth
+#         - App\Middleware\Dummy
+#     home: 
+#         path: /
+#         handler: App\Controller\DefaultController::index
+#     dummy:
+#         path: /dummy
+#         handler: App\Controller\DefaultController::index
+#     dummy_with_str:
+#         path: /dummy/<str:name>
+#         handler: App\Controller\UserController::dummy
+#     dummy_with_id:
+#         path: /dummy/<str:name>/<int:id>
+#         handler: App\Controller\UserController::dummy
+
 test_host/:
     host: <str:name>.example.com
     scheme: 

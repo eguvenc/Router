@@ -30,9 +30,9 @@ class Pipe implements PipeInterface
      */
     public function __construct(string $pipe, array $attributes)
     {
-        $this->pipe = ltrim($pipe, '/');
+        $this->pipe = '/'.trim($pipe, '/').'/';  // normalize pipe
         $this->host = empty($attributes['host']) ? null : $attributes['host'];
-        $this->schemes = empty($attributes['scheme']) ? null : (array)$attributes['scheme'];
+        $this->schemes = empty($attributes['scheme']) ? array() : (array)$attributes['scheme'];
         $this->middlewares = empty($attributes['middleware']) ? array() : (array)$attributes['middleware'];
         $this->attributes = $attributes; // pipe attributes
     }
@@ -45,8 +45,9 @@ class Pipe implements PipeInterface
      */
     public function add(string $name, RouteInterface $route)
     {
-        $route->setPipe($this->getPipe());
-        $this->routes[$this->pipe.$name] = $route;
+        $pipe = $this->getPipe();
+        $route->setPipe($pipe);
+        $this->routes[ltrim($pipe, '/').$name] = $route;
     }
 
     /**

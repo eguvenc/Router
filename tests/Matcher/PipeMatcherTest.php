@@ -24,7 +24,7 @@ class PipeMatcherTest extends PHPUnit_Framework_TestCase
 
     public function testMatchPath()
     {
-        $path = '/user/test/dummy/name/5';
+        $path = '/user/test/dummy/name/5/';
         $this->assertTrue($this->matcher->matchPath($path));
     }
 

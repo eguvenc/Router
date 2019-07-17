@@ -66,7 +66,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $router->popPipe();
         $route = $collection->get('test/dummy');
         $this->assertEquals('test/dummy', $route->getName());
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
         $this->assertEquals('App\Controller\DefaultController::test', $route->getHandler());
     }
 
@@ -89,7 +89,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $router->popPipe();
         $route = $router->popRoute();
         $this->assertEquals('dummy', $route->getName());
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
         $this->assertEquals('App\Controller\DefaultController::dummy', $route->getHandler());
     }
 
@@ -109,11 +109,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
             ])
         );
         $router = new Router($collection);
-        $route = $router->match('/dummy/test/55','admin.example.com','https');
+        $route = $router->match('/dummy/test/55/','admin.example.com','https');
         $args = $route->getArguments();
         $this->assertEquals('test', $args['name']);
         $this->assertEquals('55', $args['id']);
-        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $route->getPattern());
+        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
         $this->assertEquals('admin', $router->getHostMatches()['name']);
     }
 
@@ -137,7 +137,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $args = $route->getArguments();
         $this->assertEquals('test', $args['name']);
         $this->assertEquals('55', $args['id']);
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
         $this->assertEquals('test', $router->getHostMatches()['name']);
     }
 
@@ -200,7 +200,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $router = new Router($collection);
         $router->matchRequest();
         $route = $router->getMatchedRoute();
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
     }
 
     public function testGetHostMatches()

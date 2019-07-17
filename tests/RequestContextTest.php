@@ -23,7 +23,7 @@ class RequestContextTest extends PHPUnit_Framework_TestCase
     public function testSetPath()
     {
         $this->context->setPath('/test/path');
-        $this->assertEquals('/test/path', $this->context->getPath());   
+        $this->assertEquals('/test/path/', $this->context->getPath());   
     }
 
     public function testSetMethod()

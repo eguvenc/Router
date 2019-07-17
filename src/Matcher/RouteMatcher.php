@@ -13,7 +13,7 @@ use Obullo\Router\RouteInterface;
 class RouteMatcher extends Matcher
 {
     protected $route;
-    protected $arguments;
+    protected $arguments = array();
 
     /**
      * Constructor
@@ -34,9 +34,9 @@ class RouteMatcher extends Matcher
     public function matchPath(string $path) : bool
     {
         $pattern = $this->route->getPattern();
-        $path = ($path == "/") ? "/" : rtrim($path, "/");  // Normalize path
+        
         $arguments = array();
-        if ($path == $pattern or preg_match('#^'.$pattern.'$#', $path, $arguments)) {
+        if ($path == $pattern OR preg_match('#^'.$pattern.'$#', $path, $arguments)) {
             array_shift($arguments);
             $this->arguments = $arguments;
             return true;

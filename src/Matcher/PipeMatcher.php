@@ -32,7 +32,8 @@ class PipeMatcher extends Matcher
      */
     public function matchPath(string $path) : bool
     {
-        $matchedUri = substr(ltrim($path, '/'), 0, strlen($this->route->getPipe()));
+        $matchedUri = substr($path, 0, strlen($this->route->getPipe()));
+
         if ($this->route->getPipe() == $matchedUri) {
             return true;
         }

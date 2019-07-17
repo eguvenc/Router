@@ -34,8 +34,8 @@ class Router
      */
     public function __construct(RouteCollection $collection)
     {
-        $request = $collection->getContext();
         $this->collection = $collection;
+        $request = $collection->getContext();
         $this->path = $request->getPath();
         $this->method = $request->getMethod();
         $this->host = $request->getHost();
@@ -156,7 +156,7 @@ class Router
     }
 
     /**
-     * Returns to matched route
+     * Returns to matched pipe
      *
      * @return string
      */
