@@ -21,7 +21,8 @@ Fixed Pipe matcher bug, added extra slash to $requestContext->getPath() method.
 
 ### Fixed
 
-- Fixed Pipe matcher bug, added extra slash to $requestContext->getPath() method.
+- Fixed Pipe class scheme matching, converted scheme variable to array.
+- Fixed Pipe matcher route matching, added extra slash to $requestContext->getPath() method.
 
 
 ## 1.0.7 - 2019-06-08
