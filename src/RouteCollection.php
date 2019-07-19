@@ -23,7 +23,6 @@ class RouteCollection implements IteratorAggregate, Countable
 
     protected $rules = array();
     protected $patterns = array();
-    protected $pipes = array();
     protected $routes = array();
 
     /**
@@ -47,33 +46,21 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Add pipe
-     *
-     * @param PipeInterface $pipe object
-     */
-    public function addPipe(PipeInterface $pipe)
-    {
-        $host = $this->formatPattern($pipe->getHost());
-        $pipe->setHost($host);
-        $this->pipes[] = $pipe;
-    }
-
-    /**
      * Add route
      *
-     * @param string         $name  route name
+     * @param string         $path  route path
      * @param RouteInterface $route object
      */
-    public function add(string $name, RouteInterface $route)
+    public function add(string $path, RouteInterface $route)
     {
+        $route->setName($path);
         $unformatted = $route->getPattern();
         $this->validateUnformattedPattern($unformatted);
         $formatted = $this->formatPattern($unformatted);
         $host = $this->formatPattern($route->getHost());
-        $route->setName($name);
         $route->setHost($host);
         $route->setPattern($formatted);
-        $this->routes[$name] = $route;
+        $this->routes[$path] = $route;
     }
 
     /**
@@ -87,23 +74,13 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Returns to all toutes
+     * Returns to all routes
      *
      * @return array
      */
     public function all() : array
     {
         return $this->routes;
-    }
-
-    /**
-     * Returns to all pipes
-     *
-     * @return array
-     */
-    public function getPipes() : array
-    {
-        return $this->pipes;
     }
 
     /**
@@ -119,7 +96,7 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Returns patterns
+     * Returns to patterns
      *
      * @return array
      */
@@ -134,9 +111,9 @@ class RouteCollection implements IteratorAggregate, Countable
      * @param  string $name name
      * @return boolean
      */
-    public function get(string $name)
+    public function get(string $path)
     {
-        return isset($this->routes[$name]) ? $this->routes[$name] : false;
+        return isset($this->routes[$path]) ? $this->routes[$path] : false;
     }
 
     /**
@@ -145,9 +122,9 @@ class RouteCollection implements IteratorAggregate, Countable
      * @param  string $name name
      * @return void
      */
-    public function remove(string $name)
+    public function remove(string $path)
     {
-        unset($this->routes[$name]);
+        unset($this->routes[$path]);
     }
 
     /**

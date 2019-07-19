@@ -3,6 +3,61 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.5.0 - 2019-07-18
+
+Deprecated Pipe class and route attriburtes.
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+- Deprecated pipe functionality.
+- Depreacated route names.
+
+Changes have been made to create routes for yaml files in the following new format.
+
+```yaml
+/: 
+    method: GET
+    handler: App/src/Pages/welcome.phtml
+
+/<locale:locale>: 
+    handler: App/src/Pages/welcome.phtml
+    middleware: App\Middleware\LocaleMiddleware
+
+/user-guide/<str:version>/index.html:
+    handler: App/src/Pages/user-guide.phtml
+    middleware: App\Middleware\ValidateDocVersionMiddleware
+```
+
+Changes have been made to create routes for php files in the following new format.
+
+```php
+return [
+	'/' => [
+		'handler'=> 'App\Controller\DefaultController::index',
+		'middleware' => 'App\Middleware\Dummy'
+	],
+	'/<locale:locale>/dummy/<str:name>' => [
+		'handler'=> 'App\Controller\DefaultController::dummy',
+	],
+];
+```
+
+### Removed
+
+- Pipe class.
+- PipeInterface.
+- PipeMatcher class.
+- AttributeAwareTrait.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.0.8 - 2019-07-17
 
 Fixed Pipe matcher bug, added extra slash to $requestContext->getPath() method.

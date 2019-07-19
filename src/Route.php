@@ -3,7 +3,6 @@
 namespace Obullo\Router;
 
 use Obullo\Router\Traits\StackAwareTrait;
-use Obullo\Router\Traits\AttributeAwareTrait;
 
 /**
  * Route
@@ -14,8 +13,7 @@ use Obullo\Router\Traits\AttributeAwareTrait;
 class Route implements RouteInterface
 {
     use StackAwareTrait;
-    use AttributeAwareTrait;
-
+    
     protected $name;
     protected $host;
     protected $pattern;
@@ -40,39 +38,24 @@ class Route implements RouteInterface
             $this->methods[] = strtoupper($name);
         }
         $this->handler = $route['handler'];
-        $this->pattern = ($route['path'] == '/') ? '/' : '/'.trim($route['path'], '/').'/'; // normalize route rules
         $this->middlewares = empty($route['middleware']) ? array() : (array)$route['middleware'];
         $this->host = empty($route['host']) ? null : $route['host'];
         $this->schemes = empty($route['scheme']) ? array() : (array)$route['scheme'];
     }
 
     /**
-     * Set pipe
+     * Set route label
      *
-     * @param string $pipe pipe
-     * @return object
+     * @param string $path path
      */
-    public function setPipe(string $pipe)
+    public function setName($path)
     {
-        /**
-         * Pipe always end with forward slash,
-         * we do trim left to pattern.
-         */
-        $this->pattern = $pipe.ltrim($this->pattern, '/');
+        $this->pattern = ($path == '/') ? '/' : '/'.trim($path, '/').'/'; // normalize route rules
+        $this->name = $path;
     }
 
     /**
-     * Set route name
-     *
-     * @param string $name name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * Returns to path name
+     * Returns to path label
      *
      * @return string
      */

@@ -42,29 +42,26 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
         $this->collection = new RouteCollection($this->config, $this->context);
         $route = [
             'method' =>  'GET',
-            'path' => '/<locale:locale>/dummy/<str:name>/<int:id>',
             'handler' => 'App\Controller\DefaultController::dummy'
         ];
-        $this->collection->add('dummy', new Route($route));
+        $this->collection->add('/<locale:locale>/dummy/<str:name>/<int:id>', new Route($route));
         $route = [
             'method' => 'GET',
-            'path' => '/slug/<slug:slug_>',
             'handler' => 'App\Controller\DefaultController::dummy'
         ];
-        $this->collection->add('slug', new Route($route));
+        $this->collection->add('/slug/<slug:slug_>', new Route($route));
         $route = [
             'method' => 'GET',
-            'path' => '/test/me',
             'handler' => 'App\Controller\DefaultController::dummy'
         ];
-        $this->collection->add('test', new Route($route));
+        $this->collection->add('/test/me', new Route($route));
     }
 
     public function testGenerate()            
     {
-        $dummy = (new Generator($this->collection))->generate('dummy', ['locale' => 'en', 'name' => 'test', 'id' => 5]);
-        $slug  = (new Generator($this->collection))->generate('slug', ['slug_' => 'abcd-123_']);
-        $test  = (new Generator($this->collection))->generate('test');
+        $dummy = (new Generator($this->collection))->generate('/<locale:locale>/dummy/<str:name>/<int:id>', ['locale' => 'en', 'name' => 'test', 'id' => 5]);
+        $slug  = (new Generator($this->collection))->generate('/slug/<slug:slug_>', ['slug_' => 'abcd-123_']);
+        $test  = (new Generator($this->collection))->generate('/test/me');
 
         $this->assertEquals($dummy, '/en/dummy/test/5');
         $this->assertEquals($slug, '/slug/abcd-123_');

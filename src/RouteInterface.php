@@ -11,13 +11,6 @@ namespace Obullo\Router;
 interface RouteInterface
 {
     /**
-     * Set pipe
-     *
-     * @param string $pipe pipe
-     */
-    public function setPipe(string $pipe);
-
-    /**
      * Set route name
      *
      * @param string $name name

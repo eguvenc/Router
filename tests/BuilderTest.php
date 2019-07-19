@@ -50,24 +50,12 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $collection = $this->builder->build($this->routes);
         $this->assertInstanceOf('Obullo\Router\RouteCollection', $collection);
 
-        $dummyRoute = $collection->get('dummy');
+        $dummyRoute = $collection->get('/<locale:locale>/dummy/<str:name>');
         $this->assertEquals('App\Controller\DefaultController::dummy', $dummyRoute->getHandler());
         $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)/', $dummyRoute->getPattern());
-        /**
-         * Render pipes
-         */
-        foreach ($collection->getPipes() as $pipe) {
-            foreach ($pipe->getRoutes() as $name => $route) {
-                $collection->add($name, $route);
-            }
-        }
-        $userRoute = $collection->get('user/dummy');
-        $this->assertEquals('App\Controller\DefaultController::dummy', $userRoute->getHandler());
-        $this->assertEquals('/user/dummy/(?<name>\w+)/(?<id>\d+)/', $userRoute->getPattern());
-        $this->assertEquals('App\Middleware\Dummy', $userRoute->getStack()[0]);
 
-        $testRoute = $collection->get('test_host/dummy');
-        $this->assertEquals('/test_host/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPattern());
+        $testRoute = $collection->get('/dummy/<str:name>/<int:id>');
+        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPattern());
         $this->assertEquals('(?<name>\w+).example.com', $testRoute->getHost());
         $this->assertEquals(['http','https'], $testRoute->getSchemes());
     }

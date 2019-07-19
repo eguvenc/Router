@@ -1,66 +1,18 @@
 
-# route_name:
-#    path: /
+# /:
+#    method: GET
 #    handler: App\Controller\DefaultController::index
 
-home: 
-    path: /
+/: 
     handler: App\Controller\DefaultController::index
     middleware: App\Middleware\Dummy
-    $variable:
-        - test_route_value
 
-dummy:
-    path: /<locale:locale>/dummy/<str:name>
+/<locale:locale>/dummy/<str:name>:
     handler: App\Controller\DefaultController::dummy
 
-test_host:
+/dummy/<str:name>/<int:id>:
     host: <str:name>.example.com
     scheme: 
         - http
         - https
-    path: /dummy/<str:name>/<int:id>
     handler: App\Controller\DefaultController::dummy
-
-user/:
-    $variable:
-        - test_pipe_value
-    middleware: 
-        - App\Middleware\Dummy
-    dummy:
-        path: /dummy/<str:name>/<int:id>
-        handler: App\Controller\DefaultController::dummy
-        middleware: App\Middleware\Dummy
-    lucky:
-        path: /lucky/<str:name>/<slug:slug>
-        handler: App\Controller\DefaultController::lucky
-
-# user/test/:
-#     middleware: 
-#         - App\Middleware\Auth
-#         - App\Middleware\Dummy
-#     home: 
-#         path: /
-#         handler: App\Controller\DefaultController::index
-#     dummy:
-#         path: /dummy
-#         handler: App\Controller\DefaultController::index
-#     dummy_with_str:
-#         path: /dummy/<str:name>
-#         handler: App\Controller\UserController::dummy
-#     dummy_with_id:
-#         path: /dummy/<str:name>/<int:id>
-#         handler: App\Controller\UserController::dummy
-
-test_host/:
-    host: <str:name>.example.com
-    scheme: 
-      - http
-      - https
-    dummy:
-        host: <str:name>.example.com
-        scheme: 
-            - http
-            - https
-        path: /dummy/<str:name>/<int:id>
-        handler: App\Controller\DefaultController::dummy

@@ -2,7 +2,6 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\Matcher\PipeMatcher;
 use Obullo\Router\Matcher\RouteMatcher;
 use Obullo\Router\Generator;
 
@@ -16,7 +15,6 @@ class Router
 {
     protected $path;
     protected $host;
-    protected $pipe;
     protected $route;
     protected $method;
     protected $scheme;
@@ -35,37 +33,13 @@ class Router
     public function __construct(RouteCollection $collection)
     {
         $this->collection = $collection;
+        $this->routes = $collection->all();
+
         $request = $collection->getContext();
         $this->path = $request->getPath();
         $this->method = $request->getMethod();
         $this->host = $request->getHost();
         $this->scheme = $request->getScheme();
-    }
-
-    /**
-     * Pipe process
-     *
-     * @return void
-     */
-    public function popPipe()
-    {
-        $pipes = $this->collection->getPipes();
-        if (empty($pipes)) {
-            $this->routes = $this->collection->all();
-            return;
-        }
-        foreach ($pipes as $pipe) {
-            $matcher = new PipeMatcher($pipe);
-            if ($matcher->matchScheme($this->scheme) && $matcher->matchHost($this->host) && $matcher->matchPath($this->path)) {
-                foreach ($pipe->getRoutes() as $name => $route) {
-                    $this->collection->add($name, $route);
-                }
-                $this->pipe = $pipe;
-                $this->buildStack($pipe);
-                $this->hostMatches = $matcher->getHostMatches();
-            }
-        }
-        $this->routes = $this->collection->all();
     }
 
     /**
@@ -80,6 +54,7 @@ class Router
         }
         $route = array_shift($this->routes);
         $matcher = new RouteMatcher($route);
+
         if ($matcher->matchScheme($this->scheme) && $matcher->matchHost($this->host) && $matcher->matchPath($this->path)) {
             $this->match = true;
             $this->matcher = $matcher;
@@ -110,7 +85,6 @@ class Router
         if ($scheme != '') {
             $this->scheme = $scheme;
         }
-        $this->popPipe();
         return $this->popRoute();
     }
 
@@ -121,7 +95,6 @@ class Router
      */
     public function matchRequest()
     {
-        $this->popPipe();
         return $this->popRoute();
     }
 
@@ -156,16 +129,6 @@ class Router
     }
 
     /**
-     * Returns to matched pipe
-     *
-     * @return string
-     */
-    public function getMatchedPipe()
-    {
-        return $this->pipe;
-    }
-
-    /**
      * Returns to matched host params
      *
      * @return array
@@ -188,14 +151,14 @@ class Router
     /**
      * Url generator helper
      *
-     * @param  string $name   route name
+     * @param  string $path   route path
      * @param  array  $params url parameters
      * @return string
      */
-    public function url(string $name, $params = array())
+    public function url(string $path, $params = array())
     {
         $generator = new Generator($this->getCollection());
-        return $generator->generate($name, $params);
+        return $generator->generate($path, $params);
     }
 
     /**

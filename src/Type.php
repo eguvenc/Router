@@ -29,7 +29,7 @@ abstract class Type
         $this->type = $type;
         $type = rtrim(ltrim($type, '<'), '>');
         $this->tags = explode(':', $type);
-        $this->tag 	= $this->tags[1];
+        $this->tag  = $this->tags[1];
         if (null != $regex) {
             $this->regex = $regex;
         }

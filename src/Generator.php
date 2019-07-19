@@ -39,6 +39,8 @@ class Generator implements GeneratorInterface
      */
     public function generate(string $name, $params = array())
     {
+        $route = $this->collection->get($name);
+
         if (false === $route = $this->collection->get($name)) {
             throw new RouteNotFoundException(
                 sprintf(
@@ -67,7 +69,7 @@ class Generator implements GeneratorInterface
                     )
                 );
             }
-            $paramPattern[] = '#\([^(]+\<'.$key.'\>[^)]+\)#';
+            $paramPattern[] = '#\([^(]+\<'.preg_quote($key).'\>[^)]+\)#';
             $paramReplace[] = $types[$key]->toUrl($value);
         }
         $urlString = preg_replace($paramPattern, $paramReplace, $pattern);
