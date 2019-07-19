@@ -44,8 +44,8 @@ class Generator implements GeneratorInterface
         if (false === $route = $this->collection->get($name)) {
             throw new RouteNotFoundException(
                 sprintf(
-                    'The named "%s" route is not available to generate the URL.',
-                    $name
+                    'The route "%s" is not available to generate the URL.',
+                    htmlspecialchars($name)
                 )
             );
         }
@@ -63,9 +63,9 @@ class Generator implements GeneratorInterface
             if (! isset($types[$key])) {
                 throw new UndefinedParameterException(
                     sprintf(
-                        'The named "%s" parameter could not be resolved to generate the "%s" URL.',
-                        $key,
-                        $name
+                        'The route "%s" parameter could not be resolved to generate the "%s" URL.',
+                        htmlspecialchars($key),
+                        htmlspecialchars($name)
                     )
                 );
             }
