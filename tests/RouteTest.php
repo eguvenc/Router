@@ -16,23 +16,16 @@ class RouteTest extends PHPUnit_Framework_TestCase
                     'App\Middleware\Lucky',
                 ],
                 'host' => 'test.example.com',
-                'scheme' => ['http','https'],
-                '$variable' => 'test attribute'
+                'scheme' => ['http','https']
             ]
     	);
+        $this->route->setName('/dummy/(?<name>\w+)');
     	$this->route->setArguments(['name' => 'test', 'id' => 5]);
     }
 
-    public function testSetPipe()
+    public function testGetName()
     {
-    	$this->route->setPipe('test/');
-    	$this->assertEquals('test/dummy/(?<name>\w+)/', $this->route->getPattern());
-    }
-
-    public function testSetName()
-    {
-    	$this->route->setName('dummy');
-    	$this->assertEquals('dummy', $this->route->getName());
+    	$this->assertEquals('/dummy/(?<name>\w+)', $this->route->getName());
     }
 
     public function testGetMethods()
@@ -98,17 +91,6 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
     	$this->route->setPattern('/dummy/(?<name>\w+)/(?<id>\d+)');
     	$this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $this->route->getPattern());
-    }
-
-    public function testGetAttribute()
-    {
-        $this->assertEquals('test attribute', $this->route->getAttribute('variable'));
-    }
-
-    public function testSetAttribute()
-    {
-        $this->route->setAttribute('foo', 'bar');
-        $this->assertEquals('bar', $this->route->getAttribute('foo'));
     }
 
     public function testGetStack()

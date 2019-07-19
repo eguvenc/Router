@@ -55,7 +55,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
             ])
         );
         $router = new Router($collection);
-        $router->popPipe();
         $route = $router->popRoute();
         $this->assertEquals('/test/dummy/<str:name>/<int:id>', $route->getName());
         $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());

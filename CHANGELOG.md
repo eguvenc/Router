@@ -3,7 +3,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 1.5.0 - 2019-07-18
+## 1.1.0 - 2019-07-19
 
 Deprecated Pipe class and route attriburtes.
 

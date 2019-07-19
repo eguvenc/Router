@@ -62,13 +62,12 @@ Route Collection
 ```php
 $collection = new RouteCollection($config);
 $collection->setContext($context);
-$collection->add('home', new Route(['path' => '/', 'handler' => 'App\Controller\DefaultController::index'));
+$collection->add('/', new Route(['handler' => 'App\Controller\DefaultController::index'));
 $collection->add(
-    'dummy',
+    '/dummy/index/<int:id>/<str:name>',
     new Route(
         [
             'method' => 'GET',
-            'path' => '/dummy/index/<int:id>/<str:name>',
             'handler' => 'App\Controller\DummyController::index'
             'middleware' => ['App\Middleware\Dummy::class']
         ]
@@ -79,11 +78,11 @@ $collection->add(
 Route Class
 
 ```php
-$route = $collection->get('dummy');
+$route = $collection->get('/dummy/index/<int:id>/<str:name>');
 
 echo $route->getHandler(); //  "App\Controller\DummyController::index"
 echo $route->getMethods()[0]; // GET
-echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)"
+echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)/"
 echo $route->getStack()[0]; // App\Middleware\Dummy::class
 ```
 
@@ -131,38 +130,12 @@ class DummyController
 Yaml basic
 
 ```yaml
-home: 
-    path: /
+/:
     handler: App\Controller\DefaultController::index
-    $variable:
-        - test_route_value
 
-dummy:
-     path: /<locale:locale>/dummy/<str:name>
+/<locale:locale>/dummy/<str:name>:
      handler: App\Controller\DefaultController::dummy
      middleware: App\Middleware\Dummy
-```
-
-Yaml group 
-
-```yaml
-user/:
-    $variable:
-        - test_pipe_value
-    host: router
-    scheme: http
-    middleware: 
-        - App\Middleware\Auth
-        - App\Middleware\Dummy
-    dummy:
-        path: /dummy/<str:name>
-        handler: App\Controller\UserController::dummy
-    dummy_with_id:
-        path: /dummy/<str:name>/<int:id>
-        handler: App\Controller\UserController::dummy
-    lucky:
-        path: /lucky/<str:name>/<slug:slug>
-        handler: App\Controller\DefaultController::lucky
 ```
 
 Parsing yaml
@@ -201,11 +174,8 @@ $builder = new Builder($collection);
 $collection = $builder->build(Yaml::parseFile('/var/www/myproject/App/routes.yaml'));
 
 if ($route = $router->matchRequest()) {
-
-    $handler = $route->getHandler();
+    echo $handler = $route->getHandler();  // App\Controller\DefaultController::index
     $methods = $route->getMethods();
-
-    print_r($route->getAttribute('variable')); // test_route_value
 }
 ```
 

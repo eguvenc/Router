@@ -15,7 +15,7 @@ class RouteMatcherTest extends PHPUnit_Framework_TestCase
             'host' => '(?<name>\w+).example.com',
             'scheme' => ['http','https']
         ]);
-        $route->setName('dummy');
+        $route->setName('/dummy/(?<name>\w+)/(?<id>\d+)');
         $this->matcher = new RouteMatcher($route);
     }
 
@@ -28,7 +28,6 @@ class RouteMatcherTest extends PHPUnit_Framework_TestCase
     public function testMatchHost()
     {
         $this->assertTrue($this->matcher->matchHost('test.example.com'));
-
         $hostMatches = $this->matcher->getHostMatches();
 
         $this->assertEquals('test.example.com', $hostMatches[0]);
