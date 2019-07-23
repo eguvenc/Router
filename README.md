@@ -62,16 +62,9 @@ Route Collection
 ```php
 $collection = new RouteCollection($config);
 $collection->setContext($context);
-$collection->add('/', new Route(['handler' => 'App\Controller\DefaultController::index'));
-$collection->add(
-    '/dummy/index/<int:id>/<str:name>',
-    new Route(
-        [
-            'method' => 'GET',
-            'handler' => 'App\Controller\DummyController::index'
-            'middleware' => ['App\Middleware\Dummy::class']
-        ]
-    )
+$collection->add(new Route('GET', '/', 'Views/default.phtml'));
+$collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml')
+    ->middleware(App\Middleware\Dummy::class);
 );
 ```
 
@@ -92,37 +85,24 @@ Dispatching
 $router = new Router($collection);
 
 if ($route = $router->matchRequest()) {
-
     $handler = $route->getHandler();
-    $args = array_merge(array('request' => $request), $route->getArguments());
-    $response = null;
-    if (is_callable($handler)) {
-        $exp = explode('::', $handler);
-        $class = new $exp[0];
-        $method = $exp[1];
-        $response = call_user_func_array(array($class, $method), $args);
-    }
+
+    $response = include $handler;
+
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
-        echo $response->getBody();  // DummyController::index
+        echo $response->getBody();  // Views/dummy.phtml
     }
 }
 ```
 
-App\Controller\DummyController
+dummy.phtml
 
 ```php
-namespace App\Controller;
-
+// Views/dummy.phtml
+// 
 use Zend\Diactoros\Response\HtmlResponse;
-use Psr\Http\Message\RequestInterface as Request;
 
-class DummyController
-{
-    public function index(Request $request)
-    {
-        return new HtmlResponse('DummyController::index');
-    }
-}
+return new HtmlResponse('Im a dummy view');
 ```
 
 ### YAML example
@@ -131,10 +111,10 @@ Yaml basic
 
 ```yaml
 /:
-    handler: App\Controller\DefaultController::index
+    handler: Views/default.phtml
 
 /<locale:locale>/dummy/<str:name>:
-     handler: App\Controller\DefaultController::dummy
+     handler: Views/dummy.phtml
      middleware: App\Middleware\Dummy
 ```
 

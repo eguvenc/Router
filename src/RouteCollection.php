@@ -48,10 +48,9 @@ class RouteCollection implements IteratorAggregate, Countable
     /**
      * Add route
      *
-     * @param string         $path  route path
      * @param RouteInterface $route object
      */
-    public function add(string $path, RouteInterface $route)
+    public function add(RouteInterface $route)
     {
         $route->setName($path);
         $unformatted = $route->getPattern();
