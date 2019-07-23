@@ -8,7 +8,7 @@ namespace Obullo\Router\Matcher;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-abstract class Matcher
+abstract class AbstractMatcher
 {
     protected $hostMatches = array();
 

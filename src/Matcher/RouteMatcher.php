@@ -10,7 +10,7 @@ use Obullo\Router\RouteInterface;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class RouteMatcher extends Matcher
+class RouteMatcher extends AbstractMatcher
 {
     protected $route;
     protected $arguments = array();
