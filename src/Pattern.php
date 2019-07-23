@@ -50,7 +50,7 @@ class Pattern
      * @param  string $path route path
      * @return void
      */
-    protected function validateUnformattedPatterns(string $path)
+    public function validateUnformattedPatterns(string $path)
     {
         foreach (explode('/', $path) as $value) {
             if ((substr($value, 0, 1) == '<' && substr($value, -1) == '>') && ! array_key_exists($value, $this->values)) {
