@@ -4,6 +4,7 @@ namespace Obullo\Router;
 
 use Obullo\Router\Matcher\RouteMatcher;
 use Obullo\Router\Generator;
+use Obullo\Router\Traits\MiddlewareAwareTrait;
 
 /**
  * Router
@@ -13,6 +14,8 @@ use Obullo\Router\Generator;
  */
 class Router
 {
+    use MiddlewareAwareTrait;
+
     protected $path;
     protected $host;
     protected $route;
@@ -23,7 +26,6 @@ class Router
     protected $collection;
     protected $match = false;
     protected $routes = array();
-    protected $middlewares = array();
 
     /**
      * Constructor
@@ -62,7 +64,7 @@ class Router
             $newArgs = $this->formatArguments($args);
             $route->setArguments($newArgs);
             $this->route = $route;
-            $this->buildStack($route);
+            $this->middlewares = $route->getMiddlewares();
             return $route;
         }
         return $this->popRoute();
@@ -96,16 +98,6 @@ class Router
     public function matchRequest()
     {
         return $this->popRoute();
-    }
-
-    /**
-     * Returns to stack handler object
-     *
-     * @return object
-     */
-    public function getStack() : array
-    {
-        return $this->middlewares;
     }
 
     /**
@@ -178,17 +170,5 @@ class Router
             }
         }
         return $newArgs;
-    }
-            
-    /**
-     * Attach middlewares to stack object
-     *
-     * @param RouteRule|RouteGroup $object route objects
-     */
-    protected function buildStack($object)
-    {
-        foreach ($object->getStack() as $value) {
-            $this->middlewares[] = $value;
-        }
     }
 }

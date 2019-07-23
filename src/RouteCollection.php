@@ -2,11 +2,10 @@
 
 namespace Obullo\Router;
 
+use Obullo\Router\Pattern;
 use Obullo\Router\RequestContext;
 use Obullo\Router\Traits\RequestContextAwareTrait;
 use Obullo\Router\Exception\BadRouteException;
-use Obullo\Router\Exception\UndefinedTypeException;
-use Obullo\Router\Exception\RouteConfigurationException;
 use ArrayIterator;
 use IteratorAggregate;
 use Countable;
@@ -21,28 +20,18 @@ class RouteCollection implements IteratorAggregate, Countable
 {
     use RequestContextAwareTrait;
 
-    protected $rules = array();
-    protected $patterns = array();
     protected $routes = array();
+    protected $path;
+    protected $pattern;
 
     /**
      * Constructor
-     *
-     * @param ArrayAccess $config config
+     * 
+     * @param Pattern $pattern object
      */
-    public function __construct(array $config)
+    public function __construct(Pattern $pattern)
     {
-        if (! isset($config['patterns'])) {
-            throw new RouteConfigurationException(
-                'Please provide route patterns to create the route collection.'
-            );
-        }
-        foreach ($config['patterns'] as $object) {
-            $type = $object->getType();
-            $tag  = $object->getTag();
-            $this->rules[$type] = $object->convert()->getValue();
-            $this->patterns[$tag] = $object;
-        }
+        $this->pattern = $pattern;
     }
 
     /**
@@ -50,16 +39,47 @@ class RouteCollection implements IteratorAggregate, Countable
      *
      * @param RouteInterface $route object
      */
-    public function add(RouteInterface $route)
+    public function add(RouteInterface $route) : Self
     {
-        $route->setName($path);
-        $unformatted = $route->getPattern();
-        $this->validateUnformattedPattern($unformatted);
-        $formatted = $this->formatPattern($unformatted);
-        $host = $this->formatPattern($route->getHost());
-        $route->setHost($host);
-        $route->setPattern($formatted);
-        $this->routes[$path] = $route;
+        $route->setPattern($this->pattern);
+        $this->path = $route->getPath();
+        $route->convert();
+        $this->routes[$this->path] = $route;
+
+        return $this;
+    }
+
+    /**
+     * Add host to current route
+     * 
+     * @param string $host name
+     */
+    public function addHost(string $host)
+    {
+        $this->routes[$this->path]->setHost($host);
+        return $this;
+    }
+
+    /**
+     * Add scheme to current route
+     * 
+     * @param string|array scheme name
+     */
+    public function addScheme($scheme)
+    {
+        $this->routes[$this->path]->setScheme($host);
+        return $this;
+    }
+
+    /**
+     * Add middleware to current route
+     * 
+     * @param string|array middleware class name
+     */
+    public function addMiddleware($middleware)
+    {
+        $this->routes[$this->path]->addMiddleware($middleware);
+        return $this;
     }
 
     /**
@@ -95,13 +115,13 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Returns to patterns
+     * Returns to pattern object
      *
      * @return array
      */
-    public function getPatterns()
+    public function getPattern() : Pattern
     {
-        return $this->patterns;
+        return $this->pattern;
     }
 
     /**
@@ -124,40 +144,5 @@ class RouteCollection implements IteratorAggregate, Countable
     public function remove(string $path)
     {
         unset($this->routes[$path]);
-    }
-
-    /**
-     * Format pattern
-     *
-     * @param  string $unformatted string
-     * @return string
-     */
-    public function formatPattern($unformatted)
-    {
-        return str_replace(
-            array_keys($this->rules),
-            array_values($this->rules),
-            $unformatted
-        );
-    }
-
-    /**
-     * Validate route patterns
-     *
-     * @param  string $pattern patterns
-     * @return void
-     */
-    protected function validateUnformattedPattern(string $pattern)
-    {
-        foreach (explode('/', $pattern) as $value) {
-            if ((substr($value, 0, 1) == '<' && substr($value, -1) == '>') && ! array_key_exists($value, $this->rules)) {
-                throw new UndefinedTypeException(
-                    sprintf(
-                        'The route type %s you used is undefined.',
-                        $value
-                    )
-                );
-            }
-        }
     }
 }

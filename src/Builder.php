@@ -8,7 +8,7 @@ use Obullo\Router\Exception\BadRouteException;
 use Obullo\Router\Exception\UndefinedRouteException;
 
 /**
- * Build route data
+ * Build route data from configuration file
  *
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
@@ -40,8 +40,16 @@ class Builder
                 throw new UndefinedRouteException('There is no rule defined in the route configuration file.');
             }
             Self::ValidateRoute($path, $route);
-            $route['path'] = $path;
-            $this->collection->add($path, new Route($route));
+            $handler = $route['handler'];
+            $method  = isset($route['method']) ? $route['method'] : 'GET';
+            $host = isset($route['host']) ? $route['host'] : null;
+            $scheme = isset($route['scheme']) ? $route['scheme'] : array();
+            $middleware = isset($route['middleware']) ? $route['middleware'] : array();
+
+            $this->collection->add(new Route($method, $path, $handler))
+                ->addHost($host)
+                ->addScheme($scheme)
+                ->addMiddleware($middleware);
         }
         return $this->collection;
     }
@@ -58,7 +66,7 @@ class Builder
             throw new BadRouteException(
                 sprintf(
                     'Route handler is undefined for "%s" path.',
-                    $path
+                    htmlspecialchars($path)
                 )
             );
         }

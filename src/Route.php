@@ -2,7 +2,8 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\Traits\StackAwareTrait;
+use Obullo\Router\Pattern;
+use Obullo\Router\Traits\MiddlewareAwareTrait;
 
 /**
  * Route
@@ -12,46 +13,64 @@ use Obullo\Router\Traits\StackAwareTrait;
  */
 class Route implements RouteInterface
 {
-    use StackAwareTrait;
+    use MiddlewareAwareTrait;
     
-    protected $name;
+    protected $path;
     protected $host;
     protected $pattern;
     protected $route = array();
     protected $methods = array();
-    protected $middlewares = array();
     protected $handler = null;
     protected $arguments = array();
     protected $schemes = array();
 
     /**
-    * Create a new route
-    *
-    * @param string|array $route attributes
-    * @return object
-    */
-    public function __construct(array $route)
+     * Consructor
+     * 
+     * @param string $method  http method name
+     * @param string $path    route path
+     * @param mixed  $handler route handler
+     * @param string $host    http host
+     * @param mixex  $scheme  url scheme
+     */
+    public function __construct($method, string $path, $handler, $host = null, $scheme = null)
     {
-        $this->attributes = $route;
-        $method = isset($route['method']) ? $route['method'] : 'GET';
         foreach ((array)$method as $name) {
             $this->methods[] = strtoupper($name);
         }
-        $this->handler = $route['handler'];
-        $this->middlewares = empty($route['middleware']) ? array() : (array)$route['middleware'];
-        $this->host = empty($route['host']) ? null : $route['host'];
-        $this->schemes = empty($route['scheme']) ? array() : (array)$route['scheme'];
+        $this->path = ($path == '/') ? '/' : '/'.trim($path, '/').'/'; // normalize route rules
+        $this->handler = $handler;
+        $this->setHost($host);
+        $this->setSchemes($schemes);
     }
 
     /**
-     * Set route label
-     *
-     * @param string $path path
+     * Set pattern
+     * 
+     * @param Pattern $pattern pattern
      */
-    public function setName($path)
+    public function setPattern(Pattern $pattern)
     {
-        $this->pattern = ($path == '/') ? '/' : '/'.trim($path, '/').'/'; // normalize route rules
-        $this->name = $path;
+        $this->pattern = $pattern;
+    }
+
+    /**
+     * Convert route variables
+     * 
+     * @return void
+     */
+    public function convert()
+    {
+        /**
+         * Check some validations for unformatted tags
+         */
+        $this->pattern->validateUnformattedPatterns($this->getPath());
+
+        $path = $this->pattern->format($this->getPath());
+        $host = $this->pattern->format($this->getHost());
+
+        $this->setPath($path);
+        $this->setHost($host);
     }
 
     /**
@@ -59,9 +78,9 @@ class Route implements RouteInterface
      *
      * @return string
      */
-    public function getName() : string
+    public function getPath() : string
     {
-        return $this->name;
+        return $this->path;
     }
 
     /**
@@ -135,6 +154,17 @@ class Route implements RouteInterface
     }
 
     /**
+     * Get argument(s)
+     *
+     * @param  string|null index $key string or number
+     * @return mixed
+     */
+    public function getArguments() : array
+    {
+        return $this->arguments;
+    }
+
+    /**
      * Remove argument
      *
      * @param  string $key name
@@ -154,36 +184,5 @@ class Route implements RouteInterface
     public function getArgument(string $key)
     {
         return isset($this->arguments[$key]) ? $this->arguments[$key] : false;
-    }
-
-    /**
-     * Get argument(s)
-     *
-     * @param  string|null index $key string or number
-     * @return mixed
-     */
-    public function getArguments() : array
-    {
-        return $this->arguments;
-    }
-
-    /**
-     * Set pattern
-     *
-     * @param string $pattern
-     */
-    public function setPattern(string $pattern)
-    {
-        $this->pattern = (string)$pattern;
-    }
-
-    /**
-     * Returns to pattern
-     *
-     * @return string
-     */
-    public function getPattern() : string
-    {
-        return $this->pattern;
     }
 }

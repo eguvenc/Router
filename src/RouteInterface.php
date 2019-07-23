@@ -11,18 +11,11 @@ namespace Obullo\Router;
 interface RouteInterface
 {
     /**
-     * Set route name
-     *
-     * @param string $name name
-     */
-    public function setName($name);
-
-    /**
      * Returns to path name
      *
      * @return string
      */
-    public function getName() : string;
+    public function getPath() : string;
 
     /**
      * Set host value
@@ -86,18 +79,4 @@ interface RouteInterface
      * @return mixed
      */
     public function getArguments() : array;
-
-    /**
-     * Set pattern
-     *
-     * @param string $pattern
-     */
-    public function setPattern(string $pattern);
-
-    /**
-     * Returns to pattern
-     *
-     * @return string
-     */
-    public function getPattern() : string;
 }

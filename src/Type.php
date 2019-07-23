@@ -13,22 +13,22 @@ use Obullo\Router\Exception\BadTypeException;
 abstract class Type
 {
     protected $tag;   // id, name
-    protected $type;
-    protected $rule;  // <int:id>, <str:name>
-    protected $value; // (?<any>.*) regex value
+    protected $pattern;  // <int:id>, <str:name>
+    protected $regex; // (?<any>.*) regex value with tag
+    protected $value; // (?(.*).*) full of regex value
     protected $tags = array();
 
     /**
      * Contructor
      *
-     * @param string $type  route type
+     * @param string $pattern route type
      * @param string $regex regex rule
      */
-    public function __construct(string $type, string $regex = null)
+    public function __construct(string $pattern, string $regex = null)
     {
-        $this->type = $type;
-        $type = rtrim(ltrim($type, '<'), '>');
-        $this->tags = explode(':', $type);
+        $this->pattern = $pattern;
+        $pattern = rtrim(ltrim($pattern, '<'), '>');
+        $this->tags = explode(':', $pattern);
         $this->tag  = $this->tags[1];
         if (null != $regex) {
             $this->regex = $regex;
@@ -52,13 +52,13 @@ abstract class Type
     abstract public function toUrl($value);
 
     /**
-     * Returns to type
+     * Returns to pattern
      *
-     * @return boolean
+     * @return strin
      */
-    public function getType() : string
+    public function getPattern() : string
     {
-        return $this->type;
+        return $this->pattern;
     }
 
     /**
@@ -107,21 +107,21 @@ abstract class Type
     /**
      * Validate route type
      *
-     * @param  string $type route type
+     * @param  string $pattern 
      * @param  array  $tags exploded tags
      * @return void
      */
-    protected static function validateType(string $type, array $tags)
+    protected static function validateType(string $pattern, array $tags)
     {
-        if (strpos($type, '<') !== 0
-            || substr($type, -1) != '>'
+        if (strpos($pattern, '<') !== 0
+            || substr($pattern, -1) != '>'
             || empty($tags[0])
             || empty($tags[1])
         ) {
             throw new BadTypeException(
                 sprintf(
                     'The route type you entered must be in this format "%s".',
-                    '<key:name>'
+                    htmlspecialchars('<name:tag>')
                 )
             );
         }

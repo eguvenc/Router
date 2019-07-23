@@ -33,6 +33,7 @@ $ vendor/bin/phpunit
 ```php
 require '../vendor/autoload.php';
 
+use Obullo\Router\Pattern;
 use Obullo\Router\Route;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
@@ -41,12 +42,9 @@ use Obullo\Router\Types\{
     StrType,
     IntType
 };
-$config = array(
-    'types' => [
-        new IntType('<int:id>'),
-        new StrType('<str:name>'),
-    ]
-);
+$pattern = new Pattern;
+$pattern->add(new IntType('<int:id>'));
+$pattern->add(new StrType('<str:name>'));
 ```
 
 Psr7 Request
@@ -60,12 +58,14 @@ $context->fromRequest($request);
 Route Collection
 
 ```php
-$collection = new RouteCollection($config);
+$collection = new RouteCollection($pattern);
 $collection->setContext($context);
 $collection->add(new Route('GET', '/', 'Views/default.phtml'));
-$collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml')
-    ->middleware(App\Middleware\Dummy::class);
-);
+$collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml'));
+$collection->add(new Route('GET', '/test/index', 'Views/test.phtml'))
+    ->addHost('example.com');
+    ->addScheme('http');
+    ->addMiddleware(App\Middleware\Dummy::class);
 ```
 
 Route Class
@@ -76,7 +76,7 @@ $route = $collection->get('/dummy/index/<int:id>/<str:name>');
 echo $route->getHandler(); //  "App\Controller\DummyController::index"
 echo $route->getMethods()[0]; // GET
 echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)/"
-echo $route->getStack()[0]; // App\Middleware\Dummy::class
+echo $route->getMiddlewares()[0]; // App\Middleware\Dummy::class
 ```
 
 Dispatching
@@ -86,7 +86,6 @@ $router = new Router($collection);
 
 if ($route = $router->matchRequest()) {
     $handler = $route->getHandler();
-
     $response = include $handler;
 
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
@@ -133,25 +132,25 @@ use Obullo\Router\Types\{
     SlugType,
     TranslationType
 };
-$config = array(
-    'patterns' => [
-        new IntType('<int:id>'),
-        new StrType('<str:name>'),
-        new SlugType('<slug:slug>'),
-        new TranslationType('<locale:locale>'),
-    ]
-);
+$pattern = new Pattern;
+$pattern->add(new IntType('<int:id>'));
+$pattern->add(new StrType('<str:name>'));
+$pattern->add(new SlugType('<slug:slug>'));
+$pattern->add(new TranslationType('<locale:locale>'));
+
 $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $context = new RequestContext;
 $context->fromRequest($request);
 
-$collection = new RouteCollection($config);
+$collection = new RouteCollection($pattern);
 $collection->setContext($context);
 
 use Symfony\Component\Yaml\Yaml;
 
 $builder = new Builder($collection);
 $collection = $builder->build(Yaml::parseFile('/var/www/myproject/App/routes.yaml'));
+
+$router = new Router($collection);
 
 if ($route = $router->matchRequest()) {
     echo $handler = $route->getHandler();  // App\Controller\DefaultController::index
