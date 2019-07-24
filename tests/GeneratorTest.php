@@ -1,6 +1,7 @@
 <?php
 
 use Obullo\Router\{
+    Pattern,
     Route,
     RequestContext,
     RouteCollection,
@@ -21,8 +22,7 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $configArray = array(
-            'patterns' => [
+        $pattern = new Pattern([
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
@@ -32,29 +32,16 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
                 new SlugType('<slug:slug>'),
                 new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)'),
                 new TranslationType('<locale:locale>'),
-            ]
-        );
+        ]);
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
         $this->config  = $configArray;
         $this->context = new RequestContext;
         $this->context->fromRequest($request);
 
-        $this->collection = new RouteCollection($this->config, $this->context);
-        $route = [
-            'method' =>  'GET',
-            'handler' => 'App\Controller\DefaultController::dummy'
-        ];
-        $this->collection->add('/<locale:locale>/dummy/<str:name>/<int:id>', new Route($route));
-        $route = [
-            'method' => 'GET',
-            'handler' => 'App\Controller\DefaultController::dummy'
-        ];
-        $this->collection->add('/slug/<slug:slug_>', new Route($route));
-        $route = [
-            'method' => 'GET',
-            'handler' => 'App\Controller\DefaultController::dummy'
-        ];
-        $this->collection->add('/test/me', new Route($route));
+        $this->collection = new RouteCollection($pattern);
+        $this->collection->add(new Route('GET', '/<locale:locale>/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController::dummy'));
+        $this->collection->add(new Route('GET', '/slug/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
+        $this->collection->add(new Route('GET', '/test/me', 'App\Controller\DefaultController::dummy'));
     }
 
     public function testGenerate()            

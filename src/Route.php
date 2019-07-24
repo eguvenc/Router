@@ -31,17 +31,20 @@ class Route implements RouteInterface
      * @param string $path    route path
      * @param mixed  $handler route handler
      * @param string $host    http host
-     * @param mixex  $scheme  url scheme
+     * @param mixed  $scheme  url scheme
+     * @param mixed  $middleware middlewares
      */
-    public function __construct($method, string $path, $handler, $host = null, $scheme = null)
+    public function __construct($method, string $path, $handler, $host = null, $scheme = null, $middleware = array())
     {
         foreach ((array)$method as $name) {
             $this->methods[] = strtoupper($name);
         }
         $this->path = ($path == '/') ? '/' : '/'.trim($path, '/').'/'; // normalize route rules
+        $this->setName($this->path);
         $this->handler = $handler;
         $this->setHost($host);
-        $this->setSchemes($schemes);
+        $this->setSchemes($scheme);
+        $this->middleware($middleware);
     }
 
     /**
@@ -71,6 +74,36 @@ class Route implements RouteInterface
 
         $this->setPath($path);
         $this->setHost($host);
+    }
+
+    /**
+     * Set name
+     * 
+     * @param string $name name
+     */
+    public function setName(string $name)
+    {
+        $this->name = rtrim($name, '/');
+    }
+
+    /**
+     * Returns to name
+     * 
+     * @param string $path path
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set path
+     * 
+     * @param string $path path
+     */
+    public function setPath(string $path)
+    {
+        $this->path = $path;
     }
 
     /**

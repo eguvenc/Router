@@ -1,7 +1,7 @@
 <?php
 
 use Obullo\Router\{
-    Pipe,
+    Pattern,
     Route,
     Router,
     RequestContext,
@@ -20,8 +20,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function setup()
     {
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $config = array(
-            'patterns' => [
+        $this->pattern = new Pattern(
+            [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
@@ -32,7 +32,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
                 new TranslationType('<locale:locale>'),
             ]
         );
-        $this->config = $config;
         $this->context = new RequestContext;
         $this->context->setPath('/test/dummy/test/55');
         $this->context->setMethod('GET');
@@ -42,105 +41,99 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testPopRoute()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
-            new Route([
-                'method' => 'GET',
-                'handler' => 'App\Controller\DefaultController::dummy',
-                'middleware' => [],
+            new Route(
+                'GET',
+                '/test/dummy/<str:name>/<int:id>'
+                'App\Controller\DefaultController::dummy',
                 'test.example.com',
                 'http'
-            ])
+            )
         );
         $router = new Router($collection);
         $route = $router->popRoute();
         $this->assertEquals('/test/dummy/<str:name>/<int:id>', $route->getName());
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPath());
         $this->assertEquals('App\Controller\DefaultController::dummy', $route->getHandler());
     }
 
     public function testMatch()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/dummy/<str:name>/<int:id>',
-            new Route([
-                'method' => 'GET',
-                'handler' => 'App\Controller\DefaultController::dummy',
-                'middleware' => [],
-                'host' => '(?<name>\w+).example.com',
-                'scheme' => 'https'
-            ])
+            new Route(
+                'GET',
+                '/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                '(?<name>\w+).example.com',
+                'https'
+            )
         );
         $router = new Router($collection);
         $route = $router->match('/dummy/test/55/','admin.example.com','https');
         $args = $route->getArguments();
         $this->assertEquals('test', $args['name']);
         $this->assertEquals('55', $args['id']);
-        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
+        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPath());
         $this->assertEquals('admin', $router->getHostMatches()['name']);
     }
 
     public function testMatchRequest()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
-            new Route([
-                'method' => 'GET',
-                'handler' => 'App\Controller\DefaultController::dummy',
-                'middleware' => [],
-                'host' => '(?<name>\w+).example.com',
-                'scheme' => 'http'
-            ])
+            new Route(
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                '(?<name>\w+).example.com',
+                'http'
+            )
         );
         $router = new Router($collection);
         $route = $router->matchRequest();
         $args = $route->getArguments();
         $this->assertEquals('test', $args['name']);
         $this->assertEquals('55', $args['id']);
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPath());
         $this->assertEquals('test', $router->getHostMatches()['name']);
     }
 
-    public function testGetStack()
+    public function testGetMiddleware()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
             new Route(
-                [
-                    'method' => 'GET',
-                    'handler' => 'App\Controller\DefaultController::dummy',
-                    'middleware' => ['App\Middleware\Dummy','App\Middleware\Test'],
-                    'host' => '(?<name>\w+).example.com',
-                    'scheme' => 'http'
-                ]
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                '(?<name>\w+).example.com',
+                'http',
+                ['App\Middleware\Dummy','App\Middleware\Test']
             )
         );
         $router = new Router($collection);
         $router->matchRequest();
-        $this->assertEquals(['App\Middleware\Dummy','App\Middleware\Test'], $router->getStack());
+        $this->assertEquals(['App\Middleware\Dummy','App\Middleware\Test'], $router->getMiddleware());
     }
 
     public function testHasMatch()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
-            new Route([
-                'method' => 'GET',
-                'handler' => 'App\Controller\DefaultController::dummy',
-                'middleware' => [],
-                'host' => '(?<name>\w+).example.com',
-                'scheme' => 'http'
-            ])
+            new Route(
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                '(?<name>\w+).example.com',
+                'http'
+            )
         );
         $router = new Router($collection);
         $router->matchRequest();
@@ -149,53 +142,49 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testGetMatchedRoute()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
-            new Route([
-                'method' => 'GET',
-                'handler' => 'App\Controller\DefaultController::dummy',
-                'host' => '(?<name>\w+).example.com',
-                'scheme' => 'http'
-            ])
+            new Route(
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                '(?<name>\w+).example.com',
+                'http'
+            )
         );
         $router = new Router($collection);
         $router->matchRequest();
         $route = $router->getMatchedRoute();
-        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPattern());
+        $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPath());
     }
 
     public function testGetHostMatches()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
             new Route(
-                [
-                    'method' => 'GET',
-                    'handler' => 'App\Controller\DefaultController::dummy',
-                    'host' => 'test.example.com',
-                    'scheme' => 'http'
-                ]
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                'test.example.com',
+                'http'
             )
         );
         $router = new Router($collection);
         $router->matchRequest();
         $this->assertEquals('test.example.com', $router->getHostMatches()[0]);
 
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
             new Route(
-                [
-                    'method' => 'GET',
-                    'handler' => 'App\Controller\DefaultController::dummy',
-                    'host' => '(?<name>\w+).example.com',
-                    'scheme' => 'http'
-                ]
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                '<str:name>.example.com',
+                'http'
             )
         );
         $router = new Router($collection);
@@ -205,17 +194,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testGetCollection()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
             new Route(
-                [
-                    'method' => 'GET',
-                    'handler' => 'App\Controller\DefaultController::dummy',
-                    'host' => 'test.example.com',
-                    'scheme' => 'http'
-                ]
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                'test.example.com',
+                'http'
             )
         );
         $router = new Router($collection);
@@ -224,17 +211,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testUrl()
     {
-        $collection = new RouteCollection($this->config);
+        $collection = new RouteCollection($this->pattern);
         $collection->setContext($this->context);
         $collection->add(
-            '/test/dummy/<str:name>/<int:id>',
             new Route(
-                [
-                    'method' => 'GET',
-                    'handler' => 'App\Controller\DefaultController::dummy',
-                    'host' => 'test.example.com',
-                    'scheme' => 'http'
-                ]
+                'GET',
+                '/test/dummy/<str:name>/<int:id>',
+                'App\Controller\DefaultController::dummy',
+                'test.example.com',
+                'http'
             )
         );
         $router = new Router($collection);

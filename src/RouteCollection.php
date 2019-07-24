@@ -21,7 +21,7 @@ class RouteCollection implements IteratorAggregate, Countable
     use RequestContextAwareTrait;
 
     protected $routes = array();
-    protected $path;
+    protected $name;
     protected $pattern;
 
     /**
@@ -42,9 +42,9 @@ class RouteCollection implements IteratorAggregate, Countable
     public function add(RouteInterface $route) : Self
     {
         $route->setPattern($this->pattern);
-        $this->path = $route->getPath();
+        $this->name = $route->getName();
         $route->convert();
-        $this->routes[$this->path] = $route;
+        $this->routes[$this->name] = $route;
 
         return $this;
     }
@@ -54,9 +54,9 @@ class RouteCollection implements IteratorAggregate, Countable
      * 
      * @param string $host name
      */
-    public function addHost(string $host)
+    public function host($host) : Self
     {
-        $this->routes[$this->path]->setHost($host);
+        $this->routes[$this->name]->setHost($host);
         return $this;
     }
 
@@ -65,9 +65,9 @@ class RouteCollection implements IteratorAggregate, Countable
      * 
      * @param string|array scheme name
      */
-    public function addScheme($scheme)
+    public function scheme($scheme) : Self
     {
-        $this->routes[$this->path]->setScheme($host);
+        $this->routes[$this->name]->setSchemes($scheme);
         return $this;
     }
 
@@ -76,9 +76,9 @@ class RouteCollection implements IteratorAggregate, Countable
      * 
      * @param string|array middleware class name
      */
-    public function addMiddleware($middleware)
+    public function middleware($middleware) : Self
     {
-        $this->routes[$this->path]->addMiddleware($middleware);
+        $this->routes[$this->name]->middleware($middleware);
         return $this;
     }
 
@@ -130,9 +130,9 @@ class RouteCollection implements IteratorAggregate, Countable
      * @param  string $name name
      * @return boolean
      */
-    public function get(string $path)
+    public function get(string $name)
     {
-        return isset($this->routes[$path]) ? $this->routes[$path] : false;
+        return isset($this->routes[$name]) ? $this->routes[$name] : false;
     }
 
     /**
@@ -141,8 +141,8 @@ class RouteCollection implements IteratorAggregate, Countable
      * @param  string $name name
      * @return void
      */
-    public function remove(string $path)
+    public function remove(string $name)
     {
-        unset($this->routes[$path]);
+        unset($this->routes[$name]);
     }
 }

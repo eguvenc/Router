@@ -163,7 +163,7 @@ class Router
     protected function formatArguments(array $args) : array
     {
         $newArgs = array();
-        $types = $this->collection->getPatterns();
+        $types = $this->collection->getPattern()->getTypes();
         foreach ($args as $key => $value) {
             if (! is_numeric($key) && isset($types[$key])) {
                 $newArgs[$key] = $types[$key]->toPhp($value);

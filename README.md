@@ -42,9 +42,10 @@ use Obullo\Router\Types\{
     StrType,
     IntType
 };
-$pattern = new Pattern;
-$pattern->add(new IntType('<int:id>'));
-$pattern->add(new StrType('<str:name>'));
+$pattern = new Pattern([
+    new IntType('<int:id>'),
+    new StrType('<str:name>'),
+]);
 ```
 
 Psr7 Request
@@ -61,11 +62,11 @@ Route Collection
 $collection = new RouteCollection($pattern);
 $collection->setContext($context);
 $collection->add(new Route('GET', '/', 'Views/default.phtml'));
-$collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml'));
+$collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml'))->scheme(['http','https']);
 $collection->add(new Route('GET', '/test/index', 'Views/test.phtml'))
-    ->addHost('example.com');
-    ->addScheme('http');
-    ->addMiddleware(App\Middleware\Dummy::class);
+    ->host('example.com');
+    ->scheme('http');
+    ->middleware(App\Middleware\Dummy::class);
 ```
 
 Route Class
@@ -85,11 +86,11 @@ Dispatching
 $router = new Router($collection);
 
 if ($route = $router->matchRequest()) {
-    $handler = $route->getHandler();
+    $handler = $route->getHandler(); // Views/default.phtml
     $response = include $handler;
 
     if ($response instanceof Psr\Http\Message\ResponseInterface) {
-        echo $response->getBody();  // Views/dummy.phtml
+        echo $response->getBody();
     }
 }
 ```
@@ -109,6 +110,8 @@ return new HtmlResponse('Im a dummy view');
 Yaml basic
 
 ```yaml
+## routes.yaml
+
 /:
     handler: Views/default.phtml
 
@@ -120,6 +123,9 @@ Yaml basic
 Parsing yaml
 
 ```php
+require '../vendor/autoload.php';
+
+use Obullo\Router\Pattern;
 use Obullo\Router\Route;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
@@ -148,12 +154,12 @@ $collection->setContext($context);
 use Symfony\Component\Yaml\Yaml;
 
 $builder = new Builder($collection);
-$collection = $builder->build(Yaml::parseFile('/var/www/myproject/App/routes.yaml'));
+$collection = $builder->build(Yaml::parseFile('routes.yaml'));
 
 $router = new Router($collection);
 
 if ($route = $router->matchRequest()) {
-    echo $handler = $route->getHandler();  // App\Controller\DefaultController::index
+    echo $handler = $route->getHandler();  // Views/default.phtml
     $methods = $route->getMethods();
 }
 ```

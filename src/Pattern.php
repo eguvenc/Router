@@ -12,8 +12,22 @@ use Obullo\Router\Type;
  */
 class Pattern
 {
+    protected $types = array();
     protected $values = array();
-    protected $patterns = array();
+
+    /**
+     * Constructor
+     * 
+     * @param array $types multiple types
+     */
+    public function __construct($types = array())
+    {   
+        if (! empty($types)) {
+            foreach ($types as $type) {
+                $this->add($type);
+            }
+        }
+    }
 
     /**
      * Add type
@@ -25,10 +39,20 @@ class Pattern
         $tag = $type->getTag();  // page
         $pattern = $type->getPattern(); // <int:page>
 
+        $this->types[$tag] = $type;
         $this->values[$pattern] = $type->convert()->getValue();
-        $this->patterns[$tag] = $type;
     }
     
+    /**
+     * Returns to pattern types
+     * 
+     * @return array
+     */
+    public function getTypes() : array
+    {
+        return $this->types;
+    }
+
     /**
      * Format pattern
      *

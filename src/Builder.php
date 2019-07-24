@@ -47,9 +47,9 @@ class Builder
             $middleware = isset($route['middleware']) ? $route['middleware'] : array();
 
             $this->collection->add(new Route($method, $path, $handler))
-                ->addHost($host)
-                ->addScheme($scheme)
-                ->addMiddleware($middleware);
+                ->host($host)
+                ->scheme($scheme)
+                ->middleware($middleware);
         }
         return $this->collection;
     }

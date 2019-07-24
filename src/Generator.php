@@ -49,14 +49,14 @@ class Generator implements GeneratorInterface
                 )
             );
         }
-        $pattern = $route->getPattern();
+        $pattern = $route->getPath();
         if (empty($params)) {
             return ($pattern == '/') ? '/' : rtrim($pattern, '/');
         }
         if (false == Self::isAssoc($params)) {
             throw new InvalidArgumentException('The url generator parameters must be key-value pairs.');
         }
-        $types = $this->collection->getPatterns();
+        $types = $this->collection->getPattern()->getTypes();
         $paramPattern = array();
         $paramReplace = array();
         foreach ($params as $key => $value) {

@@ -33,7 +33,7 @@ class RequestContext
     }
 
     /**
-     * Set path
+     * Set & normalize path
      *
      * @param string $path path
      */

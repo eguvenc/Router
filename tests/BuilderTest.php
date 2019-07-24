@@ -1,8 +1,11 @@
 <?php
 
-use Obullo\Router\Builder;
-use Obullo\Router\RequestContext;
-use Obullo\Router\RouteCollection;
+use Obullo\Router\{
+    Pattern,
+    Builder,
+    RequestContext,
+    RouteCollection
+};
 use Obullo\Router\Types\{
     StrType,
     IntType,
@@ -24,8 +27,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $file = dirname(__DIR__).'/tests/Resources/routes.yaml';
         $this->routes = Yaml::parseFile($file);
 
-        $config = array(
-            'patterns' => [
+        $pattern = new Pattern([
                 new IntType('<int:id>'),  // \d+
                 new StrType('<str:name>'),     // \w+
                 new StrType('<str:word>'),     // \w+
@@ -34,12 +36,11 @@ class BuilderTest extends PHPUnit_Framework_TestCase
                 new IntType('<int:page>'),
                 new SlugType('<slug:slug>'),
                 new TranslationType('<locale:locale>'),
-            ]
-        );
+        ]);
         $context = new RequestContext;
         $context->fromRequest($request);
 
-        $collection = new RouteCollection($config);
+        $collection = new RouteCollection($pattern);
         $collection->setContext($context);
 
         $this->builder = new Builder($collection);
@@ -52,10 +53,10 @@ class BuilderTest extends PHPUnit_Framework_TestCase
 
         $dummyRoute = $collection->get('/<locale:locale>/dummy/<str:name>');
         $this->assertEquals('App\Controller\DefaultController::dummy', $dummyRoute->getHandler());
-        $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)/', $dummyRoute->getPattern());
+        $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)/', $dummyRoute->getPath());
 
         $testRoute = $collection->get('/dummy/<str:name>/<int:id>');
-        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPattern());
+        $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPath());
         $this->assertEquals('(?<name>\w+).example.com', $testRoute->getHost());
         $this->assertEquals(['http','https'], $testRoute->getSchemes());
     }

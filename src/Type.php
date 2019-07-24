@@ -21,7 +21,7 @@ abstract class Type
     /**
      * Contructor
      *
-     * @param string $pattern route type
+     * @param string $pattern route pattern
      * @param string $regex regex rule
      */
     public function __construct(string $pattern, string $regex = null)
@@ -54,7 +54,7 @@ abstract class Type
     /**
      * Returns to pattern
      *
-     * @return strin
+     * @return string
      */
     public function getPattern() : string
     {
@@ -97,21 +97,21 @@ abstract class Type
      *
      * @return object
      */
-    public function convert() : self
+    public function convert() : Self
     {
-        Self::validateType($this->getType(), $this->tags);
+        Self::validatePattern($this->getPattern(), $this->tags);
         $this->value = sprintf($this->getRegex(), $this->tag);
         return $this;
     }
 
     /**
-     * Validate route type
+     * Validate route pattern
      *
      * @param  string $pattern 
      * @param  array  $tags exploded tags
      * @return void
      */
-    protected static function validateType(string $pattern, array $tags)
+    protected static function validatePattern(string $pattern, array $tags)
     {
         if (strpos($pattern, '<') !== 0
             || substr($pattern, -1) != '>'
@@ -120,7 +120,7 @@ abstract class Type
         ) {
             throw new BadTypeException(
                 sprintf(
-                    'The route type you entered must be in this format "%s".',
+                    'The pattern you entered must be in this format "%s".',
                     htmlspecialchars('<name:tag>')
                 )
             );

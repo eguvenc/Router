@@ -11,7 +11,7 @@ trait MiddlewareAwareTrait
      * 
      * @param array|string $middleware names
      */
-    public function addMiddleware($middleware)
+    public function middleware($middleware)
     {
         foreach ((array)$middleware as $class) {
             $this->middlewares[] = $class;

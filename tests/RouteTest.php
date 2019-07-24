@@ -7,19 +7,16 @@ class RouteTest extends PHPUnit_Framework_TestCase
     public function setup()
     {
     	$this->route = new Route(
+            ['GET','POST'],
+            '/dummy/(?<name>\w+)',
+            'App\Controller\DefaultController:index',
+            'host' => 'test.example.com',
+            'scheme' => ['http','https'],
             [
-                'method' => ['GET','POST'],
-                'path' => '/dummy/(?<name>\w+)',
-                'handler' => 'App\Controller\DefaultController:index',
-                'middleware' => [
-                    'App\Middleware\Dummy',
-                    'App\Middleware\Lucky',
-                ],
-                'host' => 'test.example.com',
-                'scheme' => ['http','https']
+                'App\Middleware\Dummy',
+                'App\Middleware\Lucky',
             ]
     	);
-        $this->route->setName('/dummy/(?<name>\w+)');
     	$this->route->setArguments(['name' => 'test', 'id' => 5]);
     }
 
@@ -82,25 +79,25 @@ class RouteTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals(['id' => 5], $this->route->getArguments());
     }
 
-    public function testGetPattern()
+    public function testGetPath()
     {
-    	$this->assertEquals('/dummy/(?<name>\w+)/', $this->route->getPattern());
+    	$this->assertEquals('/dummy/(?<name>\w+)/', $this->route->getPath());
     }
 
-    public function testSetPattern()
+    public function testSetPath()
     {
-    	$this->route->setPattern('/dummy/(?<name>\w+)/(?<id>\d+)');
-    	$this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $this->route->getPattern());
+    	$this->route->setPath('/dummy/(?<name>\w+)/(?<id>\d+)');
+    	$this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)', $this->route->getPath());
     }
 
-    public function testGetStack()
+    public function testGetMiddlewares()
     {
     	$this->assertEquals(
     		[
     			'App\Middleware\Dummy',
     			'App\Middleware\Lucky',
     		],
-    		$this->route->getStack()
+    		$this->route->getMiddlewares()
     	);
     }
 }
