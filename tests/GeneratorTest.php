@@ -34,7 +34,6 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
                 new TranslationType('<locale:locale>'),
         ]);
         $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $this->config  = $configArray;
         $this->context = new RequestContext;
         $this->context->fromRequest($request);
 

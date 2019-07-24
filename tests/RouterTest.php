@@ -46,7 +46,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $collection->add(
             new Route(
                 'GET',
-                '/test/dummy/<str:name>/<int:id>'
+                '/test/dummy/<str:name>/<int:id>',
                 'App\Controller\DefaultController::dummy',
                 'test.example.com',
                 'http'
@@ -119,7 +119,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         );
         $router = new Router($collection);
         $router->matchRequest();
-        $this->assertEquals(['App\Middleware\Dummy','App\Middleware\Test'], $router->getMiddleware());
+        $this->assertEquals(['App\Middleware\Dummy','App\Middleware\Test'], $router->getMiddlewares());
     }
 
     public function testHasMatch()

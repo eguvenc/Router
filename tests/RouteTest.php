@@ -10,8 +10,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
             ['GET','POST'],
             '/dummy/(?<name>\w+)',
             'App\Controller\DefaultController:index',
-            'host' => 'test.example.com',
-            'scheme' => ['http','https'],
+            'test.example.com',
+            ['http','https'],
             [
                 'App\Middleware\Dummy',
                 'App\Middleware\Lucky',

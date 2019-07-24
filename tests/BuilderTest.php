@@ -57,7 +57,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
 
         $testRoute = $collection->get('/dummy/<str:name>/<int:id>');
         $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPath());
-        $this->assertEquals('(?<name>\w+).example.com', $testRoute->getHost());
+        $this->assertEquals('<str:name>.example.com', $testRoute->getHost());
         $this->assertEquals(['http','https'], $testRoute->getSchemes());
     }
 }

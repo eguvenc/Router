@@ -3,6 +3,7 @@
 namespace Obullo\Router;
 
 use Obullo\Router\Type;
+use Obullo\Router\Exception\UndefinedTypeException;
 
 /**
  * Pattern

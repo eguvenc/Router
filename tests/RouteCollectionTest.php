@@ -136,7 +136,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testRemove()
     {
-        $route = new Route(
+        $first = new Route(
             ['GET','POST'],
             '/dummy/<str:name>/<int:id>',
             'App\Controller\DefaultController:index',
@@ -144,8 +144,16 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add('/dummy/<str:name>/<int:id>', $route);
-        $this->collection->add('/dummy/<str:name>/<int:id>/second', $route);
+        $this->collection->add($first);
+        $second = new Route(
+            ['GET','POST'],
+            '/dummy/<str:name>/<int:id>/second',
+            'App\Controller\DefaultController:index',
+            '<str:name>.example.com',
+            ['http','https'],
+            'App\Middleware\Dummy'
+        );
+        $this->collection->add($second);
 
         $this->collection->remove('/dummy/<str:name>/<int:id>/second');
         $this->assertFalse($this->collection->get('/dummy/<str:name>/<int:id>/second'));
