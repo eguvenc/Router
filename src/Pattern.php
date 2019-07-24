@@ -18,14 +18,12 @@ class Pattern
     /**
      * Constructor
      * 
-     * @param array $types multiple types
+     * @param array $types multiple type array
      */
     public function __construct($types = array())
     {   
-        if (! empty($types)) {
-            foreach ($types as $type) {
-                $this->add($type);
-            }
+        foreach ((array)$types as $type) {
+            $this->add($type);
         }
     }
 
