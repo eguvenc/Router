@@ -3,6 +3,53 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.2.0 - 2019-07-25
+
+Added Pattern class to easily manage route patterns.
+
+### Added
+
+- Added Pattern class to easily manage route patterns.
+- Added parameters to Route class constructor to use as one by one.
+
+```php
+$pattern = new Pattern;
+$pattern->add(new IntType('<int:id>'));
+$pattern->add(new StrType('<str:name>'));
+$pattern->add(new SlugType('<slug:slug>'));
+$pattern->add(new TranslationType('<locale:locale>'));
+
+$collection = new RouteCollection($pattern);
+```
+- StackAwareTrait renamed as MiddlewareAwareTrait.
+- Added RouteCollection->middleware(),RouteCollection->host(),RouteCollection->scheme() methods.
+
+```php
+$collection->add(new Route('GET', '/test/index', 'Views/test.phtml'))
+    ->host('example.com');
+    ->scheme('http');
+    ->middleware(App\Middleware\Dummy::class);
+```
+
+### Deprecated
+
+- Deprecated first parameter of RouteCollection->add() method.
+- Deprecated Route class construct parameters. All parameters can be entered one by one.
+
+```php
+$collection->add(new Route('GET', '/', 'Views/default.phtml'));
+```
+
+### Removed
+
+- Removed StackAwareTrait class.
+- Removed RouteConfigurationException class.
+- Removed getStack() method from Router and StackAwareTrait classes.
+
+### Fixed
+
+- Nothing.
+
 ## 1.1.0 - 2019-07-19
 
 Deprecated Pipe class and route attriburtes.
