@@ -15,7 +15,7 @@ use Obullo\Router\Types\TranslationType;
 
 class PatternTest extends PHPUnit_Framework_TestCase
 {
-    public function testGeTypes()
+    public function testGetTypes()
     {
         $pattern = new Pattern([
             new IntType('<int:id>'),   // \d+
