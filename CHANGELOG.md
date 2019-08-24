@@ -3,7 +3,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 1.2.1 - 2019-08-24
+## 1.3.0 - 2019-08-24
 
 - Generator class generate() method functionality changed like php sprintf().
 
