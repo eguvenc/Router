@@ -147,10 +147,12 @@ class Router
      * @param  array  $params url parameters
      * @return string
      */
-    public function url(string $path, $params = array())
+    public function url()
     {
+        $args = func_get_args();
+
         $generator = new Generator($this->getCollection());
-        return $generator->generate($path, $params);
+        return $generator->generate(...$args);
     }
 
     /**
@@ -163,7 +165,7 @@ class Router
     protected function formatArguments(array $args) : array
     {
         $newArgs = array();
-        $types = $this->collection->getPattern()->getTypes();
+        $types = $this->collection->getPattern()->getTaggedTypes();
         foreach ($args as $key => $value) {
             if (! is_numeric($key) && isset($types[$key])) {
                 $newArgs[$key] = $types[$key]->toPhp($value);

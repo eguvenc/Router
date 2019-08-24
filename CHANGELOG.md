@@ -3,6 +3,41 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.2.1 - 2019-08-24
+
+- Generator class generate() method functionality changed like php sprintf().
+
+```php
+$url = (new Obullo\Router\Generator($collection))
+    ->generate('/test/<str:name>/<int:id>', 'name', 5);
+
+// /test/name/5
+```
+
+- Updated GeneratorInterface generate() method.
+- Renamed Pattern class getTypes() method as getPatternTypes(), added getTaggedTypes() method.
+
+### Added
+
+- getPatternTypes();
+- getTaggedTypes();
+
+methods to Pattern class.
+
+### Deprecated
+
+- Generator generate method arguments.
+- Pattern class getTypes() method.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.2.0 - 2019-07-25
 
 Added Pattern class to easily manage route patterns.

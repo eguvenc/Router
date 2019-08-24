@@ -45,8 +45,8 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
 
     public function testGenerate()            
     {
-        $dummy = (new Generator($this->collection))->generate('/<locale:locale>/dummy/<str:name>/<int:id>', ['locale' => 'en', 'name' => 'test', 'id' => 5]);
-        $slug  = (new Generator($this->collection))->generate('/slug/<slug:slug_>', ['slug_' => 'abcd-123_']);
+        $dummy = (new Generator($this->collection))->generate('/<locale:locale>/dummy/<str:name>/<int:id>', 'en','test',5);
+        $slug  = (new Generator($this->collection))->generate('/slug/<slug:slug_>', 'abcd-123_');
         $test  = (new Generator($this->collection))->generate('/test/me');
 
         $this->assertEquals($dummy, '/en/dummy/test/5');

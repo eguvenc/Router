@@ -34,7 +34,7 @@ class RouteMatcher extends AbstractMatcher
     public function matchPath(string $path) : bool
     {
         $pattern = $this->route->getPath();
-        
+
         $arguments = array();
         if ($path == $pattern OR preg_match('#^'.$pattern.'$#', $path, $arguments)) {
             array_shift($arguments);

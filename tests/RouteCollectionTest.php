@@ -109,7 +109,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
     public function testGetTypes()
     {
-        $types = $this->collection->getPattern()->getTypes();
+        $types = $this->collection->getPattern()->getTaggedTypes();
         $this->assertEquals('<int:id>', $types['id']->getPattern());
         $this->assertEquals('<str:name>', $types['name']->getPattern());
         $this->assertEquals('<str:word>', $types['word']->getPattern());

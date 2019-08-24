@@ -27,7 +27,7 @@ class PatternTest extends PHPUnit_Framework_TestCase
             new SlugType('<slug:slug>'),
             new TranslationType('<locale:locale>'),
         ]);
-        $types = $pattern->getTypes();
+        $types = $pattern->getPatternTypes();
         foreach ($types as $type) {
             $this->assertTrue(
                 in_array(
@@ -42,7 +42,7 @@ class PatternTest extends PHPUnit_Framework_TestCase
     {
         $pattern = new Pattern;
         $pattern->add(new IntType('<int:id>'));
-        $types = $pattern->getTypes();
+        $types = $pattern->getTaggedTypes();
         $this->assertEquals('<int:id>', $types['id']->getPattern());
     }
 

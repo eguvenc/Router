@@ -17,5 +17,5 @@ interface GeneratorInterface
      * @param  array  $parameters url parameters
      * @return string
      */
-    public function generate(string $name, $parameters = array());
+    public function generate();
 }

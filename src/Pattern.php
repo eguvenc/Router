@@ -14,6 +14,7 @@ use Obullo\Router\Exception\UndefinedTypeException;
 class Pattern
 {
     protected $types = array();
+    protected $taggedTypes = array();
     protected $values = array();
 
     /**
@@ -35,19 +36,31 @@ class Pattern
      */
     public function add(Type $type)
     {
-        $tag = $type->getTag();  // page
+        $tag = $type->getTag(); // <page>
         $pattern = $type->getPattern(); // <int:page>
 
-        $this->types[$tag] = $type;
-        $this->values[$pattern] = $type->convert()->getValue();
+        $this->taggedTypes[$tag] = $type;
+        $this->types[$pattern]   = $type;
+        $this->values[$pattern]  = $type->convert()->getValue();
     }
     
+
+    /**
+     * Returns to tags types
+     * 
+     * @return array
+     */
+    public function getTaggedTypes() : array
+    {
+        return $this->taggedTypes;
+    }
+
     /**
      * Returns to pattern types
      * 
      * @return array
      */
-    public function getTypes() : array
+    public function getPatternTypes() : array
     {
         return $this->types;
     }

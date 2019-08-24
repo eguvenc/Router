@@ -4,7 +4,6 @@ namespace Obullo\Router;
 
 use Obullo\Router\{
     RouteCollection,
-    Exception\BadParameterException,
     Exception\RouteNotFoundException,
     Exception\UndefinedParameterException
 };
@@ -33,12 +32,12 @@ class Generator implements GeneratorInterface
     /**
      * Generate url
      * 
-     * @param  string $name   route name
-     * @param  array  $params url parameters
      * @return string
      */
-    public function generate(string $name, $params = array())
+    public function generate()
     {
+        $args = func_get_args();
+        $name = array_shift($args);
         $route = $this->collection->get($name);
 
         if (false === $route = $this->collection->get($name)) {
@@ -50,51 +49,54 @@ class Generator implements GeneratorInterface
             );
         }
         $pattern = $route->getPath();
-        if (empty($params)) {
+        if (empty($args)) {
             return ($pattern == '/') ? '/' : rtrim($pattern, '/');
         }
-        if (false == Self::isAssoc($params)) {
-            throw new InvalidArgumentException('The url generator parameters must be key-value pairs.');
+        $urlParts  = explode('/', $name);
+        $urlFormat = preg_replace('#<.*?>#', '%s', $name);
+        
+        if (strpos($urlFormat, '%s') > 0) {
+            $urlFormat = vsprintf($urlFormat, $args);
         }
-        $types = $this->collection->getPattern()->getTypes();
-        $paramPattern = array();
-        $paramReplace = array();
-        foreach ($params as $key => $value) {
-            if (! isset($types[$key])) {
-                throw new UndefinedParameterException(
-                    sprintf(
-                        'The route "%s" parameter could not be resolved to generate the "%s" URL.',
-                        htmlspecialchars($key),
-                        htmlspecialchars($name)
-                    )
-                );
+        $formattedValues = explode('/', $urlFormat);
+
+        $types = $this->collection->getPattern()->getPatternTypes();
+        $urlString = '';
+        $i = 0;
+        foreach ($urlParts as $part) {
+            if (Self::isPattern($part)) {
+                if (! isset($types[$part])) {
+                    throw new UndefinedParameterException(
+                        sprintf(
+                            'The route "%s" parameter could not be resolved to generate the "%s" URL.',
+                            htmlspecialchars($part),
+                            htmlspecialchars($name)
+                        )
+                    );
+                }
+                $urlString.= $types[$part]->toUrl($formattedValues[$i]).'/';
+            } else {
+                $urlString.= $part.'/';
             }
-            $paramPattern[] = '#\([^(]+\<'.preg_quote($key).'\>[^)]+\)#';
-            $paramReplace[] = $types[$key]->toUrl($value);
-        }
-        $urlString = preg_replace($paramPattern, $paramReplace, $pattern);
-        if (strpos($urlString, '(') !== false) {
-            throw new BadParameterException(
-                sprintf(
-                    'Some parameters could not be resolved for the "%s" URL.',
-                    $urlString
-                )
-            );
+            ++$i;
         }
         return rtrim($urlString, '/');
     }
 
     /**
-     * Check array is associative
+     * Check url part is pattern
      * 
      * @param  array $arr array
      * @return boolean
      */
-    protected static function isAssoc(array $arr)
+    protected static function isPattern($part)
     {
-        if (array() === $arr) {
-            return false;
+        $first = substr($part, 0, 1);
+        $last  = substr($part, -1);
+
+        if ($first == '<' && $last == '>') {
+            return true;
         }
-        return array_keys($arr) !== range(0, count($arr) - 1);
+        return false;
     }
 }

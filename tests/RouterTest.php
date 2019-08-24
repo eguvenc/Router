@@ -223,7 +223,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             )
         );
         $router = new Router($collection);
-        $dummyUrl = $router->url('/test/dummy/<str:name>/<int:id>', ['name' => 'test', 'id' => 5]);
+        $dummyUrl = $router->url('/test/dummy/<str:name>/<int:id>','test',5);
         $this->assertEquals($dummyUrl, '/test/dummy/test/5');
     }
 }
