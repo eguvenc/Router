@@ -38,8 +38,6 @@ class Generator implements GeneratorInterface
     {
         $args = func_get_args();
         $name = array_shift($args);
-        $route = $this->collection->get($name);
-
         if (false === $route = $this->collection->get($name)) {
             throw new RouteNotFoundException(
                 sprintf(
