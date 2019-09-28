@@ -1,20 +1,17 @@
 <?php
 
-use Obullo\Router\{
-    Pattern,
-    Route,
-    Router,
-    RequestContext,
-    RouteCollection
-};
-use Obullo\Router\Types\{
-    StrType,
-    IntType,
-    BoolType,
-    SlugType,
-    AnyType,
-    TranslationType
-};
+use Obullo\Router\Pattern;
+use Obullo\Router\Route;
+use Obullo\Router\Router;
+use Obullo\Router\RequestContext;
+use Obullo\Router\RouteCollection;
+use Obullo\Router\Types\StrType;
+use Obullo\Router\Types\IntType;
+use Obullo\Router\Types\BoolType;
+use Obullo\Router\Types\SlugType;
+use Obullo\Router\Types\AnyType;
+use Obullo\Router\Types\TranslationType;
+
 class RouterTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
@@ -73,7 +70,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             )
         );
         $router = new Router($collection);
-        $route = $router->match('/dummy/test/55/','admin.example.com','https');
+        $route = $router->match('/dummy/test/55/', 'admin.example.com', 'https');
         $args = $route->getArguments();
         $this->assertEquals('test', $args['name']);
         $this->assertEquals('55', $args['id']);
@@ -223,7 +220,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             )
         );
         $router = new Router($collection);
-        $dummyUrl = $router->url('/test/dummy/<str:name>/<int:id>','test',5);
+        $dummyUrl = $router->url('/test/dummy/<str:name>/<int:id>', ['test',5]);
         $this->assertEquals($dummyUrl, '/test/dummy/test/5');
     }
 }

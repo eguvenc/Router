@@ -39,8 +39,8 @@ class Route implements RouteInterface
         foreach ((array)$method as $name) {
             $this->methods[] = strtoupper($name);
         }
-        $this->path = ($path == '/') ? '/' : '/'.trim($path, '/').'/'; // normalize route rules
-        $this->setName($this->path);
+        $this->setPath($path);
+        $this->setName($this->getPath());
         $this->handler = $handler;
         $this->setHost($host);
         $this->setSchemes($scheme);
@@ -103,7 +103,7 @@ class Route implements RouteInterface
      */
     public function setPath(string $path)
     {
-        $this->path = $path;
+        $this->path = ($path == '/') ? '/' : '/'.trim($path, '/').'/'; // normalize route rules
     }
 
     /**

@@ -107,7 +107,7 @@ abstract class Type
     /**
      * Validate route pattern
      *
-     * @param  string $pattern 
+     * @param  string $pattern
      * @param  array  $tags exploded tags
      * @return void
      */

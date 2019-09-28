@@ -141,18 +141,18 @@ class Router
     }
 
     /**
-     * Url generator helper
-     *
-     * @param  string $path   route path
-     * @param  array  $params url parameters
-     * @return string
+     * Url
+     * 
+     * @param  string $name   path
+     * @param  array  $args   arguments
+     * @param  string $locale locale
+     * 
+     * @return string|throw exception
      */
-    public function url()
+    public function url(string $name, $args = array(), $locale = null)
     {
-        $args = func_get_args();
-
         $generator = new Generator($this->getCollection());
-        return $generator->generate(...$args);
+        return $generator->generate($name, $args, $locale);
     }
 
     /**

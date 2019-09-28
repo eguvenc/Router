@@ -3,9 +3,97 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.4.0 - 2019-09-28
+
+- Added TranslatableRouteCollection class, now you can translate your route rules.
+
+An example routes.yaml file.
+
+```yaml
+/{hello}/{world}/<str:name>:
+        handler: App\Controller\HelloController::dummy
+```
+
+An example php file.
+
+```php
+use Zend\I18n\Translator\Translator;
+
+$translator = new Translator;
+$translator->setLocale('en');
+$translator->addTranslationFilePattern('PhpArray', ROOT, '/var/messages/%s/routing.php');
+
+$collection = new TranslatableRouteCollection($pattern);
+$collection->setContext($context);
+$collection->setTranslator($translator);
+
+use Symfony\Component\Yaml\Yaml;
+
+$builder = new Builder($collection);
+$collection = $builder->build(Yaml::parseFile('/var/www/Router/App/routes.yaml'));
+```
+
+English visitors:
+
+```
+http://en.example.com/hello/world/test
+```
+
+German visitors:
+
+```
+http://de.example.com/hallo/welt/test
+```
+
+- Generator class "generate()" method second parameter changed as array.
+- Added $locale as last parameter to generate translatable urls.
+
+```php
+$url = (new Obullo\Router\Generator($collection))
+    ->generate('/{user}/<str:name>/<int:id>', ['name', 5], 'de');
+
+// /benutzer/name/5
+```
+ 
+- Added TranslatorInterface class.
+
+```php
+interface TranslatorInterface
+{
+    /**
+     * Translate a message.
+     *
+     * @param  string $message
+     * @param  string $textDomain
+     * @param  string $locale
+     * @return string
+     */
+    public function translate($message, $textDomain = 'default', $locale = null);
+}
+```
+
+### Added
+
+- Added TranslatorInterface class.
+- Added TranslatableRouteCollection class.
+- Added SegmentTranslationException class.
+
+### Deprecated
+
+- Use of arguments to the "generate()" method of the generator class.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.3.0 - 2019-08-24
 
-- Generator class generate() method functionality changed like php sprintf().
+- Generator class "generate()" method functionality changed like php sprintf().
 
 ```php
 $url = (new Obullo\Router\Generator($collection))
@@ -14,7 +102,7 @@ $url = (new Obullo\Router\Generator($collection))
 // /test/name/5
 ```
 
-- Updated GeneratorInterface generate() method.
+- Updated GeneratorInterface "generate()" method.
 - Renamed Pattern class getTypes() method as getPatternTypes(), added getTaggedTypes() method.
 
 ### Added

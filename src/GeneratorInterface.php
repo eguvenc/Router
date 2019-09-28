@@ -13,9 +13,11 @@ interface GeneratorInterface
     /**
      * Generate url
      *
-     * @param  string $name       route name
-     * @param  array  $parameters url parameters
-     * @return string
+     * @param  string $name   path
+     * @param  array  $args   arguments
+     * @param  string $locale locale
+     *
+     * @return string|throw exception
      */
-    public function generate();
+    public function generate(string $name, $args = array(), $locale = null);
 }

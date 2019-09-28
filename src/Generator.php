@@ -2,11 +2,9 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\{
-    RouteCollection,
-    Exception\RouteNotFoundException,
-    Exception\UndefinedParameterException
-};
+use Obullo\Router\RouteCollection;
+use Obullo\Router\Exception\RouteNotFoundException;
+use Obullo\Router\Exception\UndefinedParameterException;
 use InvalidArgumentException;
 
 /**
@@ -21,7 +19,7 @@ class Generator implements GeneratorInterface
 
     /**
      * Constructor
-     * 
+     *
      * @param RouteCollection $collection routes
      */
     public function __construct(RouteCollection $collection)
@@ -31,13 +29,15 @@ class Generator implements GeneratorInterface
 
     /**
      * Generate url
-     * 
-     * @return string
+     *
+     * @param  string $name   path
+     * @param  array  $args   arguments
+     * @param  string $locale locale string (en,de,tr)
+     *
+     * @return string|throw exception
      */
-    public function generate()
+    public function generate($name, $args = array(), $locale = null)
     {
-        $args = func_get_args();
-        $name = array_shift($args);
         $route = $this->collection->get($name);
 
         if (false === $route = $this->collection->get($name)) {
@@ -48,9 +48,10 @@ class Generator implements GeneratorInterface
                 )
             );
         }
-        $pattern = $route->getPath();
-        if (empty($args)) {
-            return ($pattern == '/') ? '/' : rtrim($pattern, '/');
+        if ($locale != null) {
+            $data = $this->collection->translatePath($name, $locale);
+            $name = $data['path'];
+            $name = rtrim($name, '/');
         }
         $urlParts  = explode('/', $name);
         $urlFormat = preg_replace('#<.*?>#', '%s', $name);
@@ -85,7 +86,7 @@ class Generator implements GeneratorInterface
 
     /**
      * Check url part is pattern
-     * 
+     *
      * @param  array $arr array
      * @return boolean
      */
