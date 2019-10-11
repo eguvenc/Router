@@ -83,7 +83,7 @@ class Route implements RouteInterface
      */
     public function setName(string $name)
     {
-        $this->name = rtrim($name, '/');
+        $this->name = ($name == '/') ? '/' : rtrim($name, '/');
     }
 
     /**

@@ -3,6 +3,35 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.4.1 - 2019-10-11
+
+- Added  "/" support to Generate method of the Generate class.
+
+```php
+$url = (new Obullo\Router\Generator($collection))
+    ->generate('/');
+
+// output: "/"
+```
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.4.0 - 2019-09-28
 
 - Added TranslatableRouteCollection class, now you can translate your route rules.

@@ -38,6 +38,9 @@ class Generator implements GeneratorInterface
      */
     public function generate(string $name, $args = array(), $locale = null)
     {
+        if ($name == '/') {
+            return '/';
+        }
         if (false === $route = $this->collection->get($name)) {
             throw new RouteNotFoundException(
                 sprintf(
