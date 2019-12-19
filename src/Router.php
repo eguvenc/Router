@@ -142,11 +142,11 @@ class Router
 
     /**
      * Url
-     * 
+     *
      * @param  string $name   path
      * @param  array  $args   arguments
      * @param  string $locale locale
-     * 
+     *
      * @return string|throw exception
      */
     public function url(string $name, $args = array(), $locale = null)

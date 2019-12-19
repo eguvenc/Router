@@ -3,6 +3,49 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.5.0 - 2019-12-19
+
+- Added variable add feature.
+
+In .yaml file
+
+```yaml
+$var:
+    middleware:
+        - App\Middleware\Test
+```
+
+In .php file
+
+```php
+$collection->addVariable('$var', ['middleware' => ['App\Middleware\Test']]);
+$var = $collection->getVariable('var');
+
+print_r($var); // array('middleware' => array('App\Middleware\Test'))
+```
+
+### Added
+
+- Added addVariable() and getVariable() methods to RouteCollection class.
+- Added string $var support to Builder class.
+- Added PathTranslationException.
+- Added UndefinedVariableException.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- BadParameterException.
+- ParseException.
+- SegmentTranslationException.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.4.1 - 2019-10-11
 
 - Added  "/" support to Generate method of the Generate class.

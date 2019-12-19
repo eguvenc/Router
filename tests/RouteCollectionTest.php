@@ -1,19 +1,17 @@
 <?php
 
-use Obullo\Router\{
-    Pattern,
-    Route,
-    RequestContext,
-    RouteCollection
-};
-use Obullo\Router\Types\{
-    StrType,
-    IntType,
-    BoolType,
-    SlugType,
-    AnyType,
-    TranslationType
-};
+use Obullo\Router\Pattern;
+use Obullo\Router\Route;
+use Obullo\Router\Router;
+use Obullo\Router\RequestContext;
+use Obullo\Router\RouteCollection;
+use Obullo\Router\Types\StrType;
+use Obullo\Router\Types\IntType;
+use Obullo\Router\Types\BoolType;
+use Obullo\Router\Types\SlugType;
+use Obullo\Router\Types\AnyType;
+use Obullo\Router\Types\TranslationType;
+
 class RouteCollectionTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
@@ -157,5 +155,28 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 
         $this->collection->remove('/dummy/<str:name>/<int:id>/second');
         $this->assertFalse($this->collection->get('/dummy/<str:name>/<int:id>/second'));
+    }
+
+    public function testAddVariable()
+    {
+        $route = new Route(
+            ['GET','POST'],
+            '/dummy/test',
+            'App\Controller\DefaultController:index',
+            '<str:name>.example.com',
+            ['http','https'],
+            '$test'
+        );
+        $this->collection->add($route);
+        $this->collection->addVariable('$test', ['middleware' => ['App\Middleware\Dummy', 'App\Middleware\Test']]);
+        $var = $this->collection->getVariable('test');
+
+        $this->assertEquals(['middleware' => ['App\Middleware\Dummy', 'App\Middleware\Test']], $var);
+
+        $router = new Router($this->collection);
+        $route = $router->popRoute();
+
+        $this->assertEquals('/dummy/test', $route->getName());
+        $this->assertEquals(['$test'], $router->getMiddlewares());
     }
 }

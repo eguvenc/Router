@@ -3,7 +3,7 @@
 namespace Obullo\Router;
 
 use Obullo\Router\TranslatorInterface;
-use Obullo\Router\Exception\SegmentTranslationException;
+use Obullo\Router\Exception\PathTranslationException;
 
 /**
  * TranslatableRoute collection
@@ -115,7 +115,7 @@ class TranslatableRouteCollection extends RouteCollection
                 $match = true;
             }
             if (Self::isTranslatePattern($segment)) {
-                throw new SegmentTranslationException(
+                throw new PathTranslationException(
                     sprintf(
                         "No route translation found corresponding to item '%s'.",
                         $segment

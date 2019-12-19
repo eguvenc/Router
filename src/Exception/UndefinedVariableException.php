@@ -4,6 +4,6 @@ namespace Obullo\Router\Exception;
 
 use InvalidArgumentException;
 
-class SegmentTranslationException extends InvalidArgumentException
+class UndefinedVariableException extends InvalidArgumentException
 {
 }

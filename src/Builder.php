@@ -30,26 +30,30 @@ class Builder
     /**
      * Build routes
      *
-     * @param  array  $routes rotues
+     * @param  array  $datas rotues
      * @return RouteCollection object
      */
-    public function build(array $routes) : RouteCollection
+    public function build(array $datas) : RouteCollection
     {
-        foreach ($routes as $path => $route) {
-            if (! is_array($route)) {
-                throw new UndefinedRouteException('There is no rule defined in the route configuration file.');
-            }
-            Self::ValidateRoute($path, $route);
-            $handler = $route['handler'];
-            $method  = isset($route['method']) ? $route['method'] : 'GET';
-            $host = isset($route['host']) ? $route['host'] : null;
-            $scheme = isset($route['scheme']) ? $route['scheme'] : array();
-            $middleware = isset($route['middleware']) ? $route['middleware'] : array();
+        foreach ($datas as $key => $data) {
+            if (strpos($key, '$') === 0) {
+                $this->collection->addVariable($key, $data);
+            } else {
+                if (! is_array($data)) {
+                    throw new UndefinedRouteException('There is no rule defined in the route configuration file.');
+                }
+                Self::ValidateRoute($key, $data);
+                $handler = $data['handler'];
+                $method  = isset($data['method']) ? $data['method'] : 'GET';
+                $host = isset($data['host']) ? $data['host'] : null;
+                $scheme = isset($data['scheme']) ? $data['scheme'] : array();
+                $middleware = isset($data['middleware']) ? $data['middleware'] : array();
 
-            $this->collection->add(new Route($method, $path, $handler))
-                ->host($host)
-                ->scheme($scheme)
-                ->middleware($middleware);
+                $this->collection->add(new Route($method, $key, $handler))
+                    ->host($host)
+                    ->scheme($scheme)
+                    ->middleware($middleware);
+            }
         }
         return $this->collection;
     }
@@ -57,12 +61,12 @@ class Builder
     /**
      * Validate route
      *
-     * @param  array  $route route
+     * @param  array  $data route
      * @return void
      */
-    protected static function validateRoute(string $path, array $route)
+    protected static function validateRoute(string $path, array $data)
     {
-        if (empty($route['handler'])) {
+        if (empty($data['handler'])) {
             throw new BadRouteException(
                 sprintf(
                     'Route handler is undefined for "%s" path.',

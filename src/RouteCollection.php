@@ -6,6 +6,7 @@ use Obullo\Router\Pattern;
 use Obullo\Router\RequestContext;
 use Obullo\Router\Traits\RequestContextAwareTrait;
 use Obullo\Router\Exception\BadRouteException;
+use Obullo\Router\Exception\UndefinedVariableException;
 use ArrayIterator;
 use IteratorAggregate;
 use Countable;
@@ -20,13 +21,14 @@ class RouteCollection implements IteratorAggregate, Countable
 {
     use RequestContextAwareTrait;
 
+    protected $var = array();
     protected $routes = array();
     protected $name;
     protected $pattern;
 
     /**
      * Constructor
-     * 
+     *
      * @param Pattern $pattern object
      */
     public function __construct(Pattern $pattern)
@@ -50,8 +52,40 @@ class RouteCollection implements IteratorAggregate, Countable
     }
 
     /**
+     * Add variable
+     *
+     * @param string $name var name
+     * @param array $data array data
+     */
+    public function addVariable(string $name, array $data)
+    {
+        $this->var[$name] = $data;
+        return $this;
+    }
+
+    /**
+     * Returns to variable data
+     *
+     * @param  string $name var name
+     * @return @UndefinedGroupException|array var data
+     */
+    public function getVariable(string $name)
+    {
+        $name = '$'.ltrim($name, '$');
+        if (false == isset($this->var[$name])) {
+            throw new UndefinedVariableException(
+                sprintf(
+                    'The variable "%s" is not defined.',
+                    $name
+                )
+            );
+        }
+        return $this->var[$name];
+    }
+
+    /**
      * Add host to current route
-     * 
+     *
      * @param string $host name
      */
     public function host($host) : Self
@@ -62,7 +96,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Add scheme to current route
-     * 
+     *
      * @param string|array scheme name
      */
     public function scheme($scheme) : Self
@@ -73,7 +107,7 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Add middleware to current route
-     * 
+     *
      * @param string|array middleware class name
      */
     public function middleware($middleware) : Self

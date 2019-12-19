@@ -70,7 +70,7 @@ class TranslatableRouteCollectionTest extends PHPUnit_Framework_TestCase
         try {
             $this->collection->translatePath('/{hello}/{me}/<str:name>/test');
         } catch (Exception $e) {
-            $this->assertInstanceOf('Obullo\Router\Exception\SegmentTranslationException', $e);
+            $this->assertInstanceOf('Obullo\Router\Exception\PathTranslationException', $e);
             $this->assertEquals("No route translation found corresponding to item '{me}'.", $e->getMessage());
         }
     }
