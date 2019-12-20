@@ -6,6 +6,7 @@ use Obullo\Router\Route;
 use Obullo\Router\RouteCollection;
 use Obullo\Router\Exception\BadRouteException;
 use Obullo\Router\Exception\UndefinedRouteException;
+use Obullo\Router\Exception\InvalidKeyException;
 
 /**
  * Build route data from configuration file
@@ -42,13 +43,16 @@ class Builder
                 if (! is_array($data)) {
                     throw new UndefinedRouteException('There is no rule defined in the route configuration file.');
                 }
-                Self::ValidateRoute($key, $data);
+                Self::validateRoute($key, $data);
                 $handler = $data['handler'];
                 $method  = isset($data['method']) ? $data['method'] : 'GET';
                 $host = isset($data['host']) ? $data['host'] : null;
                 $scheme = isset($data['scheme']) ? $data['scheme'] : array();
-                $middleware = isset($data['middleware']) ? $data['middleware'] : array();
 
+                $middleware = array();
+                if (isset($data['middleware'])) {
+                    $middleware = $this->parseMiddlewareVar($data['middleware']);
+                }
                 $this->collection->add(new Route($method, $key, $handler))
                     ->host($host)
                     ->scheme($scheme)
@@ -56,6 +60,34 @@ class Builder
             }
         }
         return $this->collection;
+    }
+
+    /**
+     * Parse variables for middleware key
+     *
+     * @param  mixed $middlewares middlewares
+     * @return array
+     */
+    protected function parseMiddlewareVar($middlewares) : array
+    {
+        $newMiddlewares = array();
+        foreach ((array)$middlewares as $middleware) {
+            if (strpos($middleware, '$') === 0) {
+                $var = $this->collection->getVariable($middleware);
+                if (false == isset($var['middleware'])) {
+                    throw new InvalidKeyException(
+                        sprintf(
+                            'The "%s" variable hasn\'t got a middleware key.',
+                            $middleware
+                        )
+                    );
+                }
+                $newMiddlewares = array_merge($newMiddlewares, $var['middleware']);
+            } else {
+                $newMiddlewares[] = $middleware;
+            }
+        }
+        return $newMiddlewares;
     }
 
     /**

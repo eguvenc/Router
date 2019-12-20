@@ -1,22 +1,18 @@
 <?php
 
-use Obullo\Router\{
-    Pattern,
-    Builder,
-    RequestContext,
-    RouteCollection
-};
-use Obullo\Router\Types\{
-    StrType,
-    IntType,
-    BoolType,
-    SlugType,
-    AnyType,
-    FourDigitYearType,
-    TwoDigitMonthType,
-    TwoDigitDayType,
-    TranslationType
-};
+use Obullo\Router\Pattern;
+use Obullo\Router\Builder;
+use Obullo\Router\RequestContext;
+use Obullo\Router\RouteCollection;
+use Obullo\Router\Types\StrType;
+use Obullo\Router\Types\IntType;
+use Obullo\Router\Types\BoolType;
+use Obullo\Router\Types\SlugType;
+use Obullo\Router\Types\AnyType;
+use Obullo\Router\Types\FourDigitYearType;
+use Obullo\Router\Types\TwoDigitMonthType;
+use Obullo\Router\Types\TwoDigitDayType;
+use Obullo\Router\Types\TranslationType;
 use Symfony\Component\Yaml\Yaml;
 
 class BuilderTest extends PHPUnit_Framework_TestCase
@@ -44,20 +40,30 @@ class BuilderTest extends PHPUnit_Framework_TestCase
         $collection->setContext($context);
 
         $this->builder = new Builder($collection);
+        $this->collection = $this->builder->build($this->routes);
     }
 
     public function testBuild()
     {
-        $collection = $this->builder->build($this->routes);
-        $this->assertInstanceOf('Obullo\Router\RouteCollection', $collection);
+        $this->assertInstanceOf('Obullo\Router\RouteCollection', $this->collection);
 
-        $dummyRoute = $collection->get('/<locale:locale>/dummy/<str:name>');
+        $dummyRoute = $this->collection->get('/<locale:locale>/dummy/<str:name>');
         $this->assertEquals('App\Controller\DefaultController::dummy', $dummyRoute->getHandler());
         $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)/', $dummyRoute->getPath());
 
-        $testRoute = $collection->get('/dummy/<str:name>/<int:id>');
+        $testRoute = $this->collection->get('/dummy/<str:name>/<int:id>');
         $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPath());
         $this->assertEquals('<str:name>.example.com', $testRoute->getHost());
         $this->assertEquals(['http','https'], $testRoute->getSchemes());
+    }
+
+    public function testMiddlewareVariable()
+    {
+        $testRoute = $this->collection->get('/<locale:locale>/dummy/<str:name>');
+        $middlewares = $testRoute->getMiddlewares();
+
+        $this->assertEquals("App\Middleware\Var", $middlewares[0]);
+        $this->assertEquals("App\Middleware\Test", $middlewares[1]);
+        $this->assertEquals("App\Middleware\Locale", $middlewares[2]);
     }
 }

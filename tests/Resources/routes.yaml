@@ -3,12 +3,19 @@
 #    method: GET
 #    handler: App\Controller\DefaultController::index
 
+$test:
+    middleware:
+        - App\Middleware\Var
+        - App\Middleware\Test
+        
 /: 
     handler: App\Controller\DefaultController::index
-    middleware: App\Middleware\Dummy
 
 /<locale:locale>/dummy/<str:name>:
     handler: App\Controller\DefaultController::dummy
+    middleware: 
+        - $test
+        - App\Middleware\Locale
 
 /dummy/<str:name>/<int:id>:
     host: <str:name>.example.com

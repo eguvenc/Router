@@ -3,6 +3,54 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.6.0 - 2019-12-20
+
+- Added variable parsing feature to Builder class.
+
+Using variables
+
+```yaml
+$test:
+    middleware:
+        - App\Middleware\Var
+        - App\Middleware\Test
+
+/<locale:locale>/dummy/<str:name>:
+    handler: App\Controller\DefaultController::dummy
+    middleware: 
+        - $test
+        - App\Middleware\Locale
+```
+
+Parse result
+
+```php
+/<locale:locale>/dummy/<str:name>:
+    handler: App\Controller\DefaultController::dummy
+    middleware: 
+        - App\Middleware\Var
+        - App\Middleware\Test
+        - App\Middleware\Locale
+```
+
+### Added
+
+- Added parseMiddlewareVar() to Builder class.
+- Added InvalidKeyException.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.5.0 - 2019-12-19
 
 - Added variable add feature.
