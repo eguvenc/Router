@@ -22,7 +22,7 @@ $test:
         - App\Middleware\Locale
 ```
 
-Parse result
+Parsing result
 
 ```php
 /<locale:locale>/dummy/<str:name>:
