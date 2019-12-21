@@ -3,6 +3,39 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.7.0 - 2019-12-21
+
+- Removed obligation to match with trailing slash from Router::match() method.
+
+Route match new version 
+
+```yaml
+$router->match('/test');
+```
+
+Route match old version 
+
+```yaml
+$router->match('/test/');
+```
+
+### Added
+
+- Added missing file InvalidKeyException.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- InvalidKeyException bug fixed.
+
+
 ## 1.6.0 - 2019-12-20
 
 - Added variable parsing feature to Builder class.

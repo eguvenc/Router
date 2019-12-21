@@ -80,7 +80,7 @@ class Router
      */
     public function match(string $path, $host = null, $scheme = null)
     {
-        $this->path = $path;
+        $this->path = rtrim($path, "/")."/";
         if ($host != '') {
             $this->host = $host;
         }

@@ -70,7 +70,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             )
         );
         $router = new Router($collection);
-        $route = $router->match('/dummy/test/55/', 'admin.example.com', 'https');
+        $route = $router->match('/dummy/test/55', 'admin.example.com', 'https');
         $args = $route->getArguments();
         $this->assertEquals('test', $args['name']);
         $this->assertEquals('55', $args['id']);
