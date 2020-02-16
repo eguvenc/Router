@@ -62,7 +62,7 @@ class PatternTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('(?<word>\w+)', $pattern->format('<str:word>'));
         $this->assertEquals('(?<any>.*)', $pattern->format('<any:any>'));
         $this->assertEquals('(?<status>[0-1])', $pattern->format('<bool:status>'));
-        $this->assertEquals('(?<slug>[\w-]+)', $pattern->format('<slug:slug>'));
+        $this->assertEquals('(?<slug>[a-zA-Z0-9_-]+)', $pattern->format('<slug:slug>'));
         $this->assertEquals('(?<locale>[a-z]{2})', $pattern->format('<locale:locale>'));
     }
 
