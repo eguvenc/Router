@@ -35,8 +35,7 @@ class TypeTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('boolean', (new BoolType('<bool:status>'))->toPhp('0'));
         $this->assertInternalType('integer', (new FourDigitYearType('<yyyy:year>'))->toPhp('1998'));
         $this->assertInternalType('integer', (new IntType('<int:page>'))->toPhp('12'));
-        $this->assertInternalType('string', (new SlugType('<slug:slug>'))->toPhp('abcd-1923'));
-        $this->assertInternalType('string', (new SlugType('<slug:slug_>', '(?<$name>[\w-_]+)$'))->toPhp('abcd-1923_'));
+        $this->assertInternalType('string', (new SlugType('<slug:slug>'))->toPhp('abcd-1923_'));
         $this->assertInternalType('string', (new StrType('<str:name>'))->toPhp('test'));
         $this->assertInternalType('string', (new TranslationType('<locale:locale>'))->toPhp('en'));
         $this->assertInternalType('integer', (new TwoDigitDayType('<dd:day>'))->toPhp('02'));
