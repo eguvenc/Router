@@ -11,7 +11,6 @@ use Obullo\Router\Types\{
     TwoDigitDayType,
     TwoDigitMonthType
 };
-
 class TypeTest extends PHPUnit_Framework_TestCase
 {
     public function testGetValue()
@@ -46,8 +45,7 @@ class TypeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(false, (new BoolType('<bool:status>'))->toPhp('0'));
         $this->assertEquals(1998, (new FourDigitYearType('<yyyy:year>'))->toPhp('1998'));
         $this->assertEquals(12, (new IntType('<int:page>'))->toPhp('12'));
-        $this->assertEquals('abcd-1923', (new SlugType('<slug:slug>'))->toPhp('abcd-1923'));
-        $this->assertEquals('abcd-1923_', (new SlugType('<slug:slug_>', '(?<$name>[\w-_]+)$'))->toPhp('abcd-1923_'));
+        $this->assertEquals('abcd-1923_', (new SlugType('<slug:slug>'))->toPhp('abcd-1923_'));
         $this->assertEquals('test', (new StrType('<str:name>'))->toPhp('test'));
         $this->assertEquals('en', (new TranslationType('<locale:locale>'))->toPhp('en'));
         $this->assertEquals(02, (new TwoDigitDayType('<dd:day>'))->toPhp('02'));
