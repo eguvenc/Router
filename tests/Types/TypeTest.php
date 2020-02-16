@@ -19,8 +19,7 @@ class TypeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('(?<status>[0-1])', (new BoolType('<bool:status>'))->convert()->getValue());
         $this->assertEquals('(?<year>[0-9]{4})', (new FourDigitYearType('<yyyy:year>'))->convert()->getValue());
         $this->assertEquals('(?<page>\d+)', (new IntType('<int:page>'))->convert()->getValue());
-        $this->assertEquals('(?<slug>[\w-]+)', (new SlugType('<slug:slug>'))->convert()->getValue());
-        $this->assertEquals('(?<slug_>[\w-_]+)', (new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)'))->convert()->getValue());
+        $this->assertEquals('(?<slug>[a-zA-Z0-9_-]+)', (new SlugType('<slug:slug>'))->convert()->getValue());
         $this->assertEquals('(?<name>\w+)', (new StrType('<str:name>'))->convert()->getValue());
         $this->assertEquals('(?<locale>[a-z]{2})', (new TranslationType('<locale:locale>'))->convert()->getValue());
         $this->assertEquals('(?<day>[0-9]{2})', (new TwoDigitDayType('<dd:day>'))->convert()->getValue());
@@ -59,8 +58,7 @@ class TypeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('0', (new BoolType('<bool:status>'))->toUrl(0));
         $this->assertEquals('1998', (new FourDigitYearType('<yyyy:year>'))->toUrl('1998'));
         $this->assertEquals('12', (new IntType('<int:page>'))->toUrl('12'));
-        $this->assertEquals('abcd-1923', (new SlugType('<slug:slug>'))->toUrl('abcd-1923'));
-        $this->assertEquals('abcd-1923_', (new SlugType('<slug:slug_>', '(?<$name>[\w-_]+)$'))->toUrl('abcd-1923_'));
+        $this->assertEquals('abcd-1923_', (new SlugType('<slug:slug>'))->toUrl('abcd-1923_'));
         $this->assertEquals('test', (new StrType('<str:name>'))->toUrl('test'));
         $this->assertEquals('en', (new TranslationType('<locale:locale>'))->toUrl('en'));
         $this->assertEquals('02', (new TwoDigitDayType('<dd:day>'))->toUrl('02'));
