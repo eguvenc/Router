@@ -12,7 +12,7 @@ use Obullo\Router\Type;
  */
 class SlugType extends Type
 {
-    protected $regex = '(?<%s>[\w-]+)';
+    protected $regex = '(?<%s>[a-zA-Z0-9_-]+)';
 
     /**
      * Php format
