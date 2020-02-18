@@ -80,7 +80,7 @@ class PatternTest extends PHPUnit_Framework_TestCase
         try {
             $pattern->validateUnformattedPatterns('/test/<slug:slug>/<test:test>');
         } catch (\Exception $e) {
-            $this->assertEquals('The route type &lt;test:test&gt; you used is undefined.', $e->getMessage());
+            $this->assertEquals('The route type <test:test> you used is undefined.', $e->getMessage());
         }
     }
 }
