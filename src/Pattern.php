@@ -93,7 +93,7 @@ class Pattern
                 throw new UndefinedTypeException(
                     sprintf(
                         'The route type %s you used is undefined.',
-                        htmlspecialchars($value)
+                        $value
                     )
                 );
             }
