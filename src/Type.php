@@ -121,7 +121,7 @@ abstract class Type
             throw new BadTypeException(
                 sprintf(
                     'The pattern you entered must be in this format "%s".',
-                    htmlspecialchars('<name:tag>')
+                    '<name:tag>'
                 )
             );
         }
