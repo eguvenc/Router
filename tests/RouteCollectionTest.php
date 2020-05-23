@@ -16,7 +16,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         $pattern = new Pattern(
             [
                 new IntType('<int:id>'),

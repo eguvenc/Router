@@ -3,6 +3,93 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.7.4 - 2020-02-18
+
+- Added Laminas libraries to dev environment and RouteCollectionInterface, removed TranslatorInterface.php. The TranslatableRouteCollection class now implements Laminas\I18n\Translator\TranslatorAwareInterface.
+
+### Added
+
+- Added Laminas libraries to Unit Tests.
+- Added RouteCollectionInterface.php
+- Added Laminas\I18n\Translator\TranslatorAwareTrait, TranslatorAwareInterface, TranslatorInterface into TranslatableRouteCollection.php
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Removed Zend libraries from Unit Tests.
+- Removed TranslatorInterface.php
+
+### Fixed
+
+- Fixed build error in PatternTest.php.
+
+
+## 1.7.3 - 2020-02-18
+
+- Fixed build error in PatternTest.php.
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Fixed build error in PatternTest.php.
+
+
+## 1.7.2 - 2020-02-18
+
+- Unnecessary htmlspecialchars() function removed from exception classes.
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Unnecessary htmlspecialchars() function removed from exception classes.
+
+### Fixed
+
+- Nothing.
+
+
+## 1.7.1 - 2020-02-16
+
+- SlugType regular expression bug fixed.
+
+### Added
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- SlugType regex bug fixed.
+
+
 ## 1.7.0 - 2019-12-21
 
 - Removed obligation to match with trailing slash from Router::match() method.

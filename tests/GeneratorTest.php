@@ -15,7 +15,7 @@ use Obullo\Router\Types\FourDigitYearType;
 use Obullo\Router\Types\TwoDigitMonthType;
 use Obullo\Router\Types\TwoDigitDayType;
 use Obullo\Router\Types\TranslationType;
-use Zend\I18n\Translator\Translator;
+use Laminas\I18n\Translator\Translator;
 
 class GeneratorTest extends PHPUnit_Framework_TestCase
 {

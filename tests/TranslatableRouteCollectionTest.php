@@ -10,13 +10,13 @@ use Obullo\Router\Types\BoolType;
 use Obullo\Router\Types\SlugType;
 use Obullo\Router\Types\AnyType;
 use Obullo\Router\Types\TranslationType;
-use Zend\I18n\Translator\Translator;
+use Laminas\I18n\Translator\Translator;
 
 class TranslatableRouteCollectionTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         $pattern = new Pattern(
             [
                 new IntType('<int:id>'),

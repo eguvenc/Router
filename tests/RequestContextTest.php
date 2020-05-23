@@ -6,7 +6,7 @@ class RequestContextTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $this->request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $this->request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         $this->context = new RequestContext;
     }
 

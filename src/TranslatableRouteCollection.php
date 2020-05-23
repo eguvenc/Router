@@ -2,8 +2,9 @@
 
 namespace Obullo\Router;
 
-use Obullo\Router\TranslatorInterface;
 use Obullo\Router\Exception\PathTranslationException;
+use Laminas\I18n\Translator\TranslatorAwareInterface;
+use Laminas\I18n\Translator\TranslatorAwareTrait;
 
 /**
  * TranslatableRoute collection
@@ -11,67 +12,9 @@ use Obullo\Router\Exception\PathTranslationException;
  * @copyright Obullo
  * @license   http://opensource.org/licenses/MIT MIT license
  */
-class TranslatableRouteCollection extends RouteCollection
+class TranslatableRouteCollection extends RouteCollection implements TranslatorAwareInterface
 {
-    /**
-    * Translator used for translatable segments.
-    *
-    * @var Translator
-    */
-    protected $translator;
-
-    /**
-     * Translator text domain to use.
-     *
-     * @var string
-     */
-    protected $translatorTextDomain = 'default';
-
-    /**
-     * Set translator object
-     *
-     * @param Obullo\Router\TranslatorInterface|object $translator translator
-     * @param strin g                    $textDomain text domain
-     */
-    public function setTranslator($translator = null, $textDomain = null)
-    {
-        $this->translator = $translator;
-        if ($textDomain !== null) {
-            $this->setTranslatorTextDomain($textDomain);
-        }
-        return $this;
-    }
-
-    /**
-     * Returns to translator object
-     *
-     * @return object
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * Set translator text domain
-     *
-     * @param string $textDomain text domain
-     */
-    public function setTranslatorTextDomain($textDomain = 'default')
-    {
-        $this->translatorTextDomain = $textDomain;
-        return $this;
-    }
-
-    /**
-     * Returns to string
-     *
-     * @return string
-     */
-    public function getTranslatorTextDomain() : string
-    {
-        return $this->translatorTextDomain;
-    }
+    use TranslatorAwareTrait;
 
     /**
      * Add route

@@ -19,7 +19,7 @@ class BuilderTest extends PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+        $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         $file = dirname(__DIR__).'/tests/Resources/routes.yaml';
         $this->routes = Yaml::parseFile($file);
 

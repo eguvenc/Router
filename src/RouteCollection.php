@@ -67,7 +67,7 @@ class RouteCollection implements IteratorAggregate, Countable
      * Returns to variable data
      *
      * @param  string $name var name
-     * @return @UndefinedGroupException|array var data
+     * @return @UndefinedVariableException|array var data
      */
     public function getVariable(string $name)
     {
