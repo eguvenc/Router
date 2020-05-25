@@ -3,7 +3,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 1.7.4 - 2020-02-18
+## 1.7.4 - 2020-05-23
 
 - Added Laminas libraries to dev environment and RouteCollectionInterface, removed TranslatorInterface.php. The TranslatableRouteCollection class now implements Laminas\I18n\Translator\TranslatorAwareInterface.
 
@@ -27,7 +27,7 @@ All notable changes to this project will be documented in this file, in reverse 
 - Fixed build error in PatternTest.php.
 
 
-## 1.7.3 - 2020-02-18
+## 1.7.3 - 2020-05-23
 
 - Fixed build error in PatternTest.php.
 
