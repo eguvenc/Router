@@ -1,7 +1,7 @@
 {
     "name": "obullo/router",
     "type": "library",
-    "description": "Php7 standalone router inspired by the Django Url Dispatcher. Easy to use and Secure.",
+    "description": "A standalone and secure Router package developed for Obullo-Pages inspired by Django Url Dispatcher.",
     "keywords": [
         "obullo",
         "router",
