@@ -10,7 +10,7 @@ use Obullo\Router\Traits\MiddlewareAwareTrait;
  * Router
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class Router
 {

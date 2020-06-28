@@ -6,7 +6,7 @@ namespace Obullo\Router\Matcher;
  * Abstract matcher
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 abstract class AbstractMatcher
 {

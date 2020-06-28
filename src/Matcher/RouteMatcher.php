@@ -8,7 +8,7 @@ use Obullo\Router\RouteInterface;
  * Route match
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class RouteMatcher extends AbstractMatcher
 {
@@ -36,7 +36,7 @@ class RouteMatcher extends AbstractMatcher
         $pattern = $this->route->getPath();
 
         $arguments = array();
-        if ($path == $pattern OR preg_match('#^'.$pattern.'$#', $path, $arguments)) {
+        if ($path == $pattern or preg_match('#^'.$pattern.'$#', $path, $arguments)) {
             array_shift($arguments);
             $this->arguments = $arguments;
             return true;

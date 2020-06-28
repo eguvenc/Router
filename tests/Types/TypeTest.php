@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Types\{
     AnyType,
     BoolType,
@@ -11,7 +12,7 @@ use Obullo\Router\Types\{
     TwoDigitDayType,
     TwoDigitMonthType
 };
-class TypeTest extends PHPUnit_Framework_TestCase
+class TypeTest extends TestCase
 {
     public function testGetValue()
     {

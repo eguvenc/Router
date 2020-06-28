@@ -1,6 +1,6 @@
 <?php
 
-use Obullo\Router\Pattern;
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Route;
 use Obullo\Router\Router;
 use Obullo\Router\RequestContext;
@@ -12,13 +12,13 @@ use Obullo\Router\Types\SlugType;
 use Obullo\Router\Types\AnyType;
 use Obullo\Router\Types\TranslationType;
 
-class RouterTest extends PHPUnit_Framework_TestCase
+class RouterTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
-        $request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
-        $this->pattern = new Pattern(
-            [
+        $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
+        $this->config = array(
+            'types' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
@@ -38,7 +38,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testPopRoute()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -58,7 +58,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testMatch()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -80,7 +80,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testMatchRequest()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -102,7 +102,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testGetMiddleware()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -121,7 +121,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testHasMatch()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -139,7 +139,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testGetMatchedRoute()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -158,7 +158,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testGetHostMatches()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -173,7 +173,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $router->matchRequest();
         $this->assertEquals('test.example.com', $router->getHostMatches()[0]);
 
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -191,7 +191,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testGetCollection()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(
@@ -208,7 +208,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testUrl()
     {
-        $collection = new RouteCollection($this->pattern);
+        $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
             new Route(

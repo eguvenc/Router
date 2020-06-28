@@ -9,7 +9,7 @@ use Obullo\Router\Traits\MiddlewareAwareTrait;
  * Route
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class Route implements RouteInterface
 {
@@ -26,7 +26,7 @@ class Route implements RouteInterface
 
     /**
      * Consructor
-     * 
+     *
      * @param string $method  http method name
      * @param string $path    route path
      * @param mixed  $handler route handler
@@ -49,7 +49,7 @@ class Route implements RouteInterface
 
     /**
      * Set pattern
-     * 
+     *
      * @param Pattern $pattern pattern
      */
     public function setPattern(Pattern $pattern)
@@ -59,7 +59,7 @@ class Route implements RouteInterface
 
     /**
      * Convert route variables
-     * 
+     *
      * @return void
      */
     public function convert()
@@ -78,7 +78,7 @@ class Route implements RouteInterface
 
     /**
      * Set name
-     * 
+     *
      * @param string $name name
      */
     public function setName(string $name)
@@ -88,7 +88,7 @@ class Route implements RouteInterface
 
     /**
      * Returns to name
-     * 
+     *
      * @param string $path path
      */
     public function getName() : string
@@ -98,7 +98,7 @@ class Route implements RouteInterface
 
     /**
      * Set path
-     * 
+     *
      * @param string $path path
      */
     public function setPath(string $path)

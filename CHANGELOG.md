@@ -3,6 +3,55 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.8.0 - 2020-06-28
+
+- The first parameter of the RouteCollection constructor has been deprecated.
+- Added getConfig() method to RouteCollectionClass.
+- MIT license changed with BSD-3-Clause.
+
+### Added
+
+- Added getConfig() method to RouteCollectionClass.
+
+### Deprecated
+
+- The first parameter of the RouteCollection constructor has been deprecated. We just sending the configuration array instead of sending the Pattern class.
+
+Deprecated codes
+
+```php 
+$pattern = new Pattern;
+$pattern->add(new IntType('<int:id>'));
+$pattern->add(new StrType('<str:name>'));
+$pattern->add(new SlugType('<slug:slug>'));
+$pattern->add(new TranslationType('<locale:locale>'));
+
+$collection = new RouteCollection($pattern);
+```
+
+New codes
+
+```php
+$config = [
+    'types' => [
+        new IntType('<int:id>'),
+        new StrType('<str:name>'),
+        new SlugType('<slug:slug>'),
+        new TranslationType('<locale:locale>'),
+    ]
+];
+$collection = new RouteCollection($config);
+```
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.7.4 - 2020-05-23
 
 - Added Laminas libraries to dev environment and RouteCollectionInterface, removed TranslatorInterface.php. The TranslatableRouteCollection class now implements Laminas\I18n\Translator\TranslatorAwareInterface.

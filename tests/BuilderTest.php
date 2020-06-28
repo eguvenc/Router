@@ -1,6 +1,6 @@
 <?php
 
-use Obullo\Router\Pattern;
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Builder;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
@@ -15,15 +15,16 @@ use Obullo\Router\Types\TwoDigitDayType;
 use Obullo\Router\Types\TranslationType;
 use Symfony\Component\Yaml\Yaml;
 
-class BuilderTest extends PHPUnit_Framework_TestCase
+class BuilderTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
         $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         $file = dirname(__DIR__).'/tests/Resources/routes.yaml';
         $this->routes = Yaml::parseFile($file);
 
-        $pattern = new Pattern([
+        $config = array(
+            'types' => [
                 new IntType('<int:id>'),  // \d+
                 new StrType('<str:name>'),     // \w+
                 new StrType('<str:word>'),     // \w+
@@ -32,11 +33,12 @@ class BuilderTest extends PHPUnit_Framework_TestCase
                 new IntType('<int:page>'),
                 new SlugType('<slug:slug>'),
                 new TranslationType('<locale:locale>'),
-        ]);
+            ]
+        );
         $context = new RequestContext;
         $context->fromRequest($request);
 
-        $collection = new RouteCollection($pattern);
+        $collection = new RouteCollection($config);
         $collection->setContext($context);
 
         $this->builder = new Builder($collection);

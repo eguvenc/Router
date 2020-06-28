@@ -1,10 +1,11 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Route;
 
-class RouteTest extends PHPUnit_Framework_TestCase
+class RouteTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
         $this->route = new Route(
             ['GET','POST'],

@@ -1,8 +1,7 @@
 <?php
 
-use Obullo\Router\{
-    Pattern
-};
+use PHPUnit\Framework\TestCase;
+use Obullo\Router\Pattern;
 use Obullo\Router\Types\StrType;
 use Obullo\Router\Types\IntType;
 use Obullo\Router\Types\BoolType;
@@ -13,20 +12,23 @@ use Obullo\Router\Types\TwoDigitMonthType;
 use Obullo\Router\Types\TwoDigitDayType;
 use Obullo\Router\Types\TranslationType;
 
-class PatternTest extends PHPUnit_Framework_TestCase
+class PatternTest extends TestCase
 {
     public function testGetTypes()
     {
-        $pattern = new Pattern([
-            new IntType('<int:id>'),   // \d+
-            new StrType('<str:name>'), // \w+
-            new StrType('<str:word>'), // \w+
-            new AnyType('<any:any>'),
-            new BoolType('<bool:status>'),
-            new IntType('<int:page>'),
-            new SlugType('<slug:slug>'),
-            new TranslationType('<locale:locale>'),
-        ]);
+        $config = array(
+            'types' => [
+                new IntType('<int:id>'),   // \d+
+                new StrType('<str:name>'), // \w+
+                new StrType('<str:word>'), // \w+
+                new AnyType('<any:any>'),
+                new BoolType('<bool:status>'),
+                new IntType('<int:page>'),
+                new SlugType('<slug:slug>'),
+                new TranslationType('<locale:locale>'),
+            ]
+        );
+        $pattern = new Pattern($config);
         $types = $pattern->getPatternTypes();
         foreach ($types as $type) {
             $this->assertTrue(
@@ -48,15 +50,18 @@ class PatternTest extends PHPUnit_Framework_TestCase
 
     public function testFormat()
     {
-        $pattern = new Pattern([
-            new IntType('<int:id>'),   // \d+
-            new StrType('<str:name>'), // \w+
-            new StrType('<str:word>'), // \w+
-            new AnyType('<any:any>'),
-            new BoolType('<bool:status>'),
-            new SlugType('<slug:slug>'),
-            new TranslationType('<locale:locale>'),
-        ]);
+        $config = array(
+            'types' => [
+                new IntType('<int:id>'),   // \d+
+                new StrType('<str:name>'), // \w+
+                new StrType('<str:word>'), // \w+
+                new AnyType('<any:any>'),
+                new BoolType('<bool:status>'),
+                new SlugType('<slug:slug>'),
+                new TranslationType('<locale:locale>'),
+            ]
+        );
+        $pattern = new Pattern($config);
         $this->assertEquals('(?<id>\d+)', $pattern->format('<int:id>'));
         $this->assertEquals('(?<name>\w+)', $pattern->format('<str:name>'));
         $this->assertEquals('(?<word>\w+)', $pattern->format('<str:word>'));
@@ -68,15 +73,18 @@ class PatternTest extends PHPUnit_Framework_TestCase
 
     public function testValidateUnformattedPatterns()
     {
-        $pattern = new Pattern([
-            new IntType('<int:id>'),   // \d+
-            new StrType('<str:name>'), // \w+
-            new StrType('<str:word>'), // \w+
-            new AnyType('<any:any>'),
-            new BoolType('<bool:status>'),
-            new SlugType('<slug:slug>'),
-            new TranslationType('<locale:locale>'),
-        ]);
+        $config = array(
+            'types' => [
+                new IntType('<int:id>'),   // \d+
+                new StrType('<str:name>'), // \w+
+                new StrType('<str:word>'), // \w+
+                new AnyType('<any:any>'),
+                new BoolType('<bool:status>'),
+                new SlugType('<slug:slug>'),
+                new TranslationType('<locale:locale>'),
+            ]
+        );
+        $pattern = new Pattern($config);
         try {
             $pattern->validateUnformattedPatterns('/test/<slug:slug>/<test:test>');
         } catch (\Exception $e) {

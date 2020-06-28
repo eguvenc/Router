@@ -1,10 +1,11 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\RequestContext;
 
-class RequestContextTest extends PHPUnit_Framework_TestCase
+class RequestContextTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
         $this->request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
         $this->context = new RequestContext;

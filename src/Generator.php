@@ -11,7 +11,7 @@ use InvalidArgumentException;
  * Url Generator
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class Generator implements GeneratorInterface
 {

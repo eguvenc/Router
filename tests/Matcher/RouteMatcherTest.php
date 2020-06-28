@@ -1,11 +1,12 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Route;
 use Obullo\Router\Matcher\RouteMatcher;
 
-class RouteMatcherTest extends PHPUnit_Framework_TestCase
+class RouteMatcherTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
         $route = new Route(
             'GET',

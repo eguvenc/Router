@@ -2,13 +2,19 @@
 
 namespace Obullo\Router\Traits;
 
+/**
+ * MiddlewareAwareTrait
+ *
+ * @copyright Obullo
+ * @license   http://opensource.org/licenses/MIT MIT license
+ */
 trait MiddlewareAwareTrait
 {
     protected $middlewares = array();
 
     /**
      * Add middleware
-     * 
+     *
      * @param array|string $middleware names
      */
     public function middleware($middleware)

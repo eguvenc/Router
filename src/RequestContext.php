@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface as Request;
  * Request context
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class RequestContext
 {

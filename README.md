@@ -33,7 +33,6 @@ $ vendor/bin/phpunit
 ```php
 require '../vendor/autoload.php';
 
-use Obullo\Router\Pattern;
 use Obullo\Router\Route;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
@@ -42,16 +41,18 @@ use Obullo\Router\Types\{
     StrType,
     IntType
 };
-$pattern = new Pattern([
-    new IntType('<int:id>'),
-    new StrType('<str:name>'),
-]);
+$config = [
+    'types' => [
+        new IntType('<int:id>'),
+        new StrType('<str:name>'),
+    ]
+];
 ```
 
 Psr7 Request
 
 ```php
-$request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
 $context = new RequestContext;
 $context->fromRequest($request);
 ```
@@ -59,7 +60,7 @@ $context->fromRequest($request);
 Route Collection
 
 ```php
-$collection = new RouteCollection($pattern);
+$collection = new RouteCollection($config);
 $collection->setContext($context);
 $collection->add(new Route('GET', '/', 'Views/default.phtml'));
 $collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml'))->scheme(['http','https']);
@@ -72,15 +73,19 @@ $collection->add(new Route('GET', '/test/index', 'Views/test.phtml'))
 Route Class
 
 ```php
+use Obullo\Router\RouteInterface;
+
 $route = $collection->get('/dummy/index/<int:id>/<str:name>');
 
-echo $route->getHandler(); //  "App\Controller\DummyController::index"
-echo $route->getMethods()[0]; // GET
-echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)/"
-echo $route->getMiddlewares()[0]; // App\Middleware\Dummy::class
+if ($route instanceof RouteInterface) {
+    echo $route->getHandler(); //  "App\Controller\DummyController::index"
+    echo $route->getMethods()[0]; // GET
+    echo $route->getPattern(); //  "/dummy/index/(?\d+)/(?\w+)/"
+    echo $route->getMiddlewares()[0]; // App\Middleware\Dummy::class
+}
 ```
 
-Dispatching
+Dispatch
 
 ```php
 $router = new Router($collection);
@@ -100,14 +105,14 @@ dummy.phtml
 ```php
 // Views/dummy.phtml
 // 
-use Zend\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 return new HtmlResponse('Im a dummy view');
 ```
 
 ### YAML example
 
-Yaml basic
+Basic .yaml configuration
 
 ```yaml
 ## routes.yaml
@@ -120,12 +125,11 @@ Yaml basic
      middleware: App\Middleware\Dummy
 ```
 
-Parsing yaml
+Reading routes from `.yaml` files
 
 ```php
 require '../vendor/autoload.php';
 
-use Obullo\Router\Pattern;
 use Obullo\Router\Route;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
@@ -138,17 +142,19 @@ use Obullo\Router\Types\{
     SlugType,
     TranslationType
 };
-$pattern = new Pattern;
-$pattern->add(new IntType('<int:id>'));
-$pattern->add(new StrType('<str:name>'));
-$pattern->add(new SlugType('<slug:slug>'));
-$pattern->add(new TranslationType('<locale:locale>'));
-
-$request = Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$config = [
+    'types' => [
+        new IntType('<int:id>'),
+        new StrType('<str:name>'),
+        new SlugType('<slug:slug>'),
+        new TranslationType('<locale:locale>'),
+    ]
+];
+$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
 $context = new RequestContext;
 $context->fromRequest($request);
 
-$collection = new RouteCollection($pattern);
+$collection = new RouteCollection($config);
 $collection->setContext($context);
 
 use Symfony\Component\Yaml\Yaml;

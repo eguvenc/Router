@@ -9,7 +9,7 @@ use Obullo\Router\Exception\UndefinedTypeException;
  * Pattern
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class Pattern
 {
@@ -19,19 +19,20 @@ class Pattern
 
     /**
      * Constructor
-     * 
+     *
      * @param array $types multiple type array
      */
-    public function __construct($types = array())
-    {   
-        foreach ((array)$types as $type) {
+    public function __construct(array $config = array())
+    {
+        $types = empty($config['types']) ? [] : $config['types'];
+        foreach ($types as $type) {
             $this->add($type);
         }
     }
 
     /**
      * Add type
-     * 
+     *
      * @param Type $type object
      */
     public function add(Type $type)
@@ -43,11 +44,10 @@ class Pattern
         $this->types[$pattern]   = $type;
         $this->values[$pattern]  = $type->convert()->getValue();
     }
-    
 
     /**
      * Returns to tags types
-     * 
+     *
      * @return array
      */
     public function getTaggedTypes() : array
@@ -57,7 +57,7 @@ class Pattern
 
     /**
      * Returns to pattern types
-     * 
+     *
      * @return array
      */
     public function getPatternTypes() : array
@@ -91,10 +91,7 @@ class Pattern
         foreach (explode('/', $path) as $value) {
             if ((substr($value, 0, 1) == '<' && substr($value, -1) == '>') && ! array_key_exists($value, $this->values)) {
                 throw new UndefinedTypeException(
-                    sprintf(
-                        'The route type %s you used is undefined.',
-                        $value
-                    )
+                    sprintf('The route type %s you used is undefined.', $value)
                 );
             }
         }

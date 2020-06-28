@@ -8,7 +8,7 @@ use Obullo\Router\Type;
  * Bool <bool:bool>
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class BoolType extends Type
 {

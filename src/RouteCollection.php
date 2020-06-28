@@ -5,6 +5,7 @@ namespace Obullo\Router;
 use Obullo\Router\Pattern;
 use Obullo\Router\RequestContext;
 use Obullo\Router\Traits\RequestContextAwareTrait;
+use Obullo\Router\Traits\ExceptionTrait;
 use Obullo\Router\Exception\BadRouteException;
 use Obullo\Router\Exception\UndefinedVariableException;
 use ArrayIterator;
@@ -15,25 +16,37 @@ use Countable;
  * Route collection
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class RouteCollection implements IteratorAggregate, Countable
 {
     use RequestContextAwareTrait;
 
     protected $var = array();
+    protected $config = array();
     protected $routes = array();
     protected $name;
     protected $pattern;
 
     /**
-     * Constructor
+     * Construct parameters
      *
-     * @param Pattern $pattern object
+     * @param array $config configuration array
      */
-    public function __construct(Pattern $pattern)
+    public function __construct(array $config)
     {
-        $this->pattern = $pattern;
+        $this->config = $config;
+        $this->pattern = new Pattern($config);
+    }
+
+    /**
+     * Return to configuration
+     *
+     * @return array
+     */
+    public function getConfig() : array
+    {
+        return $this->config;
     }
 
     /**

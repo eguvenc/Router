@@ -8,7 +8,7 @@ use Obullo\Router\Type;
  * Year <yyyy:year>
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class FourDigitYearType extends Type
 {

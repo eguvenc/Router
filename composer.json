@@ -14,7 +14,7 @@
         "secure"
     ],
     "homepage": "http://obullo.com",
-    "license": "MIT",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Ersin Guvenc",
@@ -38,7 +38,7 @@
     },
     "require-dev": {
         "symfony/yaml": "^3.0",
-        "phpunit/phpunit": "^4.8",
+        "phpunit/phpunit": "^7.5",
         "laminas/laminas-diactoros": "^2.3",
         "laminas/laminas-i18n": "^2.10",
         "laminas/laminas-servicemanager": "^3.4"

@@ -1,6 +1,6 @@
 <?php
 
-use Obullo\Router\Pattern;
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Route;
 use Obullo\Router\Router;
 use Obullo\Router\RequestContext;
@@ -12,13 +12,13 @@ use Obullo\Router\Types\SlugType;
 use Obullo\Router\Types\AnyType;
 use Obullo\Router\Types\TranslationType;
 
-class RouteCollectionTest extends PHPUnit_Framework_TestCase
+class RouteCollectionTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
         $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
-        $pattern = new Pattern(
-            [
+        $config = array(
+            'types' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
@@ -35,7 +35,7 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
         $context->setHost('test.example.com');
         $context->setScheme('https');
 
-        $collection = new RouteCollection($pattern);
+        $collection = new RouteCollection($config);
         $collection->setContext($context);
 
         $this->collection = $collection;

@@ -10,7 +10,7 @@ use Laminas\I18n\Translator\TranslatorAwareTrait;
  * TranslatableRoute collection
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class TranslatableRouteCollection extends RouteCollection implements TranslatorAwareInterface
 {

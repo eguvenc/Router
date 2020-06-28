@@ -12,7 +12,7 @@ use Obullo\Router\Exception\InvalidKeyException;
  * Build route data from configuration file
  *
  * @copyright Obullo
- * @license   http://opensource.org/licenses/MIT MIT license
+ * @license   https://opensource.org/licenses/BSD-3-Clause
  */
 class Builder
 {

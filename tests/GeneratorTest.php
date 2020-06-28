@@ -1,6 +1,6 @@
 <?php
 
-use Obullo\Router\Pattern;
+use PHPUnit\Framework\TestCase;
 use Obullo\Router\Route;
 use Obullo\Router\RequestContext;
 use Obullo\Router\RouteCollection;
@@ -17,11 +17,12 @@ use Obullo\Router\Types\TwoDigitDayType;
 use Obullo\Router\Types\TranslationType;
 use Laminas\I18n\Translator\Translator;
 
-class GeneratorTest extends PHPUnit_Framework_TestCase
+class GeneratorTest extends TestCase
 {
-    public function setup()
+    public function setup() : void
     {
-        $this->pattern = new Pattern([
+        $this->config = array(
+            'types' => [
                 new IntType('<int:id>'),
                 new StrType('<str:name>'),
                 new StrType('<str:word>'),
@@ -31,8 +32,9 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
                 new SlugType('<slug:slug>'),
                 new SlugType('<slug:slug_>', '(?<%s>[\w-_]+)'),
                 new TranslationType('<locale:locale>'),
-        ]);
-        $this->collection = new RouteCollection($this->pattern);
+            ]
+        );
+        $this->collection = new RouteCollection($this->config);
         $this->collection->add(new Route('GET', '/<locale:locale>/dummy/<str:name>/<int:id>', 'App\Controller\DefaultController::dummy'));
         $this->collection->add(new Route('GET', '/slug/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
         $this->collection->add(new Route('GET', '/test/me', 'App\Controller\DefaultController::dummy'));
@@ -51,7 +53,7 @@ class GeneratorTest extends PHPUnit_Framework_TestCase
 
     public function testTranslatableGenerate()
     {
-        $this->collection = new TranslatableRouteCollection($this->pattern);
+        $this->collection = new TranslatableRouteCollection($this->config);
         
         $translator = new Translator;
         $translator->setLocale('tr');
