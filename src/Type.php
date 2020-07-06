@@ -93,6 +93,16 @@ abstract class Type
     }
 
     /**
+     * Returns to array of the tags
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
      * Convert rule
      *
      * @return object

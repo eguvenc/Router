@@ -1,17 +1,16 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Obullo\Router\Types\{
-    AnyType,
-    BoolType,
-    FourDigitYearType,
-    IntType,
-    SlugType,
-    StrType,
-    TranslationType,
-    TwoDigitDayType,
-    TwoDigitMonthType
-};
+use Obullo\Router\Types\AnyType;
+use Obullo\Router\Types\BoolType;
+use Obullo\Router\Types\FourDigitYearType;
+use Obullo\Router\Types\IntType;
+use Obullo\Router\Types\SlugType;
+use Obullo\Router\Types\StrType;
+use Obullo\Router\Types\TranslationType;
+use Obullo\Router\Types\TwoDigitDayType;
+use Obullo\Router\Types\TwoDigitMonthType;
+
 class TypeTest extends TestCase
 {
     public function testGetValue()
@@ -64,5 +63,185 @@ class TypeTest extends TestCase
         $this->assertEquals('en', (new TranslationType('<locale:locale>'))->toUrl('en'));
         $this->assertEquals('02', (new TwoDigitDayType('<dd:day>'))->toUrl('02'));
         $this->assertEquals('11', (new TwoDigitMonthType('<mm:month>'))->toUrl('11'));
+    }
+
+    public function testAnyTypeSetState()
+    {
+        $type = AnyType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testBoolTypeSetState()
+    {
+        $type = BoolType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testFourDigitYearTypeSetState()
+    {
+        $type = FourDigitYearType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testIntTypeSetState()
+    {
+        $type = IntType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testSlugTypeSetState()
+    {
+        $type = SlugType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testStrTypeSetState()
+    {
+        $type = StrType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testTranslationTypeSetState()
+    {
+        $type = TranslationType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testTwoDigitDayTypeSetState()
+    {
+        $type = TwoDigitDayType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
+    }
+
+    public function testTwoDigitMonthTypeSetState()
+    {
+        $type = TwoDigitMonthType::__set_state(array(
+             'regex' => '(?<%s>\\d+)',
+             'tag' => 'id',
+             'pattern' => '<int:id>',
+             'value' => null,
+             'tags' =>
+            array(
+              0 => 'int',
+              1 => 'id',
+            ),
+        ));
+        $this->assertEquals('(?<%s>\\d+)', $type->getRegex());
+        $this->assertEquals('<int:id>', $type->getPattern());
+        $this->assertEquals('id', $type->getTag());
+        $this->assertEquals('int', $type->getTags()[0]);
+        $this->assertEquals('id', $type->getTags()[1]);
     }
 }

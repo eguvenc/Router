@@ -15,6 +15,17 @@ class IntType extends Type
     protected $regex = '(?<%s>\d+)';
 
     /**
+     * Allows to write to a cached static configuration file
+     * 
+     * @param  array  $array cached variables
+     * @return object
+     */
+    public static function __set_state(array $array)
+    {
+        return new Self($array['pattern'], $array['regex']);
+    }
+
+    /**
      * Php format
      *
      * @param  number $value

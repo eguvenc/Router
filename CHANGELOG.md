@@ -3,6 +3,27 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.8.1 - 2020-07-07
+
+- `__set_state()` method has been added to the types to enable writing to a cached static configuration file.
+
+### Added
+
+- Added `__set_state()` method.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+
 ## 1.8.0 - 2020-06-28
 
 - The first parameter of the RouteCollection constructor has been deprecated.
