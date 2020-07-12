@@ -15,14 +15,6 @@
     ],
     "homepage": "http://obullo.com",
     "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Ersin Guvenc",
-            "email": "eguvenc@gmail.com",
-            "homepage": "http://obullo.com",
-            "role": "Developer"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Obullo\\Router\\": "src/"
