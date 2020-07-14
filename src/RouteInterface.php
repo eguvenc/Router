@@ -11,7 +11,14 @@ namespace Obullo\Router;
 interface RouteInterface
 {
     /**
-     * Returns to path name
+     * Returns to route name
+     *
+     * @return string
+     */
+    public function getName() : string;
+
+    /**
+     * Returns to path
      *
      * @return string
      */
