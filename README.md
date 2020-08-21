@@ -62,9 +62,9 @@ Route Collection
 ```php
 $collection = new RouteCollection($config);
 $collection->setContext($context);
-$collection->add(new Route('GET', '/', 'Views/default.phtml'));
-$collection->add(new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml'))->scheme(['http','https']);
-$collection->add(new Route('GET', '/test/index', 'Views/test.phtml'))
+$collection->add('home', new Route('GET', '/', 'Views/default.phtml'));
+$collection->add('dummy', new Route('GET', '/dummy/index/<int:id>/<str:name>', 'Views/dummy.phtml'))->scheme(['http','https']);
+$collection->add('test', new Route('GET', '/test/index', 'Views/test.phtml'))
     ->host('example.com');
     ->scheme('http');
     ->middleware(App\Middleware\Dummy::class);
@@ -75,7 +75,7 @@ Route Class
 ```php
 use Obullo\Router\RouteInterface;
 
-$route = $collection->get('/dummy/index/<int:id>/<str:name>');
+$route = $collection->get('dummy');
 
 if ($route instanceof RouteInterface) {
     echo $route->getHandler(); //  "App\Controller\DummyController::index"
@@ -108,64 +108,4 @@ dummy.phtml
 use Laminas\Diactoros\Response\HtmlResponse;
 
 return new HtmlResponse('Im a dummy view');
-```
-
-### YAML example
-
-Basic .yaml configuration
-
-```yaml
-## routes.yaml
-
-/:
-    handler: Views/default.phtml
-
-/<locale:locale>/dummy/<str:name>:
-     handler: Views/dummy.phtml
-     middleware: App\Middleware\Dummy
-```
-
-Reading routes from `.yaml` files
-
-```php
-require '../vendor/autoload.php';
-
-use Obullo\Router\Route;
-use Obullo\Router\RequestContext;
-use Obullo\Router\RouteCollection;
-use Obullo\Router\Router;
-use Obullo\Router\Builder;
-use Obullo\Router\Generator;
-use Obullo\Router\Types\{
-    StrType,
-    IntType,
-    SlugType,
-    TranslationType
-};
-$config = [
-    'types' => [
-        new IntType('<int:id>'),
-        new StrType('<str:name>'),
-        new SlugType('<slug:slug>'),
-        new TranslationType('<locale:locale>'),
-    ]
-];
-$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
-$context = new RequestContext;
-$context->fromRequest($request);
-
-$collection = new RouteCollection($config);
-$collection->setContext($context);
-
-use Symfony\Component\Yaml\Yaml;
-
-$builder = new Builder($collection);
-$collection = $builder->build(Yaml::parseFile('routes.yaml'));
-
-$router = new Router($collection);
-
-if ($route = $router->matchRequest()) {
-    echo $handler = $route->getHandler();  // Views/default.phtml
-    $methods = $route->getMethods();
-}
 ```
