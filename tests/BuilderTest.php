@@ -13,15 +13,13 @@ use Obullo\Router\Types\FourDigitYearType;
 use Obullo\Router\Types\TwoDigitMonthType;
 use Obullo\Router\Types\TwoDigitDayType;
 use Obullo\Router\Types\TranslationType;
-use Symfony\Component\Yaml\Yaml;
 
 class BuilderTest extends TestCase
 {
     public function setup() : void
     {
         $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
-        $file = dirname(__DIR__).'/tests/Resources/routes.yaml';
-        $this->routes = Yaml::parseFile($file);
+        $this->routes = include 'Resources/routes.php';
 
         $config = array(
             'types' => [
@@ -49,11 +47,11 @@ class BuilderTest extends TestCase
     {
         $this->assertInstanceOf('Obullo\Router\RouteCollection', $this->collection);
 
-        $dummyRoute = $this->collection->get('/<locale:locale>/dummy/<str:name>');
+        $dummyRoute = $this->collection->get('dummy');
         $this->assertEquals('App\Controller\DefaultController::dummy', $dummyRoute->getHandler());
         $this->assertEquals('/(?<locale>[a-z]{2})/dummy/(?<name>\w+)/', $dummyRoute->getPath());
 
-        $testRoute = $this->collection->get('/dummy/<str:name>/<int:id>');
+        $testRoute = $this->collection->get('dummy_int');
         $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $testRoute->getPath());
         $this->assertEquals('<str:name>.example.com', $testRoute->getHost());
         $this->assertEquals(['http','https'], $testRoute->getSchemes());
@@ -61,7 +59,7 @@ class BuilderTest extends TestCase
 
     public function testMiddlewareVariable()
     {
-        $testRoute = $this->collection->get('/<locale:locale>/dummy/<str:name>');
+        $testRoute = $this->collection->get('dummy');
         $middlewares = $testRoute->getMiddlewares();
 
         $this->assertEquals("App\Middleware\Var", $middlewares[0]);

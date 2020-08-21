@@ -51,49 +51,19 @@ class RouteCollection implements IteratorAggregate, Countable
 
     /**
      * Add route
-     *
+     * 
+     * @param string         $name  route name
      * @param RouteInterface $route object
      */
-    public function add(RouteInterface $route)
+    public function add(string $name, RouteInterface $route)
     {
+        $route->setName($name);
         $route->setPattern($this->pattern);
-        $this->name = $route->getName();
+        $this->name = $name;
         $route->convert();
         $this->routes[$this->name] = $route;
 
         return $this;
-    }
-
-    /**
-     * Add variable
-     *
-     * @param string $name var name
-     * @param array $data array data
-     */
-    public function addVariable(string $name, array $data)
-    {
-        $this->var[$name] = $data;
-        return $this;
-    }
-
-    /**
-     * Returns to variable data
-     *
-     * @param  string $name var name
-     * @return @UndefinedVariableException|array var data
-     */
-    public function getVariable(string $name)
-    {
-        $name = '$'.ltrim($name, '$');
-        if (false == isset($this->var[$name])) {
-            throw new UndefinedVariableException(
-                sprintf(
-                    'The variable "%s" is not defined.',
-                    $name
-                )
-            );
-        }
-        return $this->var[$name];
     }
 
     /**

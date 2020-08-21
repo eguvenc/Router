@@ -36,73 +36,51 @@ class Builder
      */
     public function build(array $datas) : RouteCollection
     {
-        foreach ($datas as $key => $data) {
-            if (strpos($key, '$') === 0) {
-                $this->collection->addVariable($key, $data);
-            } else {
-                if (! is_array($data)) {
-                    throw new UndefinedRouteException('There is no rule defined in the route configuration file.');
-                }
-                Self::validateRoute($key, $data);
-                $handler = $data['handler'];
-                $method  = isset($data['method']) ? $data['method'] : 'GET';
-                $host = isset($data['host']) ? $data['host'] : null;
-                $scheme = isset($data['scheme']) ? $data['scheme'] : array();
-
-                $middleware = array();
-                if (isset($data['middleware'])) {
-                    $middleware = $this->parseMiddlewareVar($data['middleware']);
-                }
-                $this->collection->add(new Route($method, $key, $handler))
-                    ->host($host)
-                    ->scheme($scheme)
-                    ->middleware($middleware);
+        foreach ($datas as $name => $data) {
+            if (! is_array($data)) {
+                throw new UndefinedRouteException('There is no rule defined in the route configuration file.');
             }
+            Self::validateRoute($name, $data);
+            $path = $data['path'];
+            $handler = $data['handler'];
+            $method  = isset($data['method']) ? $data['method'] : 'GET';
+            $host = isset($data['host']) ? $data['host'] : null;
+            $scheme = isset($data['scheme']) ? $data['scheme'] : array();
+            $middleware = isset($data['middleware']) ? $data['middleware'] : array();
+
+            $this->collection->add($name, new Route($method, $path, $handler))
+                ->host($host)
+                ->scheme($scheme)
+                ->middleware($middleware);
         }
         return $this->collection;
     }
 
     /**
-     * Parse variables for middleware key
-     *
-     * @param  mixed $middlewares middlewares
-     * @return array
-     */
-    protected function parseMiddlewareVar($middlewares) : array
-    {
-        $newMiddlewares = array();
-        foreach ((array)$middlewares as $middleware) {
-            if (strpos($middleware, '$') === 0) {
-                $var = $this->collection->getVariable($middleware);
-                if (false == isset($var['middleware'])) {
-                    throw new InvalidKeyException(
-                        sprintf(
-                            'The "%s" variable hasn\'t got a middleware key.',
-                            $middleware
-                        )
-                    );
-                }
-                $newMiddlewares = array_merge($newMiddlewares, $var['middleware']);
-            } else {
-                $newMiddlewares[] = $middleware;
-            }
-        }
-        return $newMiddlewares;
-    }
-
-    /**
      * Validate route
      *
-     * @param  array  $data route
+     * @param  string $name route name
+     * @param  array  $data route data
      * @return void
      */
-    protected static function validateRoute(string $path, array $data)
+    protected static function validateRoute(string $name, array $data)
     {
+        if (empty($name)) {
+            throw new BadRouteException('You must provide a route name.');
+        }
+        if (empty($data['path'])) {
+            throw new BadRouteException(
+                sprintf(
+                    'Route path is undefined for "%s" route.',
+                    $name
+                )
+            );
+        }
         if (empty($data['handler'])) {
             throw new BadRouteException(
                 sprintf(
-                    'Route handler is undefined for "%s" path.',
-                    htmlspecialchars($path)
+                    'Route handler is undefined for "%s" route.',
+                    $name
                 )
             );
         }

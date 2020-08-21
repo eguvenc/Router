@@ -29,7 +29,6 @@
         "php": "^7.0"
     },
     "require-dev": {
-        "symfony/yaml": "^3.0",
         "phpunit/phpunit": "^7.5",
         "laminas/laminas-diactoros": "^2.3",
         "laminas/laminas-i18n": "^2.10",
