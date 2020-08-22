@@ -77,9 +77,9 @@ class TranslatableRouteCollectionTest extends TestCase
 
     public function testAdd()
     {
-        $this->collection->add(new Route('GET', '/<locale:locale>/{dummy}/<str:name>/<int:id>', 'App\Controller\DefaultController::dummy'));
-        $this->collection->add(new Route('GET', '/{slug}/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
-        $this->collection->add(new Route('GET', '/{hello}/{world}', 'App\Controller\DefaultController::dummy'));
+        $this->collection->add('locale.dummy.name.id', new Route('GET', '/<locale:locale>/{dummy}/<str:name>/<int:id>', 'App\Controller\DefaultController::dummy'));
+        $this->collection->add('slug.slug', new Route('GET', '/{slug}/<slug:slug_>', 'App\Controller\DefaultController::dummy'));
+        $this->collection->add('hello.world', new Route('GET', '/{hello}/{world}', 'App\Controller\DefaultController::dummy'));
 
         $route = $this->collection->get('/<locale:locale>/{dummy}/<str:name>/<int:id>');
         $this->assertEquals($route->getName(), '/<locale:locale>/{dummy}/<str:name>/<int:id>');

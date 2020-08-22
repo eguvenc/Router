@@ -19,12 +19,14 @@ class TranslatableRouteCollection extends RouteCollection implements TranslatorA
     /**
      * Add route
      *
+     * @param string         $name  route name
      * @param RouteInterface $route object
      */
-    public function add(RouteInterface $route)
+    public function add(string $name, RouteInterface $route)
     {
+        $route->setName($name);
         $route->setPattern($this->pattern);
-        $this->name = $route->getName();
+        $this->name = $name;
         $route->convert();
         $this->routes[$this->name] = $route;
         
@@ -34,8 +36,8 @@ class TranslatableRouteCollection extends RouteCollection implements TranslatorA
         if ($data['match'] == true) {
             $translatedRoute = clone $route;
             $translatedRoute->setPath($data['path']);
-            $translatedRoute->setName($data['path']);
-            $this->add($translatedRoute);
+            $translatedRoute->setName($name);
+            $this->add($name, $translatedRoute);
         }
         return $this;
     }
@@ -54,7 +56,7 @@ class TranslatableRouteCollection extends RouteCollection implements TranslatorA
         $match = false;
         foreach ($segments as $segment) {
             if (Self::isTranslatePattern($segment)) {
-                $segment = $this->translator->translate($segment, $this->translatorTextDomain, $locale);
+                $segment = $this->translator->translate($segment, $this->getTranslatorTextDomain(), $locale);
                 $match = true;
             }
             if (Self::isTranslatePattern($segment)) {

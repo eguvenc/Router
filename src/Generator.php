@@ -49,13 +49,16 @@ class Generator implements GeneratorInterface
                 )
             );
         }
+        $route->convert();
+        $path = $route->getPath();
+        echo $path;
+        die;
         if ($locale != null) {
             $data = $this->collection->translatePath($name, $locale);
-            $name = $data['path'];
-            $name = rtrim($name, '/');
+            $path = rtrim($data['path'], '/');
         }
-        $urlParts  = explode('/', $name);
-        $urlFormat = preg_replace('#<.*?>#', '%s', $name);
+        $urlParts  = explode('/', $path);
+        $urlFormat = preg_replace('#<.*?>#', '%s', $path);
         
         if (strpos($urlFormat, '%s') > 0) {
             $urlFormat = vsprintf($urlFormat, $args);

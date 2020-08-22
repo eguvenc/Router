@@ -28,14 +28,14 @@ class Route implements RouteInterface
     /**
      * Consructor
      *
-     * @param string $method  http method name
+     * @param mixed  $method  http method name
      * @param string $path    route path
      * @param string $handler route handler
      * @param string $host    http host
      * @param mixed  $scheme  url scheme
      * @param mixed  $middleware middlewares
      */
-    public function __construct(string $method, string $path, string $handler, $host = null, $scheme = null, $middleware = array())
+    public function __construct($method, string $path, string $handler, $host = null, $scheme = null, $middleware = array())
     {
         foreach ((array)$method as $name) {
             $this->methods[] = strtoupper($name);

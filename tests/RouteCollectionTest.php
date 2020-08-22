@@ -51,8 +51,8 @@ class RouteCollectionTest extends TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add($route);
-        $r = $this->collection->get('/dummy/<str:name>/<int:id>');
+        $this->collection->add('dummy.name.id', $route);
+        $r = $this->collection->get('dummy.name.id');
 
         $this->assertEquals(['GET','POST'], $r->getMethods());
         $this->assertEquals('/dummy/(?<name>\w+)/(?<id>\d+)/', $r->getPath());
@@ -80,8 +80,8 @@ class RouteCollectionTest extends TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add($first);
-        $this->collection->add($second);
+        $this->collection->add('d1', $first);
+        $this->collection->add('d2', $second);
         $this->assertEquals(2, $this->collection->count());
     }
 
@@ -95,9 +95,9 @@ class RouteCollectionTest extends TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add($route);
+        $this->collection->add('dummy.name.id', $route);
         $r = $this->collection->all();
-        $this->assertEquals('App\Controller\DefaultController:index', $r['/dummy/<str:name>/<int:id>']->getHandler());
+        $this->assertEquals('App\Controller\DefaultController:index', $r['dummy.name.id']->getHandler());
     }
 
     public function testGetIterator()
@@ -127,8 +127,8 @@ class RouteCollectionTest extends TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add($route);
-        $r = $this->collection->get('/dummy/<str:name>/<int:id>');
+        $this->collection->add('dummy.name.id', $route);
+        $r = $this->collection->get('dummy.name.id');
         $this->assertEquals(['GET','POST'], $r->getMethods());
     }
 
@@ -142,7 +142,7 @@ class RouteCollectionTest extends TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add($first);
+        $this->collection->add('dummy.name.id.first', $first);
         $second = new Route(
             ['GET','POST'],
             '/dummy/<str:name>/<int:id>/second',
@@ -151,32 +151,9 @@ class RouteCollectionTest extends TestCase
             ['http','https'],
             'App\Middleware\Dummy'
         );
-        $this->collection->add($second);
+        $this->collection->add('dummy.name.id.second', $second);
+        $this->collection->remove('dummy.name.id.second');
 
-        $this->collection->remove('/dummy/<str:name>/<int:id>/second');
-        $this->assertFalse($this->collection->get('/dummy/<str:name>/<int:id>/second'));
-    }
-
-    public function testAddVariable()
-    {
-        $route = new Route(
-            ['GET','POST'],
-            '/dummy/test',
-            'App\Controller\DefaultController:index',
-            '<str:name>.example.com',
-            ['http','https'],
-            '$test'
-        );
-        $this->collection->add($route);
-        $this->collection->addVariable('$test', ['middleware' => ['App\Middleware\Dummy', 'App\Middleware\Test']]);
-        $var = $this->collection->getVariable('test');
-
-        $this->assertEquals(['middleware' => ['App\Middleware\Dummy', 'App\Middleware\Test']], $var);
-
-        $router = new Router($this->collection);
-        $route = $router->popRoute();
-
-        $this->assertEquals('/dummy/test', $route->getName());
-        $this->assertEquals(['$test'], $router->getMiddlewares());
+        $this->assertFalse($this->collection->get('dummy.name.id.second'));
     }
 }

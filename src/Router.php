@@ -143,7 +143,7 @@ class Router
     /**
      * Url
      *
-     * @param  string $name   path
+     * @param  string $name   route name
      * @param  array  $args   arguments
      * @param  string $locale locale
      *

@@ -41,6 +41,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+            'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -51,7 +52,7 @@ class RouterTest extends TestCase
         );
         $router = new Router($collection);
         $route = $router->popRoute();
-        $this->assertEquals('/test/dummy/<str:name>/<int:id>', $route->getName());
+        $this->assertEquals('test.dummy.name.int', $route->getName());
         $this->assertEquals('/test/dummy/(?<name>\w+)/(?<id>\d+)/', $route->getPath());
         $this->assertEquals('App\Controller\DefaultController::dummy', $route->getHandler());
     }
@@ -61,6 +62,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+            'dummy.name.int',
             new Route(
                 'GET',
                 '/dummy/<str:name>/<int:id>',
@@ -83,6 +85,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+            'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -105,6 +108,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+            'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -124,6 +128,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+            'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -142,6 +147,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+            'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -161,6 +167,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+           'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -176,6 +183,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+           'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -194,6 +202,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+           'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -211,6 +220,7 @@ class RouterTest extends TestCase
         $collection = new RouteCollection($this->config);
         $collection->setContext($this->context);
         $collection->add(
+           'test.dummy.name.int',
             new Route(
                 'GET',
                 '/test/dummy/<str:name>/<int:id>',
@@ -220,7 +230,7 @@ class RouterTest extends TestCase
             )
         );
         $router = new Router($collection);
-        $dummyUrl = $router->url('/test/dummy/<str:name>/<int:id>', ['test',5]);
+        $dummyUrl = $router->url('test.dummy.name.int', ['test',5]);
         $this->assertEquals($dummyUrl, '/test/dummy/test/5');
     }
 }

@@ -18,12 +18,13 @@ class RouteTest extends TestCase
                 'App\Middleware\Lucky',
             ]
         );
+        $this->route->setName('dummy.name');
         $this->route->setArguments(['name' => 'test', 'id' => 5]);
     }
 
     public function testGetName()
     {
-        $this->assertEquals('/dummy/(?<name>\w+)', $this->route->getName());
+        $this->assertEquals('dummy.name', $this->route->getName());
     }
 
     public function testGetMethods()
